@@ -1,9 +1,14 @@
+import PolyExp: hankel
 export hilbert, perp, weights, solve
+
+function PolyExp.hankel(T, L1::AbstractVector, L2::AbstractVector)
+    PolyExp.hankel(series(T), L1, L2)
+end
 
 function PolyExp.hankel(T, d::Int64, X = variables(T))
     L0 = monomials(X, deg(T)-d)
     L1 = monomials(X, d)
-    PolyExp.hankel(T,L0,L1)
+    hankel(T,L0,L1)
 end
     
 function hilbert(T)

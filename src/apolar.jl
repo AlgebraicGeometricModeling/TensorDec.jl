@@ -1,8 +1,18 @@
-import PolyExp: hankel
+import PolyExp: hankel, dual, Series
 export hilbert, perp, weights, solve
 
+
+"""                                                                                                                                  ```                                                                                                                                  dual(p::Polynomial, d:: Int64) -> Series{T}                                                                                          ```                                                                                                                                  Compute the series associated to the tensor p of degree d.                                                                           T is the type of the coefficients of the polynomial p.                                                                               """
+function PolyExp.dual{T}( p::Polynomial{true,T}, d:: Int64 = deg(p))
+    s = Dict{Monomial{true},T}()
+    for t in p
+	s[t.x] = t.α/binomial(d,exponent(t.x))
+    end
+    return PolyExp.Series(s)
+end
+
 function PolyExp.hankel(T, L1::AbstractVector, L2::AbstractVector)
-    PolyExp.hankel(series(T), L1, L2)
+    PolyExp.hankel(dual(T,deg(T)), L1, L2)
 end
 
 function PolyExp.hankel(T, d::Int64, X = variables(T))

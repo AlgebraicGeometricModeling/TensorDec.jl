@@ -32,4 +32,4 @@ P = perp(T,k)
 ## Documentation
 
 - More on the package [TensorDec.jl](https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl) comming.
-- For more information on [Julia](http://docs.julialang.org/en/latest/#manual)
+- For more information on [Julia](https://julialang.org/)

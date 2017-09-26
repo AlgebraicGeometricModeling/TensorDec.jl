@@ -1,5 +1,4 @@
-import PolyExp: svd_decompose, series
-
+import PolyExp: svd_decompose
 export svd_decompose
 
 #------------------------------------------------------------------------
@@ -55,29 +54,24 @@ end
 
 
 #------------------------------------------------------------------------
-function solve(P, X , d =  sum(deg(P[i])-1 for i in 1:length(P)) + 1)
-    L = monomials(X,d)
-    Xi = solve_macaulay(P,X,d)
-end
-
-function weights(T, Xi)
-    X = variables(T)
-    d = deg(T)
-    L = monomials(X,d)
-    I = idx(L)
-    A = fill(0.0, length(L), size(Xi,1))
-    for i in 1:size(Xi,1)
-        p = (sum(Xi[i,j]*X[j] for j in 1:length(X)))^d
-        for t in p
-            j = get(I,t.x,0)
-            if j != 0
-                A[j,i] = t.α/PolyExp.binom(d,exponent(t.x))
-            end
-        end
-    end
-    b = [t[2] for t in terms(T)]
-    A\b
-end
+# function weights(T, Xi)
+#     X = variables(T)
+#     d = deg(T)
+#     L = monomials(X,d)
+#     I = idx(L)
+#     A = fill(0.0, length(L), size(Xi,1))
+#     for i in 1:size(Xi,1)
+#         p = (sum(Xi[i,j]*X[j] for j in 1:length(X)))^d
+#         for t in p
+#             j = get(I,t.x,0)
+#             if j != 0
+#                 A[j,i] = t.α/PolyExp.binom(d,exponent(t.x))
+#             end
+#         end
+#     end
+#     b = [t[2] for t in terms(T)]
+#     A\b
+# end
 
 function normalize(M,i)
     diagm([1/M[j,i] for j in 1:size(M,1)])*M

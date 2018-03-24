@@ -4,10 +4,9 @@ To install the package within julia:
 
 ```julia
 Pkg.clone("https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl.git")
-Pkg.build("TensorDec")
 ```
 
-To use it within julia:
+Here is an example of its use:
 
 ```julia
 using TensorDec
@@ -17,16 +16,30 @@ n = length(X)
 d = 4
 r = 4
 
-println("Symmetric tensor: dim ", n, "  degree ",d, "  rank ",r)
-Xi = rand(r,n)
+# Symmetric tensor of degree d and rank r:
+Xi = rand(n,r)
 w = fill(1.0,r)
-T = tensor(w,Xi,X, d)
+F = tensor(w,Xi,X, d)
 
-println("Hilbert fct: ", hilbert(T))
 k = 2
-H = hankel(T,k)
+H = hankel(F,k)
 
-P = perp(T,k)
+P = perp(F,k)
+
+decompose(F)
+
+# Multilinear tensor
+A = rand(3,2)
+B = rand(3,2)
+C = rand(3,2)
+w = rand(2)
+
+T = tensor(w,A,B,C)
+
+w0, A0, B0, C0 = decompose(T)
+
+T-tensor(w0,A0,B0,C0)
+
 ```
 
 ## Documentation

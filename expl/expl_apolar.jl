@@ -19,7 +19,7 @@ P = perp(T,k)
 Pa = map(t->subs(t,x0=>1.), P)
 println("Perp ", k, " : ", size(H),"  kernel ",length(P))
 
-#Xis = solve(P,X,3)
+#Xis = solve_macaulay(P,X,3)
 #ws = weights(T,Xis)
 
 #T0 = tensor(ws,Xis,X,d)

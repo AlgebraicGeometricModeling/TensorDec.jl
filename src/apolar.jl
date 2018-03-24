@@ -1,21 +1,26 @@
-import PolyExp: hankel, dual, Series
-export hilbert, perp, weights, solve
+export dual, hankel, hilbert, perp
 
 
-"""                                                                                                                                  ```                                                                                                                                  dual(p::Polynomial, d:: Int64) -> Series{T}                                                                                          ```                                                                                                                                  Compute the series associated to the tensor p of degree d.                                                                           T is the type of the coefficients of the polynomial p.                                                                               """
-function PolyExp.dual{T}( p::Polynomial{true,T}, d:: Int64 = deg(p))
-    s = Dict{Monomial{true},T}()
+"""                                                                                                    
+```                                                                                                    
+dual(p::Polynomial, d:: Int64) -> Series{T}                                                         
+```
+Compute the series associated to the tensor p of degree d.                                             
+T is the type of the coefficients of the polynomial p.                                                 
+"""
+function dual(p::Polynomial{true,T}, d:: Int64) where T
+    s = Series{T, Monomial{true}}()
     for t in p
 	s[t.x] = t.α/binomial(d,exponent(t.x))
     end
-    return PolyExp.Series(s)
+    return s
 end
 
-function PolyExp.hankel(T, L1::AbstractVector, L2::AbstractVector)
-    PolyExp.hankel(dual(T,deg(T)), L1, L2)
+function hankel(p, L1::AbstractVector, L2::AbstractVector)
+    hankel(dual(p, deg(p)), L1, L2)
 end
 
-function PolyExp.hankel(T, d::Int64, X = variables(T))
+function hankel(T, d::Int64, X = variables(T))
     L0 = monomials(X, deg(T)-d)
     L1 = monomials(X, d)
     hankel(T,L0,L1)

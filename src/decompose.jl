@@ -1,4 +1,3 @@
-import PolyExp: svd_decompose
 export decompose, cst_rkf, eps_rkf
 
 #------------------------------------------------------------------------
@@ -100,7 +99,16 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where 
     return w, Xi
 end
 #------------------------------------------------------------------------
+"""
+```
+decompose(T :: Array{C,3},  rkf :: Function)
+```
+Decompose the multilinear tensor of order 3 T  as a weighted sum of tensor products of vectors of norm 1.
 
+The optional argument ``rkf`` is the rank function used to determine the numerical rank. Its default value ``eps_rkf(1.e-6)`` determines the rank as the first i s.t. S[i+1]/S[i]< 1.e-6 where S is the vector of singular values.
+
+If the rank function cst_rkf(r) is used, the SVD is truncated at rank r.
+"""
 
 function decompose(T::Array{C,3}, rkf::Function = eps_rkf(1.e-6)) where C
     H = Matrix{C}[]
@@ -109,6 +117,28 @@ function decompose(T::Array{C,3}, rkf::Function = eps_rkf(1.e-6)) where C
     end
     return decompose(H, rkf)
 end
+
+#------------------------------------------------------------------------
+function decompose(sigma::Series{C,M}, rkf::Function = eps_rkf(1.e-6)) where {C, M}
+    d  = deg(sigma)
+    X = variables(sigma)
+    
+    B0 = monomials(X, d-1-div(d-1,2))
+    B1 = monomials(X, div(d-1,2))
+
+    H = Matrix{C}[hankel(sigma, B0, B1)]
+    for x in X
+        push!(H, hankel(sigma, B0, [b*x for b in B1]))
+    end
+    H = Matrix{C}[]
+    for i in 1:size(T,3)
+        push!(H,T[i,:,:])
+    end
+    w, Xi, X, Y = decompose(H, rkf)
+    return w, Xi
+    
+end
+
 
 #------------------------------------------------------------------------
 function weights(T, Xi)

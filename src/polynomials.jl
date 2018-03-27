@@ -1,4 +1,4 @@
-export @ring, deg
+export @ring, deg, monoms
 import DynamicPolynomials: maxdegree, monomials
 
 function buildpolvar(::Type{PV}, arg, var) where PV

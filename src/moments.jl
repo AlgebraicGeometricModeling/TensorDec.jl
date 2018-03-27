@@ -36,14 +36,30 @@ of size r*n and the weights w.
 """
 moment(w, P) = function(α)
   res = 0
-  for i in 1:size(P,1)
+  for j in 1:size(P,2)
       m = 1
-      for j in 1:length(α)
-        m *= P[i,j]^α[j]
+      for i in 1:length(α)
+        m *= P[i,j]^α[i]
       end
-      res+=m*w[i];
+      res+=m*w[j];
   end
   res
+end
+
+#------------------------------------------------------------------------
+""" 
+```
+series(f,L) -> Series{T}
+```
+Compute the generating series ``\\sum_{x^{α} \\in L} f(α) z^α``
+for a function  ``f: \\mathbb{N}^n \\rightarrow T`` and a sequence L of monomials.
+"""
+function series(f::Function, L::Vector)
+   res = series(f(L[1].z), L[1])
+   for m in L
+         res[m] = f(m.z)
+   end
+   res
 end
 
 #----------------------------------------------------------------------

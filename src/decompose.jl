@@ -11,14 +11,11 @@ end
 
 cst_rkf = r::Int64 -> function (S) return r end
 
-function decompose(H::Vector{Matrix{C}}, rkf::Function ) where C
+function decompose(H::Vector{Matrix{C}}, rkf::Function, nrm::Bool = true ) where C
 
     H0 = H[1]
-    U, S, V = svd(H0)       #H= U diag(S) V'
+    U, S, V = svd(H0)       # H0= U*diagm(S)*V'
     r = rkf(S)
-    
-    #Un0 = transpose(U[1,1:r])
-    #Un1 = V[1,1:r]
 
     Sr = S[1:r]
     Sinv = diagm([one(C)/S[i] for i in 1:r])
@@ -34,40 +31,51 @@ function decompose(H::Vector{Matrix{C}}, rkf::Function ) where C
     E = eigvecs(M0)
 
     Xi = fill(zero(E[1,1]),n+1,r)
-
     for i in 1:r Xi[1,i]=1 end
-
-    #w = E \ Un1
-    w = fill(one(E[1,1]),r)
-    
     for i in 1:r
     	for j in 1:n
 	    Xi[j+1,i] = (E[:,i]\(M[j]*E[:,i]))[1]
 	end
-        nm = norm(Xi[:,i])
-        Xi[:,i]./=nm
-        w[i] = nm
     end
 
-    #D = Un0 .* Sr'
-    # for i in 1:r
-    # 	w[i] *=  (D*E[:,i])[1]
-    # end
-
-    X = (U[:,1:r].* Sr')*E
-    for i in 1:r
-        nm = norm(X[:,i])
-        X[:,i] ./= nm
-        w[i]*=nm
+    w = fill(one(E[1,1]),r)    
+    if nrm
+        for i in 1:r
+            nm = norm(Xi[:,i])
+            Xi[:,i]./=nm
+            w[i] = nm
+        end
     end
     
-    Y = V[:,1:r]*inv(E')
-    for i in 1:r
-        nm = norm(Y[:,i])
-        Y[:,i] ./= nm
-        w[i]*=nm
+    X = (U[:,1:r].* Sr')*E
+    if nrm
+        for i in 1:r
+            nm = norm(X[:,i])
+            X[:,i] ./= nm
+            w[i] *= nm
+        end
+    else
+        for i in 1:r
+            nm = X[1,i]
+            X[:,i] ./=  nm
+            w[i] *= nm
+        end
     end
-
+    
+    Y = (E \ V[:,1:r]')'
+    if nrm
+        for i in 1:r
+            nm = norm(Y[:,i])
+            Y[:,i] ./= nm
+            w[i]*=nm
+        end
+    else
+        for i in 1:r
+            nm = Y[1,i]
+            Y[:,i] ./=  nm
+            w[i] *= nm
+        end
+    end
     return w, Xi, X, Y 
 end
 
@@ -112,7 +120,7 @@ If the rank function cst_rkf(r) is used, the SVD is truncated at rank r.
 
 function decompose(T::Array{C,3}, rkf::Function = eps_rkf(1.e-6)) where C
     H = Matrix{C}[]
-    for i in 1:size(T,3)
+    for i in 1:size(T,1)
         push!(H,T[i,:,:])
     end
     return decompose(H, rkf)
@@ -120,22 +128,19 @@ end
 
 #------------------------------------------------------------------------
 function decompose(sigma::Series{C,M}, rkf::Function = eps_rkf(1.e-6)) where {C, M}
-    d  = deg(sigma)
+    d  = maxdegree(sigma)
     X = variables(sigma)
     
-    B0 = monomials(X, d-1-div(d-1,2))
-    B1 = monomials(X, div(d-1,2))
+    B0 = monoms(X, d-1-div(d-1,2))
+    B1 = monoms(X, div(d-1,2))
 
     H = Matrix{C}[hankel(sigma, B0, B1)]
     for x in X
         push!(H, hankel(sigma, B0, [b*x for b in B1]))
     end
-    H = Matrix{C}[]
-    for i in 1:size(T,3)
-        push!(H,T[i,:,:])
-    end
-    w, Xi, X, Y = decompose(H, rkf)
-    return w, Xi
+
+    w, Xi, X, Y = decompose(H, rkf, false)
+    return w, Xi[2:end,:]
     
 end
 

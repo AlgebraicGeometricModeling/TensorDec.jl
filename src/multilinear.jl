@@ -31,3 +31,16 @@ function tensor(w::Vector, A::Matrix, B::Matrix, C::Matrix)
     r = size(A,2)
     reshape(sum(w[i]*A[:,i]*reshape(B[:,i]*C[:,i]',1,d2*d3) for i in 1:r),d1,d2,d3)
 end
+
+function Base.norm(T::Array{C,3}) where C
+    n = size(T)
+    r = zero(0)
+    for i in 1:n[1]
+        for j in 1:n[2]
+            for k in 1:n[3]
+                r += abs(T[i,j,k])
+            end
+        end
+    end
+    return sqrt(r)
+end

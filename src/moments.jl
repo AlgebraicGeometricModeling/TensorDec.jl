@@ -19,7 +19,7 @@ function Base.log(A::Array{U}, pt::Vector{T}) where {U,T}
     R = fill(zero(eltype(pt)), N[1], N[2])
     for i  in 1:N[1]
         for j in 1:N[2]
-            R[i,j] = real(log(A[i,j])/log(pt[j]))
+            R[i,j] = real(log(A[i,j])/log(pt[i]))
         end
     end
     R

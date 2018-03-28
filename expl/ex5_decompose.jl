@@ -12,7 +12,7 @@ w0 = fill(1.0,r)
 T = tensor(w0,Xi0,X, d)
 
 
-w, Xi = svd_decompose(T,x0,r)
+w, Xi = decompose(T)
 
 println("w=",w)
 println("Xi=",Xi)

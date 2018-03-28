@@ -11,6 +11,8 @@ end
 
 cst_rkf = r::Int64 -> function (S) return r end
 
+
+# Decomposition of the pencil of matrices
 function decompose(H::Vector{Matrix{C}}, rkf::Function, nrm::Bool = true ) where C
 
     H0 = H[1]

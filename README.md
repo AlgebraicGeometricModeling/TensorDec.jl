@@ -1,12 +1,14 @@
 The package `TensorDec.jl` is for tensor decompositions.
 
+## Installation
+
 To install the package within julia:
 
 ```julia
 Pkg.clone("https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl.git")
 ```
 
-Here is an example of its use:
+## Example
 
 ```julia
 using TensorDec

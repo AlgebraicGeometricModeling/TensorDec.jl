@@ -4,14 +4,24 @@ Package for the decomposition of tensors and polynomial-exponential series.
 
 ## Introduction
 
-For symmetric tensors or multivariate homogeneous polynomials ``\sum_{\alpha \mid |\alpha|=d} \sigma_{\alpha} {d \choose \alpha} x^{\alpha}``, we compute their Waring decomposition:
-```math
-    \sigma(y) = \sum_{i=1}^r \omega_i(y) (\xi_{i,1} y_1+ \cdots + \xi_{i,n} y_n)^d
-```
-For multilinear tensors, ``\sigma=(\sigma_{i,j,k})\in E_1 \otimes E_2 \otimes E_3``
-we compute their Waring decomposition:
-    
+The package `TensorDec.jl`provides tools for the following decomposition problems:
 
+### Symmetric tensor decomposition
+For symmetric tensors or multivariate homogeneous polynomials ``\sigma(\mathbf{x}) = \sum_{|\alpha|=d} \sigma_{\alpha} {d \choose \alpha} \mathbf{x}^{\alpha}``, we consider their Waring decomposition:
+```math
+    \sigma(\mathbf{x}) = \sum_{i=1}^r \omega_i\, (\xi_{i,1} x_1+ \cdots + \xi_{i,n} x_n)^d
+```
+with `r`minimal.
+    
+### Multilinear tensor decomposition    
+For multilinear tensors, ``\sigma=(\sigma_{i,j,k})\in E_1 \otimes E_2 \otimes E_3``
+we consider the decomposition:
+```math
+    \sigma = \sum_{i=1}^r \omega_i\, U_i^1 \otimes U_i^2 \otimes U_i^3
+```    
+with ``U_i^j \in E_j `` vectors and `r` minimal.
+
+### Polynomial-exponential decomposition        
 For sequences ``(\sigma_{\alpha})_{\alpha} \in \mathbb{K}^{\mathbb{N}^{n}}`` or series 
 ```math
 \sigma(y) = \sum_{\alpha \in \mathbb{K}^{\mathbb{N}^{n}}} \sigma_{\alpha} \frac{y^{\alpha}}{\alpha!}

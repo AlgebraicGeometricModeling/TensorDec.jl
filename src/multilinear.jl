@@ -2,21 +2,10 @@ export tensor
 
 """
 ```
-tensor(w, Xi, V, d) -> Polynomial{true,T} 
+tensor(A, B, C) -> Array{K,3}
 ```
-Compute ``∑ wᵢ \Pro_j(ξ_{i,j,1} X[j][1] + ... + ξ_{i,j,n_j} X[j][n_j])^d[j]``.
+Compute the trilinear tensor ``T=(∑_{l=1}^{length(w)} A[i,l]*B[j,l]*C[k,l])_{i,j,k}``. 
 """
-function tensor(w::Vector{T}, Xi::Matrix{U}, Xl::Vector, dl::Vector{Int64}) where {T,U}
-    r = length(w)
-    I = []; s=0;
-    for k in 1:length(dl)
-        push!(I,s+1:s+length(Xl[k]))
-        s+=length(Xl[k])
-    end
-    sum( w[i]*prod( dot(Xi[i,I[j]],Xl[j])^dl[j] for j in 1:length(dl)) for i in 1:r)
-end
-
-
 function tensor(A::Matrix, B::Matrix, C::Matrix)
     d1 = size(A,1)
     d2 = size(B,1)
@@ -24,6 +13,14 @@ function tensor(A::Matrix, B::Matrix, C::Matrix)
     r = size(A,2)
     reshape(sum(A[:,i]*reshape(B[:,i]*C[:,i]',1,d2*d3) for i in 1:r),d1,d2,d3)
 end
+
+
+"""
+```
+tensor(w, A, B, C) -> Array{K,3}
+```
+Compute the trilinear tensor ``T=(∑_{l=1}^{length(w)} w[l]*A[i,l]*B[j,l]*C[k,l])_{i,j,k}``. 
+"""
 function tensor(w::Vector, A::Matrix, B::Matrix, C::Matrix)
     d1 = size(A,1)
     d2 = size(B,1)
@@ -32,6 +29,9 @@ function tensor(w::Vector, A::Matrix, B::Matrix, C::Matrix)
     reshape(sum(w[i]*A[:,i]*reshape(B[:,i]*C[:,i]',1,d2*d3) for i in 1:r),d1,d2,d3)
 end
 
+"""
+L``^2`` norm of the coefficient of the tensor `T`
+"""
 function Base.norm(T::Array{C,3}) where C
     n = size(T)
     r = zero(0)

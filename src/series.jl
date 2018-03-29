@@ -237,7 +237,7 @@ end
 ```
 maxdegree(σ::Series) -> Int64
 ```
-Maximal degree of the moments defined in the seris `σ`.
+Maximal degree of the moments defined in the series `σ`.
 """
 function MultivariatePolynomials.maxdegree(s::Series)
     d = 0

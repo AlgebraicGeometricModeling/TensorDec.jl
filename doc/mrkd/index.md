@@ -56,3 +56,11 @@ using TensorDec
 See the [Examples](@ref sec_examples) for more details.
 
 
+## Dependencies
+
+The package `TensorDec` depends on the following packages:
+
+- `DynamicPolynomials` package on multivariate polynomials represented as lists of monomials.
+- `MultivariatePolynomials` generic interface package for multivariate polynomials.
+
+        

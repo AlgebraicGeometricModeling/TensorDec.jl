@@ -46,5 +46,5 @@ T-tensor(w0,A0,B0,C0)
 
 ## Documentation
 
-- More on the package [TensorDec.jl](http://www-sop.inria.fr/members/Bernard.Mourrain/software/TensorDec/index.html) comming.
+- [LATEST](http://www-sop.inria.fr/members/Bernard.Mourrain/software/TensorDec/index.html)
 - For more information on [Julia](https://julialang.org/)

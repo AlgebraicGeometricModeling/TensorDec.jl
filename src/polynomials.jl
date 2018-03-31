@@ -56,15 +56,15 @@ function coeff(t::Term{B,T}) where {B,T}
   t.α
 end
 #----------------------------------------------------------------------
-"""
-```
- monomial()
-```
- return the monomial 1
-"""
-function monomial()
-    Monomial{true}()
-end
+# """
+# ```
+#  monomial()
+# ```
+#  return the monomial 1
+# """
+# function monomial()
+#     Monomial{true}()
+# end
 
 function Base.one(::Type{Monomial{true}})
     Monomial{true}()

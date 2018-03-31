@@ -30,17 +30,31 @@ function tensor(w::Vector, A::Matrix, B::Matrix, C::Matrix)
 end
 
 """
-L``^2`` norm of the coefficient of the tensor `T`
+L``^p`` norm of the coefficient of the tensor `T`. The default value of p is 2.
 """
-function Base.norm(T::Array{C,3}) where C
+function Base.norm(T::Array{C,3}, p::Int64=2) where C
+    n = size(T)
+    r = zero(0)
+    
+    for i in 1:n[1]
+        for j in 1:n[2]
+            for k in 1:n[3]
+                r += abs(T[i,j,k])^p
+            end
+        end
+    end
+    return r^(1//p)
+end
+
+function Base.norm(T::Array{C,3}, Infiny::Float64) where C
     n = size(T)
     r = zero(0)
     for i in 1:n[1]
         for j in 1:n[2]
             for k in 1:n[3]
-                r += abs(T[i,j,k])
+                r =max(r,abs(T[i,j,k]))
             end
         end
     end
-    return sqrt(r)
+    return r
 end

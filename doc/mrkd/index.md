@@ -21,6 +21,7 @@ we consider the decomposition:
 ```    
 with ``U_i^j \in E_j `` vectors and `r` minimal.
 
+    
 ### Polynomial-exponential decomposition        
 For sequences ``(\sigma_{\alpha})_{\alpha} \in \mathbb{K}^{\mathbb{N}^{n}}`` or series 
 ```math

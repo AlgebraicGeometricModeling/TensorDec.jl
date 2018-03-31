@@ -1,4 +1,4 @@
-export decompose, cst_rkf, eps_rkf
+export decompose, cst_rkf, eps_rkf, weights
 
 #------------------------------------------------------------------------
 eps_rkf = eps::Float64 -> function (S)
@@ -113,19 +113,38 @@ end
 ```
 decompose(T :: Array{C,3},  rkf :: Function)
 ```
-Decompose the multilinear tensor of order 3 T  as a weighted sum of tensor products of vectors of norm 1.
+Decompose the multilinear tensor `T` of order 3 as a weighted sum of tensor products of vectors of norm 1.
 
 The optional argument `rkf` is the rank function used to determine the numerical rank from the vector S of singular values. Its default value `eps_rkf(1.e-6)` determines the rank as the first i s.t. S[i+1]/S[i]< 1.e-6 where S is the vector of singular values.
 
 If the rank function cst_rkf(r) is used, the SVD is truncated at rank r.
+
+Slices along the mode m=1 of the tensor (i.e. `T[i,:,:]`) are used by default to compute the decomposition. The optional argument `mode = m` can be used to specify the sliced mode.  
+``` 
+decompose(T, mode=2) 
+decompose(T, eps_rkf(1.e-10), mode=3)
+```
 """
 
-function decompose(T::Array{C,3}, rkf::Function = eps_rkf(1.e-6)) where C
-    H = Matrix{C}[]
-    for i in 1:size(T,1)
-        push!(H,T[i,:,:])
+function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); args...) where R
+    m = 1
+    for arg in args
+        if arg[1] == :mode
+            m = arg[2]
+        end
     end
-    return decompose(H, rkf)
+    H = Matrix{R}[]
+    for i in 1:size(T,m)
+        push!(H, slicedim(T,m,i))
+    end
+    w, A, B, C = decompose(H, rkf)
+    if m==1
+        return w, A, B, C
+    elseif m==2
+        return w, B, A, C
+    else
+        return w, B, C, A
+    end
 end
 
 #------------------------------------------------------------------------
@@ -161,17 +180,26 @@ function decompose(sigma::Series{C,M}, rkf::Function = eps_rkf(1.e-6)) where {C,
     
 end
 
-
 #------------------------------------------------------------------------
-function weights(T, Xi)
+"""
+```
+    weights(T, Xi::Matrix) -> Vector
+```
+Compute the weight vector in the decomposition of the homogeneous polynomial `T`
+as a weighted sum of powers of the linear forms associated to the 
+columns of `Xi`.
+"""
+function weights(T::Polynomial{true,C}, Xi::Matrix) where C
     X = variables(T)
     d = deg(T)
     L = monomials(X,d)
     I = Dict{Monomial{true},Int64}()
-    for (m, i) in zip(L,1:length(L)) I[m] = i end
-    A = fill(zero(Xi[1,1]), length(L), size(Xi,1))
-    for i in 1:size(Xi,1)
-        p = (sum(Xi[i,j]*X[j] for j in 1:length(X)))^d
+    for (m, i) in zip(L,1:length(L))
+        I[m] = i
+    end
+    A = fill(zero(Xi[1,1]), length(L), size(Xi,2))
+    for i in 1:size(Xi,2)
+        p = dot(Xi[:,i],X)^d
         for t in p
             j = get(I,t.x,0)
             if j != 0
@@ -179,12 +207,20 @@ function weights(T, Xi)
             end
         end
     end
+
+    b = fill(zero(C), length(L))
+    for t in T
+        j = get(I,t.x,0)
+        if j != 0
+            b[j] = t.α
+        end
+    end
     b = [t.α for t in T]
     A\b
 end
 
 function normalize(M,i)
-    diagm([1/M[j,i] for j in 1:size(M,1)])*M
+    diagm([1/M[i,j] for j in 1:size(M,1)])*M
 end
 
 

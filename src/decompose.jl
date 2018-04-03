@@ -1,4 +1,4 @@
-export decompose, cst_rkf, eps_rkf, weights
+export decompose, cst_rkf, eps_rkf, weights, normlz
 
 #------------------------------------------------------------------------
 eps_rkf = eps::Float64 -> function (S)
@@ -13,12 +13,11 @@ cst_rkf = r::Int64 -> function (S) return r end
 
 
 # Decomposition of the pencil of matrices
-function decompose(H::Vector{Matrix{C}}, rkf::Function, nrm::Bool = true ) where C
+function decompose(H::Vector{Matrix{C}}, rkf::Function ) where C
 
-    H0 = H[1]
-    U, S, V = svd(H0)       # H0= U*diagm(S)*V'
+    U, S, V = svd(H[1])       # H0= U*diagm(S)*V'
     r = rkf(S)
-
+    
     Sr = S[1:r]
     Sinv = diagm([one(C)/S[i] for i in 1:r])
     
@@ -33,54 +32,20 @@ function decompose(H::Vector{Matrix{C}}, rkf::Function, nrm::Bool = true ) where
     E = eigvecs(M0)
 
     Xi = fill(zero(E[1,1]),n+1,r)
-    for i in 1:r Xi[1,i]=1 end
+    for i in 1:r
+        Xi[1,i]=1
+    end
     for i in 1:r
     	for j in 1:n
 	    Xi[j+1,i] = (E[:,i]\(M[j]*E[:,i]))[1]
 	end
     end
 
-    w = fill(one(E[1,1]),r)    
-    if nrm
-        for i in 1:r
-            nm = norm(Xi[:,i])
-            Xi[:,i]./=nm
-            w[i] = nm
-        end
-    end
-    
     X = (U[:,1:r].* Sr')*E
-    if nrm
-        for i in 1:r
-            nm = norm(X[:,i])
-            X[:,i] ./= nm
-            w[i] *= nm
-        end
-    else
-        for i in 1:r
-            nm = X[1,i]
-            X[:,i] ./=  nm
-            w[i] *= nm
-        end
-    end
-    
     Y = (E \ V[:,1:r]')'
-    if nrm
-        for i in 1:r
-            nm = norm(Y[:,i])
-            Y[:,i] ./= nm
-            w[i]*=nm
-        end
-    else
-        for i in 1:r
-            nm = Y[1,i]
-            Y[:,i] ./=  nm
-            w[i] *= nm
-        end
-    end
-    return w, Xi, X, Y 
-end
 
+    return Xi, X, Y 
+end
 
 #------------------------------------------------------------------------
 """
@@ -105,7 +70,16 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where 
     for x in X
         push!(H, hankel(sigma, B0, [b*x for b in B1]))
     end
-    w, Xi, X, Y = decompose(H, rkf)
+    Xi, X, Y = decompose(H, rkf)
+    r = size(Xi,2)
+    n = size(Xi,1)
+    w = fill(one(C),r)
+    for i in 1:r
+        #w[i]*= norm(Xi[:,i]);  Xi[:,i] /= norm(Xi[:,i])
+        w[i] = Xi[1,i]; Xi[:,i]/= Xi[1,i]
+        w[i]*= X[1,i]
+        w[i]*= Y[1,i]
+    end
     return w, Xi
 end
 #------------------------------------------------------------------------
@@ -126,21 +100,34 @@ decompose(T, eps_rkf(1.e-10), mode=3)
 ```
 """
 
-function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); args...) where R
-    m = 1
-    for arg in args
-        if arg[1] == :mode
-            m = arg[2]
-        end
-    end
+function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); mode=1) where R
+
     H = Matrix{R}[]
-    for i in 1:size(T,m)
-        push!(H, slicedim(T,m,i))
+    for i in 1:size(T,mode)
+        push!(H, slicedim(T,mode,i))
     end
-    w, A, B, C = decompose(H, rkf)
-    if m==1
+
+    A, B, C = decompose(H, rkf)
+    r = size(A,2)
+    w = fill(one(R),r)    
+
+    for i in 1:r
+        nm = norm(A[:,i])
+        A[:,i]./=nm
+        w[i] = nm
+        
+        nm = norm(B[:,i])
+        B[:,i] ./= nm
+        w[i] *= nm
+        
+        nm = norm(C[:,i])
+        C[:,i] ./= nm
+        w[i] *= nm
+    end 
+
+    if mode==1
         return w, A, B, C
-    elseif m==2
+    elseif mode==2
         return w, B, A, C
     else
         return w, B, C, A
@@ -150,7 +137,7 @@ end
 #------------------------------------------------------------------------
 """
 ```
-decompose(sigma :: Series{T}, rkf :: Function)
+decompose(σ :: Series{T}, rkf :: Function)
 ```
 Decompose the series ``σ`` as a weighted sum of exponentials.
 Return ``ω``, ``Ξ`` where 
@@ -163,19 +150,29 @@ The optional argument `rkf` is the rank function used to determine the numerical
 
 If the rank function cst_rkf(r) is used, the SVD is truncated at rank r.
 """
-function decompose(sigma::Series{C,M}, rkf::Function = eps_rkf(1.e-6)) where {C, M}
+function decompose(sigma::Series{R,M}, rkf::Function = eps_rkf(1.e-6)) where {R, M}
     d  = maxdegree(sigma)
     X = variables(sigma)
-    
-    B0 = monoms(X, d-1-div(d-1,2))
+
+    B0 = monoms(X, div(d-1,2))
     B1 = monoms(X, div(d-1,2))
 
-    H = Matrix{C}[hankel(sigma, B0, B1)]
+    H = Matrix{R}[hankel(sigma, B0, B1)]
     for x in X
         push!(H, hankel(sigma, B0, [b*x for b in B1]))
     end
 
-    w, Xi, X, Y = decompose(H, rkf, false)
+    Xi, X, Y = decompose(H, rkf)
+
+    r = size(Xi,2)
+    w = fill(one(R),r)
+
+    for i in 1:r
+        w[i] = Xi[1,i]; Xi[:,i]/= Xi[1,i]
+        w[i]*= X[1,i]
+        w[i]*= Y[1,i]
+    end
+
     return w, Xi[2:end,:]
     
 end
@@ -183,7 +180,7 @@ end
 #------------------------------------------------------------------------
 """
 ```
-    weights(T, Xi::Matrix) -> Vector
+weights(T, Xi::Matrix) -> Vector
 ```
 Compute the weight vector in the decomposition of the homogeneous polynomial `T`
 as a weighted sum of powers of the linear forms associated to the 
@@ -219,7 +216,7 @@ function weights(T::Polynomial{true,C}, Xi::Matrix) where C
     A\b
 end
 
-function normalize(M,i)
+function normlz(M,i)
     diagm([1/M[i,j] for j in 1:size(M,1)])*M
 end
 

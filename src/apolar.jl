@@ -1,15 +1,23 @@
 export dual, hankel, hilbert, perp
 
 
-"""  
+"""
 ```                                                                          dual(p::Polynomial, d:: Int64) -> Series{T}                                  ```
-Compute the series associated to the tensor p of degree d.                                             
-T is the type of the coefficients of the polynomial p.                                                 
+Compute the series associated to the tensor p of degree d.
+T is the type of the coefficients of the polynomial p.
 """
 function dual(p::Polynomial{true,T}, d:: Int64) where T
     s = Series{T, Monomial{true}}()
     for t in p
 	s[t.x] = t.α/binomial(d,exponent(t.x))
+    end
+    return s
+end
+
+function dual(p::Polynomial{true,T}) where T
+    s = Series{T, Monomial{true}}()
+    for t in p
+	       s[t.x] = t.α
     end
     return s
 end
@@ -20,7 +28,7 @@ function hankel(p, L1::AbstractVector, L2::AbstractVector)
 end
 
 """
-Compute the Hankel matrix (a.k.a. Catalecticant matrix) in degree d of the 
+Compute the Hankel matrix (a.k.a. Catalecticant matrix) in degree d of the
 symmetric tensor F.
 """
 function hankel(F, d::Int64, X = variables(F))
@@ -30,14 +38,14 @@ function hankel(F, d::Int64, X = variables(F))
 end
 
 """
-Sequence of dimension of ``S/(F^⟂)`` or of the kernels of the Hankel matrix in degree i 
-for i in 1:deg(F). 
+Sequence of dimension of ``S/(F^⟂)`` or of the kernels of the Hankel matrix in degree i
+for i in 1:deg(F).
 """
 function hilbert(F)
     H = [1]
     for i in 1:deg(F)-1
         N = nullspace(hankel(F,i))
-        push!(H,size(N,1)-size(N,2))   
+        push!(H,size(N,1)-size(N,2))
     end
     push!(H,1)
     H

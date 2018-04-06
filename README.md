@@ -47,7 +47,7 @@ T-tensor(w0,A0,B0,C0)
 ## Documentation
 
 - [LATEST](http://www-sop.inria.fr/members/Bernard.Mourrain/software/TensorDec/index.html)
-- For more information on [Julia](https://julialang.org/)
+- More information on [Julia](https://julialang.org/)
 
 
 ## Dependencies

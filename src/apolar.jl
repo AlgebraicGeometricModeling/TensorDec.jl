@@ -18,7 +18,7 @@ end
 
 """
 ```
-dual(p::Polynomial, d:: Int64) -> Series{T}
+dual(p::Polynomial) -> Series{T}
 ```
 Compute the series associated to the polynomial p, replacing
 the variables xi by its dual dxi. T is the type of the coefficients of the polynomial p.

@@ -2,7 +2,9 @@ export dual, hankel, hilbert, perp
 
 
 """
-```                                                                          dual(p::Polynomial, d:: Int64) -> Series{T}                                  ```
+```
+dual(p::Polynomial, d:: Int64) -> Series{T}
+```
 Compute the series associated to the tensor p of degree d.
 T is the type of the coefficients of the polynomial p.
 """
@@ -14,6 +16,13 @@ function dual(p::Polynomial{true,T}, d:: Int64) where T
     return s
 end
 
+"""
+```
+dual(p::Polynomial, d:: Int64) -> Series{T}
+```
+Compute the series associated to the polynomial p, replacing
+the variables xi by its dual dxi. T is the type of the coefficients of the polynomial p.
+"""
 function dual(p::Polynomial{true,T}) where T
     s = Series{T, Monomial{true}}()
     for t in p

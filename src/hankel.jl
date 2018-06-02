@@ -1,5 +1,5 @@
 ###
-### Series as linear functionals on polynomials. 
+### Series as linear functionals on polynomials.
 ###
 ### Hankel matrices associated to series.
 ###
@@ -13,8 +13,8 @@ export series, hankel, hankelspan
 ```
 hankel(σ::Series{T}, L1, L2) -> Array{T,2}
 ```
-Hankel matrix of ``σ`` with the rows indexed by the list of 
-polynomials L1 and the columns by L2. The entries are the dot product for ``σ`` 
+Hankel matrix of ``σ`` with the rows indexed by the list of
+polynomials L1 and the columns by L2. The entries are the dot product for ``σ``
 of the corresponding elements in L1 and L2.
 
 Example
@@ -36,18 +36,18 @@ function hankel(sigma::Series{C,M}, L1::AbstractVector, L2::AbstractVector) wher
    H = fill(zero(C), (length(L1), length(L2)));
    for i in 1:length(L1)
       for j in 1:length(L2)
-         H[i,j] = dot(sigma, L1[i], L2[j])
+         H[i,j] = dot(sigma, L1[i]*L2[j])
       end
    end
    H
 end
 
 #------------------------------------------------------------------------
-""" 
+"""
 ```
 series(H::Matrix{C}, L1::Vector{M}, L2::Vector{M}) -> Series{C,M}
 ```
-Compute the series associated to the Hankel matrix H, with rows (resp. columns) 
+Compute the series associated to the Hankel matrix H, with rows (resp. columns)
 indexed by the array of monomials L1 (resp. L2).
 """
 function series(H::Array{C,2} , L1::Vector{M}, L2::Vector{M}) where {C, M}

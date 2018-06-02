@@ -31,6 +31,11 @@ function dual(p::Polynomial{true,T}) where T
     return s
 end
 
+function dual(t::Term{true,T}) where T
+    s = Series{T, Monomial{true}}()
+    s[t.x] = t.α
+    return s
+end
 
 function hankel(p, L1::AbstractVector, L2::AbstractVector)
     hankel(dual(p, deg(p)), L1, L2)

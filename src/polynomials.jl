@@ -72,8 +72,8 @@ end
 
 #----------------------------------------------------------------------
 """
-``` 
-exponent(m::Monomial) -> Array{Int64,1} 
+```
+exponent(m::Monomial) -> Array{Int64,1}
 ```
 Get the exponent of a monomial as a array of Int64
 """
@@ -109,11 +109,15 @@ end
 monoms(V, d::Int64) -> Vector{Monomial}
 monoms(V, rg::UnitRangeInt64) -> Vector{Monomial}
 ```
-List of all monomials in the variables V up to degree d of from degree d1 to d2, 
+List of all monomials in the variables V up to degree d of from degree d1 to d2,
 ordered by increasing degree.
 """
-function monoms(V::Vector{PolyVar{true}}, rg::UnitRange{Int64}) 
-    reverse(monomials(V,[i for i in rg]))
+function monoms(V::Vector{PolyVar{true}}, rg::UnitRange{Int64})
+    L = DynamicPolynomials.Monomial{true}[]
+    for i in rg
+        append!(L, DynamicPolynomials.monomials(V,i))
+    end
+    L
 end
 
 #-----------------------------------------------------------------------
@@ -121,10 +125,10 @@ end
 ```
 monoms(V, d::Int64) -> Vector{Monomial}
 ```
-List of all monomials in the variables V up to degree d of from degree d1 to d2, 
+List of all monomials in the variables V up to degree d of from degree d1 to d2,
 ordered by increasing degree.
 """
-function monoms(V::Vector{PolyVar{true}}, d ::Int64) 
+function monoms(V::Vector{PolyVar{true}}, d ::Int64)
     if (d>0)
         monoms(V,0:d)
     else

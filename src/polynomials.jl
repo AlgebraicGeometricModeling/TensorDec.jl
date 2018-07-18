@@ -1,4 +1,4 @@
-export @ring, deg, monoms
+export @ring, deg, monoms, exponent
 import DynamicPolynomials: maxdegree, monomials
 
 function buildpolvar(::Type{PV}, arg, var) where PV
@@ -77,7 +77,7 @@ exponent(m::Monomial) -> Array{Int64,1}
 ```
 Get the exponent of a monomial as a array of Int64
 """
-function exponent(m::Monomial)
+function Base.exponent(m::Monomial)
     return m.z
 end
 

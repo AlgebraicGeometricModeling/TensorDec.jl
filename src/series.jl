@@ -6,19 +6,19 @@
 ###
 
 
-export Series, series, zero, convert, monomials, setindex, setindex!, dual, deg, integrate, +, -, *, /
+export Series, series, zero, convert, monomials, setindex, setindex!, dual, deg, integrate, +, -, *, /, scale
 
 import Base:
     show, showcompact, print, length, endof, getindex, setindex!, copy, promote_rule, convert, start, next, done, eltype, dot,
-    *, /, //, -, +, ==, ^, divrem, conj, rem, real, imag, diff, norm
+    *, /, //, -, +, ==, ^, divrem, conj, rem, real, imag, diff, norm,  scale!
 
 #----------------------------------------------------------------------
 """
 ```
 Series{C,M}
 ```
-Class representing multivariate series. The series is a dictionary, 
-which associates values of type C to monomials of type M. 
+Class representing multivariate series. The series is a dictionary,
+which associates values of type C to monomials of type M.
 """
 mutable struct Series{C,M}
     terms::Dict{M,C}
@@ -117,7 +117,7 @@ end
 
 #----------------------------------------------------------------------
 function +(s1::Series{C,M}, s2::Series{C,M}) where {C,M}
-    r = s1; 
+    r = s1;
     for (m, c) in s2
         v = r[m] + c
         if v == zero(C)
@@ -316,6 +316,15 @@ function *(p::P, s::Series{C,M}) where {C, M <:AbstractMonomial,
     return r
 end
 
+function Base.truncate(s::Series{C,M}, d::Int64) where {C,M}
+    r = Series{C,M}()
+    for (m,c) in s
+        if degree(m)<= d
+            r[m]= c
+        end
+    end
+    return r
+end
 #----------------------------------------------------------------------
 function ==(p::Series, q::Series)
     for (m, c) in p
@@ -332,7 +341,7 @@ function ==(p::Series, q::Series)
 end
 
 #----------------------------------------------------------------------
-""" 
+"""
 Scale the moments ``σ_α`` by ``λ^{deg(α)}``.
 """
 function scale(sigma::Series, lambda)
@@ -344,10 +353,10 @@ function scale(sigma::Series, lambda)
 end
 
 #----------------------------------------------------------------------
-""" 
+"""
 Scale the moments ``σ_α`` by ``λ^{deg(α)}``, overwriting ``σ``
 """
-function scale!(s::Series, lambda)
+function Base.scale!(s::Series, lambda)
     for (m, c) in s
         s[m] *= lambda^deg(m)
     end
@@ -374,7 +383,7 @@ function Base.dot(sigma::Series{C,M}, t::T) where {C,M, T<:AbstractTerm}
 end
 
 function Base.dot(sigma::Series{C,M}, p::P) where {C,M, P<:AbstractPolynomial}
-    r = zero(C) 
+    r = zero(C)
     for t in p
         r+= coefficient(t)*sigma[monomial(t)]
     end
@@ -404,13 +413,13 @@ function printmonomial(io::IO, m::M) where M
     if !isconstant(m)
         needsep = false
         for i in 1:length(m.z)
-            if m.z[i] != 0 
+            if m.z[i] != 0
                 if needsep
                     print(io, '*')
                 end
                 print(io,'d')
                 show(io, m.vars[i])
-                if m.z[i] > 1 
+                if m.z[i] > 1
                     print(io, '^')
                     print(io, m.z[i])
                 elseif m.z[i] < 0

@@ -30,13 +30,13 @@ end
 ```
 moment(w::Vector{T}, P::Matrix{T}) -> Vector{Int64} -> T
 ```
-Compute the moment function ``α -> ∑_{i} ω_{i} P_{i}^α`` 
-associated to the sequence P of r points of dimension n, which is a matrix 
+Compute the moment function ``α -> ∑_{i} ω_{i} P_{i}^α``
+associated to the sequence P of r points of dimension n, which is a matrix
 of size r*n and the weights w.
 """
 moment(w, P) = function(α)
   res = 0
-  for j in 1:size(P,2)
+  for j in 1:length(w)
       m = 1
       for i in 1:length(α)
         m *= P[i,j]^α[i]
@@ -47,7 +47,7 @@ moment(w, P) = function(α)
 end
 
 #------------------------------------------------------------------------
-""" 
+"""
 ```
 series(f,L) -> Series{T}
 ```
@@ -73,7 +73,7 @@ moment(p::Polynomial, zeta::Vector) =  function(V::Vector{Int})
     U = [zeta[i]^V[i] for i in 1:length(V)]
     p(U)
 end
-    
+
 #----------------------------------------------------------------------
 """
 ```
@@ -82,9 +82,9 @@ series(w:: Vector{T}, P::Matrix{T}, L::Vector{M}) -> Series{T}
 Compute the series of the moment sequence ``∑_{i} ω_{i} P_{i}^α`` for ``α \\in L``.
 """
 function series(w:: Vector{T}, P, L::Vector{M}) where {T,M}
-   series(moment(w,P), L) 
+   series(moment(w,P), L)
 end
-    
+
 #----------------------------------------------------------------------
 """
 ```

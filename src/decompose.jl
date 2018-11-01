@@ -1,5 +1,7 @@
 export decompose, cst_rkf, eps_rkf, weights, normlz
 
+import LinearAlgebra: diagm
+
 #------------------------------------------------------------------------
 eps_rkf = eps::Float64 -> function (S)
   i :: Int = 1;
@@ -19,11 +21,11 @@ function decompose(H::Vector{Matrix{C}}, rkf::Function ) where C
     r = rkf(S)
 
     Sr = S[1:r]
-    Sinv = diagm([one(C)/S[i] for i in 1:r])
+    Sinv = diagm(0 => [one(C)/S[i] for i in 1:r])
 
     M = []
     for i in 2:length(H)
-    	push!(M, Sinv*(ctranspose(U[:,1:r])*H[i]*V[:,1:r]))
+    	push!(M, Sinv*conj(U[:,1:r]')*H[i]*V[:,1:r] )
     end
 
     n  = length(M)
@@ -104,7 +106,7 @@ function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); mode=1) where 
 
     H = Matrix{R}[]
     for i in 1:size(T,mode)
-        push!(H, slicedim(T,mode,i))
+        push!(H, selectdim(T,mode,i))
     end
 
     A, B, C = decompose(H, rkf)
@@ -151,7 +153,7 @@ The optional argument `rkf` is the rank function used to determine the numerical
 If the rank function cst_rkf(r) is used, the SVD is truncated at rank r.
 """
 function decompose(sigma::Series{R,M}, rkf::Function = eps_rkf(1.e-6)) where {R, M}
-    d  = maxdegree(sigma)
+    d = maxdegree(sigma)
     X = variables(sigma)
 
     B0 = monoms(X, div(d-1,2))
@@ -218,5 +220,5 @@ function weights(T::Polynomial{true,C}, Xi::Matrix) where C
 end
 
 function normlz(M,i)
-    diagm([1/M[i,j] for j in 1:size(M,1)])*M
+    diagm(0 => [1/M[i,j] for j in 1:size(M,1)])*M
 end

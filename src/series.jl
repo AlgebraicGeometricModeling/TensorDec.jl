@@ -9,9 +9,10 @@
 export Series, series, zero, convert, monomials, setindex, setindex!, dual, deg, integrate, +, -, *, /, scale
 
 import Base:
-    show, showcompact, print, length, endof, getindex, setindex!, copy, promote_rule, convert, start, next, done, eltype, dot,
-    *, /, //, -, +, ==, ^, divrem, conj, rem, real, imag, diff, norm,  scale!
+    show, print, length, getindex, setindex!, copy, promote_rule, convert, eltype,
+    *, /, //, -, +, ==, ^, divrem, conj, rem, real, imag, diff
 
+import LinearAlgebra: dot,  norm #,  scale!
 #----------------------------------------------------------------------
 """
 ```
@@ -71,7 +72,7 @@ Base.getindex(p::Series{C,M}, m::M) where {C, M} =
 Base.getindex(p::Series, m::Int...) = p[[m...;]]
 
 function setindex!(p::Series{C,M}, v, m::M) where {C, M}
-    if method_exists(isapprox, (C,C)) && isapprox(v, zero(C))
+    if isapprox(v, zero(C)) #method_exists(isapprox, (C,C)) &&
         delete!(p.terms, m)
     else
         p.terms[m] = v
@@ -356,7 +357,7 @@ end
 """
 Scale the moments ``σ_α`` by ``λ^{deg(α)}``, overwriting ``σ``
 """
-function Base.scale!(s::Series, lambda)
+function scale!(s::Series, lambda)
     for (m, c) in s
         s[m] *= lambda^deg(m)
     end
@@ -374,15 +375,15 @@ function integrate(s::Series{C,M}, v::V) where {C,M, V<: AbstractVariable}
 end
 
 #----------------------------------------------------------------------
-function Base.dot(sigma::Series{C,M}, m::M) where {C,M<:AbstractMonomial}
+function LinearAlgebra.dot(sigma::Series{C,M}, m::M) where {C,M<:AbstractMonomial}
     return sigma[m]
 end
 
-function Base.dot(sigma::Series{C,M}, t::T) where {C,M, T<:AbstractTerm}
+function LinearAlgebra.dot(sigma::Series{C,M}, t::T) where {C,M, T<:AbstractTerm}
     return coefficient(t)*sigma[monomial(t)]
 end
 
-function Base.dot(sigma::Series{C,M}, p::P) where {C,M, P<:AbstractPolynomial}
+function LinearAlgebra.dot(sigma::Series{C,M}, p::P) where {C,M, P<:AbstractPolynomial}
     r = zero(C)
     for t in p
         r+= coefficient(t)*sigma[monomial(t)]
@@ -390,7 +391,7 @@ function Base.dot(sigma::Series{C,M}, p::P) where {C,M, P<:AbstractPolynomial}
     return r
 end
 
-function Base.dot(sigma::Series{C,M}, p::P, q::P) where {C,M, P}
+function LinearAlgebra.dot(sigma::Series{C,M}, p::P, q::P) where {C,M, P}
     dot(sigma, p*q)
 end
 

@@ -22,11 +22,9 @@ makedocs(
          )
 
 deploydocs(
-           deps = Deps.pip("mkdocs", "python-markdown-math"),
            repo = "gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl.git",
            target = "site",
-           julia  = "0.6",
-           osname = "osx",
+           julia  = "1.0",
            deps = nothing,
            make = nothing
            )

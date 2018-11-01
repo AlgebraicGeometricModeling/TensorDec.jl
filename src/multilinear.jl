@@ -1,5 +1,6 @@
 export tensor
 
+import LinearAlgebra: norm
 """
 ```
 tensor(A, B, C) -> Array{K,3}
@@ -32,7 +33,7 @@ end
 """
 L``^p`` norm of the coefficient of the tensor `T`. The default value of p is 2.
 """
-function Base.norm(T::Array{C,3}, p::Int64=2) where C
+function LinearAlgebra.norm(T::Array{C,3}, p::Int64=2) where C
     n = size(T)
     r = zero(0)
     
@@ -46,7 +47,7 @@ function Base.norm(T::Array{C,3}, p::Int64=2) where C
     return r^(1//p)
 end
 
-function Base.norm(T::Array{C,3}, Infiny::Float64) where C
+function LinearAlgebra.norm(T::Array{C,3}, Infiny::Float64) where C
     n = size(T)
     r = zero(0)
     for i in 1:n[1]

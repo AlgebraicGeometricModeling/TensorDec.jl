@@ -51,7 +51,7 @@ Pages = map(file -> joinpath("expl", file), filter(x ->endswith(x, "md"), readdi
 Pages = map(file -> joinpath("code", file), filter(x ->endswith(x, "md"), readdir("code"))) 
 ```
 
-## Installation
+## [Installation](@id sec_installation)
 
 The package is available at [https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl](https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl.git).
 
@@ -73,5 +73,7 @@ The package `TensorDec` depends on the following packages:
 
 - `DynamicPolynomials` package on multivariate polynomials represented as lists of monomials.
 - `MultivariatePolynomials` generic interface package for multivariate polynomials.
+
+These packages will installed with `TensorDec`  (see [installation](@ref sec_installation)).
 
         

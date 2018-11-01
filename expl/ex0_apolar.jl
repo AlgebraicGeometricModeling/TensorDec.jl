@@ -1,5 +1,5 @@
 using TensorDec
-
+using DynamicPolynomials
 
 X = @ring x0 x1 x2 
 n = length(X)

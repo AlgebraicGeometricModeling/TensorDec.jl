@@ -1,5 +1,7 @@
 export @ring, deg, monoms, exponent
+
 import DynamicPolynomials: maxdegree, monomials
+import LinearAlgebra: norm
 
 function buildpolvar(::Type{PV}, arg, var) where PV
     :($(esc(arg)) = $var)
@@ -21,7 +23,7 @@ macro ring(args...)
     X = DynamicPolynomials.PolyVar{true}[DynamicPolynomials.PolyVar{true}(string(arg)) for arg in args]
     V = [buildpolvar(PolyVar{true}, args[i], X[i]) for i in 1:length(X)]
     push!(V, :(TMP = $X) )
-    reduce((x,y) -> :($x; $y), :(), V)
+    Base.reduce((x,y) -> :($x; $y), V; init = :() )
 end
 
 #----------------------------------------------------------------------
@@ -167,7 +169,7 @@ function (p::Polynomial{B,T})(x::Vector) where {B,T}
 end
 
 #----------------------------------------------------------------------
-function Base.norm(p::Polynomial{B,T}, x::Float64) where {B,T}
+function LinearAlgebra.norm(p::Polynomial{B,T}, x::Float64) where {B,T}
     if (x == Inf)
         r = - Inf
         for t in p
@@ -182,7 +184,7 @@ function Base.norm(p::Polynomial{B,T}, x::Float64) where {B,T}
     r
 end
 
-function Base.norm(pol::Polynomial{B,T}, p::Int64=2) where {B,T}
+function LinearAlgebra.norm(pol::Polynomial{B,T}, p::Int64=2) where {B,T}
     r=sum(abs(t.α)^p for t in pol)
     exp(log(r)/p)
 end

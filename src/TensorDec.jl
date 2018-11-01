@@ -1,5 +1,6 @@
 module TensorDec
 
+using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
 
@@ -15,5 +16,6 @@ include("decompose.jl")
 
 end
 
-using DynamicPolynomials
-using MultivariatePolynomials
+# using LinearAlgebra
+# using DynamicPolynomials
+# using MultivariatePolynomials

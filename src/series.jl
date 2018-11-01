@@ -6,10 +6,10 @@
 ###
 
 
-export Series, series, zero, convert, monomials, setindex, setindex!, dual, deg, integrate, +, -, *, /, scale
+export Series, series, zero, convert, monomials, setindex, setindex!, deg, integrate, +, -, *, /, scale
 
 import Base:
-    show, print, length, getindex, setindex!, copy, promote_rule, convert, eltype,
+    show, print, length, getindex, setindex!, copy, promote_rule, convert, eltype, iterate,
     *, /, //, -, +, ==, ^, divrem, conj, rem, real, imag, diff
 
 import LinearAlgebra: dot,  norm #,  scale!
@@ -79,12 +79,14 @@ function setindex!(p::Series{C,M}, v, m::M) where {C, M}
     end
 end
 
-start(p::Series) = start(p.terms)
-next(p::Series, state) = next(p.terms, state)
-done(p::Series, state) = done(p.terms, state)
+#start(p::Series) = start(p.terms)
+#next(p::Series, state) = next(p.terms, state)
+#done(p::Series, state) = done(p.terms, state)
+Base.iterate(p::Series) = Base.iterate(p.terms)
+Base.iterate(p::Series, state) = Base.iterate(p.terms, state)
 
+#----------------------------------------------------------------------
 copy(p::Series{C,M}) where {C, M} = Series{C,M}(copy(p.terms))
-
 #----------------------------------------------------------------------
 function MultivariatePolynomials.variables(s::Series)
     for (m, c) in s

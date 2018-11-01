@@ -7,7 +7,7 @@ tensor(A, B, C) -> Array{K,3}
 ```
 Compute the trilinear tensor ``T=(∑_{l=1}^{length(w)} A[i,l]*B[j,l]*C[k,l])_{i,j,k}``. 
 """
-function tensor(A::Matrix, B::Matrix, C::Matrix)
+function tensor(A::AbstractArray, B::AbstractArray, C::AbstractArray)
     d1 = size(A,1)
     d2 = size(B,1)
     d3 = size(C,1)
@@ -22,7 +22,7 @@ tensor(w, A, B, C) -> Array{K,3}
 ```
 Compute the trilinear tensor ``T=(∑_{l=1}^{length(w)} w[l]*A[i,l]*B[j,l]*C[k,l])_{i,j,k}``. 
 """
-function tensor(w::Vector, A::Matrix, B::Matrix, C::Matrix)
+function tensor(w::Vector, A::AbstractArray, B::AbstractArray, C::AbstractArray)
     d1 = size(A,1)
     d2 = size(B,1)
     d3 = size(C,1)

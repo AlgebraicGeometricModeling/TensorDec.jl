@@ -24,7 +24,7 @@ Compute the series associated to the polynomial p, replacing
 the variables xi by its dual dxi. T is the type of the coefficients of the polynomial p.
 """
 function dual(p::Polynomial{true,T}) where T
-    s = Series{T, Monomial{true}}()
+    s = Series{T, DynamicPolynomials.Monomial{true}}()
     for t in p
 	       s[t.x] = t.α
     end

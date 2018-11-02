@@ -5,6 +5,7 @@ The package `TensorDec.jl` is for tensor decompositions.
 To install the package within julia:
 
 ```julia
+using Pkg
 Pkg.clone("https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl.git")
 ```
 
@@ -31,10 +32,10 @@ P = perp(F,k)
 decompose(F)
 
 # Multilinear tensor
-A = rand(3,2)
-B = rand(3,2)
-C = rand(3,2)
-w = rand(2)
+A = randn(3,2)
+B = randn(3,2)
+C = randn(3,2)
+w = randn(2)
 
 T = tensor(w,A,B,C)
 
@@ -52,6 +53,6 @@ T-tensor(w0,A0,B0,C0)
 
 ## Dependencies
 
-- Julia 0.6
+- Julia 1.0
 - DynamicPolynomials
 - MultivariatePolynomials

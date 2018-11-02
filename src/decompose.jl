@@ -17,7 +17,7 @@ cst_rkf = r::Int64 -> function (S) return r end
 # Decomposition of the pencil of matrices
 function decompose(H::Vector{Matrix{C}}, rkf::Function ) where C
 
-    U, S, V = svd(H[1])       # H0= U*diagm(S)*V'
+    U, S, V = svd(H[1])       # H0= U*diag(S)*V'
     r = rkf(S)
 
     Sr = S[1:r]

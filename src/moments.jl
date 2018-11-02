@@ -92,7 +92,7 @@ series(w:: Vector{T}, P::Matrix{T}, X, d::Int64) -> Series{T}
 ```
 Compute the series of the moment sequence ``∑_i ω_{i} P_{i}^α`` for ``|α| \\leq d``.
 """
-function series(w::Vector{T}, P::Matrix{T}, X, d::Int64) where T
+function series(w::Vector{T}, P::AbstractMatrix, X, d::Int64) where T
     h = moment(w,P)
     L = monoms(X,d)
    series(h,L)

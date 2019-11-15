@@ -1,3 +1,4 @@
+using LinearAlgebra
 using TensorDec
 
 X = @ring x0 x1 x2

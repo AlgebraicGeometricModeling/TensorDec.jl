@@ -72,15 +72,18 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where 
     for x in X
         push!(H, hankel(sigma, B0, [b*x for b in B1]))
     end
+    
     Xi, X, Y = decompose(H, rkf)
     r = size(Xi,2)
     n = size(Xi,1)
-    w = fill(one(C),r)
+    w = [Xi[1,i]*X[1,i]*Y[1,i] for i in 1:r]
     for i in 1:r
-        #w[i]*= norm(Xi[:,i]);  Xi[:,i] /= norm(Xi[:,i])
-        w[i] = Xi[1,i]; Xi[:,i]/= Xi[1,i]
-        w[i]*= X[1,i]
-        w[i]*= Y[1,i]
+        # w[i]*= norm(Xi[:,i]);  Xi[:,i] /= norm(Xi[:,i])
+        # wi  = Xi[1,i];
+        Xi[:,i] /= Xi[1,i]
+        # wi  *= X[1,i]
+        # wi  *= Y[1,i]
+        # w[i] = w
     end
     return w, Xi
 end
@@ -189,7 +192,7 @@ Compute the weight vector in the decomposition of the homogeneous polynomial `T`
 as a weighted sum of powers of the linear forms associated to the
 columns of `Xi`.
 """
-function weights(T::Polynomial{true,C}, Xi::Matrix) where C
+function weights(T::Polynomial{true,C}, Xi::AbstractMatrix) where C
     X = variables(T)
     d = deg(T)
     L = monomials(X,d)

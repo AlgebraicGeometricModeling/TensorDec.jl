@@ -1,3 +1,5 @@
+using LinearAlgebra
+using DynamicPolynomials
 using AlgebraicSolvers
 using TensorDec
 

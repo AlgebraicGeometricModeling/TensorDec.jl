@@ -12,4 +12,4 @@ T = tensor(w, A, B, C)
 
 er = norm(T-T0)/norm(T)
 
-cd = er/2.e-16
+c = er/2.e-16

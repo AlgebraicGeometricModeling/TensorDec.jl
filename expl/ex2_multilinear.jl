@@ -1,3 +1,4 @@
+using LinearAlgebra
 using TensorDec
 
 r  = 4

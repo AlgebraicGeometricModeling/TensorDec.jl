@@ -1,3 +1,4 @@
+export apolarpro
 using LinearAlgebra
 using MultivariatePolynomials
 using TensorDec

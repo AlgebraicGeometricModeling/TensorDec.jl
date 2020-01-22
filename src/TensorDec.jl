@@ -13,7 +13,7 @@ include("symmetric.jl")
 include("multilinear.jl")
 include("apolar.jl")
 include("decompose.jl")
-
+include("apolar_prod.jl")
 end
 
 # using LinearAlgebra

@@ -4,9 +4,9 @@ export apolarpro
 ```
 apolarpro(P,Q) -> Float64
 ```
-The apolar product of two homogeneous polynomials P$=\sum_{|α|=d}{\binom{d}{\alpha}p_{α}x^{α}}$ and
-Q$=\sum_{|α|=d}{\binom{d}{\alpha}q_{α}x^{α}}$, of degree d in n variables is given by
-$⟨P,Q⟩_d=\sum_{|α|=d}{\binom{d}{\alpha}\bar{p_{α}}q^{α}}$.
+The apolar product of two homogeneous polynomials P=∑_{|α|=d} binom{d}{α} p_α x^α and
+Q=∑_{|α|=d} binom{d}{α} q_α  x^α, of degree d in n variables is given by
+⟨P,Q⟩_d=∑_{|α|=d} binom{d}{α}̅p_αq_α.
 
 
 Example

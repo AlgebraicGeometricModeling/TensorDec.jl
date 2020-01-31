@@ -1,4 +1,40 @@
 export ahp
+#-----------------------------------------------------------------------
+"""
+```
+ahp(T::symmetric Tensor, X=@ring x1...x_n)-> 'P' Associated homogeneous polynomial
+```
+The associated homogeneous polynomials of degree d in n variables of a symmetric tensor of order d and dimension n.
+
+
+Example
+-------
+```jldoctest
+julia> n=2
+2
+
+julia> d=3
+3
+
+julia> T
+2×2×2 Array{Float64,3}:
+[:, :, 1] =
+ -3.0  -1.5
+ -1.5   0.0
+
+[:, :, 2] =
+ -1.5  0.0
+  0.0  1.5
+
+julia> X=@ring x1 x2
+2-element Array{PolyVar{true},1}:
+ x1
+ x2
+
+ julia> P=ahp(T,X)
+ (-3.0 + 0.0im)x1³ + (-4.5 + 0.0im)x1²x2 + (1.5 + 0.0im)x2³
+```
+"""
 using LinearAlgebra
 using MultivariatePolynomials
 using TensorDec

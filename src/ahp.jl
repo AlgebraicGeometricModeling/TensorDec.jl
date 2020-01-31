@@ -2,7 +2,7 @@ export ahp
 #-----------------------------------------------------------------------
 """
 ```
-ahp(T::symmetric Tensor, X=@ring x1...x_n)-> 'P' Associated homogeneous polynomial
+ahp(T::symmetric Tensor, X=@ring x1...xn)-> 'P' Associated homogeneous polynomial
 ```
 The associated homogeneous polynomials of degree d in n variables of a symmetric tensor of order d and dimension n.
 

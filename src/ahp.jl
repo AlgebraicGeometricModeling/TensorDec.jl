@@ -1,4 +1,10 @@
 export ahp
+
+using LinearAlgebra
+using MultivariatePolynomials
+using TensorDec
+using DynamicPolynomials
+
 #-----------------------------------------------------------------------
 """
 ```
@@ -35,10 +41,6 @@ julia> X=@ring x1 x2
  (-3.0 + 0.0im)x1³ + (-4.5 + 0.0im)x1²x2 + (1.5 + 0.0im)x2³
 ```
 """
-using LinearAlgebra
-using MultivariatePolynomials
-using TensorDec
-using DynamicPolynomials
 function ahp(T::Array,X)
     n=size(X,1)
     v=size(T)

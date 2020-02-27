@@ -1,4 +1,11 @@
 export apolarpro
+
+
+using LinearAlgebra
+using MultivariatePolynomials
+using TensorDec
+using DynamicPolynomials
+
 #-----------------------------------------------------------------------
 """
 ```
@@ -27,10 +34,6 @@ julia> apolarpro(P,Q)
 8.0 - 3.0im
 ```
 """
-using LinearAlgebra
-using MultivariatePolynomials
-using TensorDec
-using DynamicPolynomials
 function apolarpro(P,Q)
     X=variables(P)
     n=size(X,1)

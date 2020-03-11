@@ -15,6 +15,7 @@ include("apolar.jl")
 include("decompose.jl")
 include("apolar_prod.jl")
 include("ahp.jl")
+include("prelim.jl")
 include("RNS.jl")
 include("TR_RNS.jl")
 end

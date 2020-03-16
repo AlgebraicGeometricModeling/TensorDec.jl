@@ -3,6 +3,8 @@ module TensorDec
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
+using Reexport
+@reexport using MulivariateSeries
 
 include("polynomials.jl")
 include("series.jl")

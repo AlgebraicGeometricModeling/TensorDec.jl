@@ -3,6 +3,7 @@ using LinearAlgebra
 using MultivariatePolynomials
 using TensorDec
 using DynamicPolynomials
+
 function gradeval(F,X,a)
         [DynamicPolynomials.differentiate(F, X[i])(a) for i in 1:length(X)]
 end
@@ -16,9 +17,11 @@ function hessianeval(F,X,a)
     end
     v
 end
+
 function hpol(W,A,X,d)
     P = sum(W[i]*(transpose(A[:,i])*X)^d for i in 1:length(W))
 end
+
 function op(W::Vector, V::Matrix,P)
     r=size(W,1)
     A=fill(0.0+0.0im,r,r)

@@ -1,5 +1,7 @@
 module TensorDec
 
+info() = "TensorDec", "0.1.0"
+
 using Reexport
 @reexport using MultivariateSeries
 using LinearAlgebra
@@ -22,6 +24,5 @@ include("prelim.jl")
 include("RNS.jl")
 include("TR_RNS.jl")
 
-greet() = print("TensorDec package")
 
 end # module

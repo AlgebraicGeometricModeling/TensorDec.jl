@@ -1,6 +1,5 @@
 using TensorDec
 using DynamicPolynomials
-using MultivariateSeries
 using LinearAlgebra
 
 X = @ring x0 x1 x2
@@ -28,22 +27,21 @@ println("d*:",norm(T0-T1))
 
 
 function hankel_pencil(pol::Polynomial{true,C}) where C
-
     d     = MultivariateSeries.deg(pol)
     X     = variables(pol)
-    sigma = TensorDec.dual(pol,d)
+    sigma = dual(pol,d)
 
     B0 = monomials(X, d-1-div(d-1,2))
     B1 = monomials(X, div(d-1,2))
 
     H = Matrix{C}[]
     for x in X
-        push!(H, TensorDec.hankel(sigma, B0, [b*x for b in B1]))
+        push!(H, MultivariateSeries.hankel(sigma, B0, [b*x for b in B1]))
     end
     H
 end
 
-function reduce_pencil(H, rkf::Function=TensorDec.eps_rkf(1.e-6))
+function reduce_pencil(H, rkf::Function=MultivariateSeries.eps_rkf(1.e-6))
 
     U, S, V = svd(H[1])       # H0= U*diag(S)*V'
     r = rkf(S)
@@ -73,11 +71,11 @@ function eigen_pencil(M)
 end
 
     
-W0, V0 = TensorDec.decompose(T0)
+W0, V0 = decompose(T0)
 T00 = tensor(W0,V0,X,d)  
 println("dec T0: ",norm(T0-T00))
 
-W1, V1 = TensorDec.decompose(T1)
+W1, V1 = decompose(T1)
 T10 = tensor(W1,V1,X,d)  
 println("dec T1: ",norm(T1-T10))
 

@@ -20,6 +20,7 @@ function hpol(W,A,X,d)
     P = sum(W[i]*(transpose(A[:,i])*X)^d for i in 1:length(W))
 end
 function op(W::Vector, V::Matrix,P)
+    d=maxdegree(P)
     r=size(W,1)
     A=fill(0.0+0.0im,r,r)
     B=fill(0.0+0.0im,r)

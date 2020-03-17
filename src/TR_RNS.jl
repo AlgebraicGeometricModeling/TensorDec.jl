@@ -2,6 +2,7 @@ export Delta, solve, trustcomplexsym, TR_RNS_SPED, TR_RNS_R, TR_RNS_C
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
+
 function Delta(P,W::Vector)
     W0=real(W)
     r=size(W0,1)
@@ -11,17 +12,19 @@ function Delta(P,W::Vector)
     delta=min(delta1,delta2)
 
 end
+
 function solve(a::Float64,b::Float64,c::Float64)
     D=b^2-4*a*c
     x1=(-b+sqrt(D))/(2*a)
     x2=(-b-sqrt(D))/(2*a)
-if x1>=1 && x1<=2
-    x=x1
-else
-    x=x2
+    if x1>=1 && x1<=2
+        x=x1
+    else
+        x=x2
+    end
+    x
 end
-x
-end
+
 function trustcomplexsym(delta, W::Vector, V::Matrix,P)
     r=size(W,1)
     n=size(V,1)

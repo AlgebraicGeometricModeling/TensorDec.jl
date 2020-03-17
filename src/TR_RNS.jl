@@ -26,8 +26,9 @@ function solve(a::Float64,b::Float64,c::Float64)
 end
 
 function trustcomplexsym(delta, W::Vector, V::Matrix,P)
+    X=variables(P)
     r=size(W,1)
-    n=size(V,1)
+    n=size(X,1)
     d=maxdegree(P)
     c= typeof(V[1,1])
     G1=fill(0.0, r)

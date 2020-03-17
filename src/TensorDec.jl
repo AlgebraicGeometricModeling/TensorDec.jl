@@ -1,6 +1,6 @@
 module TensorDec
 
-info() = "TensorDec", "0.1.0"
+info() = "TensorDec", "0.1.0", "https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl"
 
 using Reexport
 @reexport using MultivariateSeries

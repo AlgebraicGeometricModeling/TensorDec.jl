@@ -6,5 +6,5 @@ include("ex4_moments.jl")
 include("ex5_decompose.jl")
 #include("ex6_perproots.jl")
 #include("ex7_newton.jl")
-include("ex7.1_RNS.jl")
+#include("ex7.1_RNS.jl")
 

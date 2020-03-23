@@ -282,9 +282,10 @@ function TR_RNS_R(P,r,N)
     return A,B
 end
 
-function TR_RNS_R(P,r,A1,B1,N::Int64=100)
+function TR_RNS_R(P,A1::Vector,B1::Matrix,N::Int64=100)
     d = maxdegree(P)
     X = variables(P)
+    r = length(A1)
     n = size(X,1)
     A1+=fill(0.0im,r)
     B1+=fill(0.0im,n,r)

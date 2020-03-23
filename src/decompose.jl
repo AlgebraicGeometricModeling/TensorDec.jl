@@ -89,7 +89,7 @@ function decompose_qrbasis(D, L, X)
     
     F = qr(D0,Val(true))
     
-    B = Any[]
+    B = DynamicPolynomials.Monomial{true}[]
     for i in 1:size(D0,1)
         m = copy(L0[F.p[i]])
         m.z[1]-=1
@@ -144,12 +144,12 @@ function decompose_qr(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) whe
     
     B, Rr, Idx = decompose_qrbasis(D, L, X)
     
-    R  = decompose_pencil(D, Idx, B, X)
+    H  = decompose_pencil(D, Idx, B, X)
     
-    I0 = inv(R[1])
-    for i in 1:length(R) R[i]*= I0 end
+    I0 = inv(H[1])
+    for i in 1:length(H) H[i]*= I0 end
     
-    Xi = decompose_eigen(R)
+    Xi = decompose_eigen(H)
     w = weights(pol,Xi);
     w, Xi
 end

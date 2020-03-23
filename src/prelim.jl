@@ -1,4 +1,4 @@
-export gradeval, hessianeval, hpol, op
+export gradeval, hessianeval, hpol, op, Delta, solve
 using LinearAlgebra
 using MultivariatePolynomials
 using TensorDec
@@ -34,4 +34,25 @@ function op(W::Vector, V::Matrix,P)
         B[i]=conj(W[i])*P(conj(V[:,i]))
     end
     C=A\B
+end
+function Delta(P,W::Vector)
+    W0=real(W)
+    r=size(W0,1)
+    d=maxdegree(P)
+    delta1=(1/10)*sqrt((d/r)*sum(W0[i]^2 for i in 1:r))
+    delta2=(1/2)*(norm(P))
+    delta=min(delta1,delta2)
+
+end
+
+function solve(a::Float64,b::Float64,c::Float64)
+    D=b^2-4*a*c
+    x1=(-b+sqrt(D))/(2*a)
+    x2=(-b-sqrt(D))/(2*a)
+    if x1>=1 && x1<=2
+        x=x1
+    else
+        x=x2
+    end
+    x
 end

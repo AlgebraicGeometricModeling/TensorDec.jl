@@ -168,7 +168,8 @@ S=M'*Ns
 
 
         delta,op1,op2
-    end
+end
+
 function TR_RNS_SPED(P,r,N)
     d = maxdegree(P)
     X = variables(P)
@@ -185,27 +186,27 @@ function TR_RNS_SPED(P,r,N)
     A1=fill(0.0+0.0im,r)
     B1=fill(0.0+0.0im,n,r)
     B1=B0
-      for i in 1:r
-          A1[i]=A0[i]*C[i]
-      end
-        P1=hpol(A1,B1,X,d)
-        d1=norm(P1-P)
-        for i in 1:r
-          y=abs(A1[i])
-          z=angle(A1[i])
-           A1[i]=y*norm(B1[:,i])^d
-           B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
-          end
-      a0=Delta(P,A1)
-     De[1], E[1:r], F[1:n,1:r] = trustcomplexsym(a0,A1,B1,P)
+    for i in 1:r
+        A1[i]=A0[i]*C[i]
+    end
+    P1=hpol(A1,B1,X,d)
+    d1=norm(P1-P)
+    for i in 1:r
+        y=abs(A1[i])
+        z=angle(A1[i])
+        A1[i]=y*norm(B1[:,i])^d
+        B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
+    end
+    a0=Delta(P,A1)
+    De[1], E[1:r], F[1:n,1:r] = trustcomplexsym(a0,A1,B1,P)
     W=fill(0.0+0.0im,r)
     V=fill(0.0+0.0im,n,r)
     i = 2
-                 @time(while  i < N && De[i-1] > 1.e-3
-                De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=trustcomplexsym(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
-                W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
-                i += 1
-                end)
+    @time(while  i < N && De[i-1] > 1.e-3
+          De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=trustcomplexsym(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+          W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
+          i += 1
+          end)
     P4=hpol(W,V,X,d)
     d2=norm(P4-P)
     A=fill(0.0+0.0im,r)
@@ -216,118 +217,169 @@ function TR_RNS_SPED(P,r,N)
     end
     P5=hpol(A,B,X,d)
     d3=norm(P-P5)
-    println("N:",i)
-    println("d0:",d0)
-    println("d1:",d1)
-    println("d3:",d3)
-
+    println("N: ",i)
+    println("dist0: ",d0)
+    println("dist1: ",d1)
+    println("dist*: ",d3)
+    
     return A,B
+end
+
+function TR_RNS_R(P,r,N)
+    d = maxdegree(P)
+    X = variables(P)
+    n=size(X,1)
+    A0 = rand(Float64,r)
+    B0 = rand(Float64,n,r)
+    De=fill(0.0,N)
+    E=fill(0.0+0.0im,N*r)
+    F=fill(0.0+0.0im,n,N*r)
+    A0+=fill(0.0im,r)
+    B0+=fill(0.0im,n,r)
+    P0=hpol(A0,B0,X,d)
+    d0=norm(P-P0)
+    C=op(A0,B0,P)
+    A1=fill(0.0+0.0im,r)
+    B1=fill(0.0+0.0im,n,r)
+    B1=B0
+    for i in 1:r
+        A1[i]=A0[i]*C[i]
     end
-    function TR_RNS_R(P,r,N)
-        d = maxdegree(P)
-        X = variables(P)
-        n=size(X,1)
-        A0 = rand(Float64,r)
-        B0 = rand(Float64,n,r)
-        De=fill(0.0,N)
-        E=fill(0.0+0.0im,N*r)
-        F=fill(0.0+0.0im,n,N*r)
-        A0+=fill(0.0im,r)
-        B0+=fill(0.0im,n,r)
-        P0=hpol(A0,B0,X,d)
-        d0=norm(P-P0)
-        C=op(A0,B0,P)
-        A1=fill(0.0+0.0im,r)
-        B1=fill(0.0+0.0im,n,r)
-        B1=B0
-          for i in 1:r
-              A1[i]=A0[i]*C[i]
-          end
-            P1=hpol(A1,B1,X,d)
-            d1=norm(P1-P)
-            for i in 1:r
-              y=abs(A1[i])
-              z=angle(A1[i])
-               A1[i]=y*norm(B1[:,i])^d
-               B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
-              end
-            a0=Delta(P,A1)
-            De[1], E[1:r], F[1:n,1:r] = trustcomplexsym(a0,A1,B1,P)
-            W=fill(0.0+0.0im,r)
-            V=fill(0.0+0.0im,n,r)
-            i = 2
-             @time(while  i < N && De[i-1] > 1.e-3
-            De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=trustcomplexsym(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
-            W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
-            i += 1
-        end)
-        P4=hpol(W,V,X,d)
-        d2=norm(P4-P)
-        A=fill(0.0+0.0im,r)
-        B=fill(0.0+0.0im,n,r)
-        if d2<d1
-            A,B=W,V
-        else A,B=A1,B1
-        end
-        P5=hpol(A,B,X,d)
-        d3=norm(P-P5)
-        println("N:",i)
-        println("d0:",d0)
-        println("d1:",d1)
-        println("d3:",d3)
+    P1=hpol(A1,B1,X,d)
+    d1=norm(P1-P)
+    for i in 1:r
+        y=abs(A1[i])
+        z=angle(A1[i])
+        A1[i]=y*norm(B1[:,i])^d
+        B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
+    end
+    a0=Delta(P,A1)
+    De[1], E[1:r], F[1:n,1:r] = trustcomplexsym(a0,A1,B1,P)
+    W=fill(0.0+0.0im,r)
+    V=fill(0.0+0.0im,n,r)
+    i = 2
+    @time(while  i < N && De[i-1] > 1.e-3
+          De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=trustcomplexsym(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+          W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
+          i += 1
+          end)
+    P4=hpol(W,V,X,d)
+    d2=norm(P4-P)
+    A=fill(0.0+0.0im,r)
+    B=fill(0.0+0.0im,n,r)
+    if d2<d1
+        A,B=W,V
+    else
+        A,B=A1,B1
+    end
+    P5=hpol(A,B,X,d)
+    d3=norm(P-P5)
+    println("N: ",i)
+    println("dist0: ",d0)
+    println("dist1: ",d1)
+    println("dist*: ",d3)
+    
+    return A,B
+end
 
-        return A,B
-        end
-        function TR_RNS_C(P,r,N)
-            d = maxdegree(P)
-            X = variables(P)
-            n=size(X,1)
-            A0 = rand(ComplexF64,r)
-            B0 = rand(ComplexF64,n,r)
-            De=fill(0.0,N)
-            E=fill(0.0+0.0im,N*r)
-            F=fill(0.0+0.0im,n,N*r)
-            P0=hpol(A0,B0,X,d)
-            d0=norm(P-P0)
-            C=op(A0,B0,P)
-            A1=fill(0.0+0.0im,r)
-            B1=fill(0.0+0.0im,n,r)
-            B1=B0
-              for i in 1:r
-                  A1[i]=A0[i]*C[i]
-              end
-                P1=hpol(A1,B1,X,d)
-                d1=norm(P1-P)
-                for i in 1:r
-                  y=abs(A1[i])
-                  z=angle(A1[i])
-                   A1[i]=y*norm(B1[:,i])^d
-                   B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
-                  end
-                 a0=Delta(P,A1)
-                De[1], E[1:r], F[1:n,1:r] = trustcomplexsym(a0,A1,B1,P)
-                W=fill(0.0+0.0im,r)
-                V=fill(0.0+0.0im,n,r)
-                i = 2
-                 @time(while  i < N && De[i-1] > 1.e-3
-                De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=trustcomplexsym(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
-                W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
-                i += 1
-            end)
-            P4=hpol(W,V,X,d)
-            d2=norm(P4-P)
-            A=fill(0.0+0.0im,r)
-            B=fill(0.0+0.0im,n,r)
-            if d2<d1
-                A,B=W,V
-            else A,B=A1,B1
-            end
-            P5=hpol(A,B,X,d)
-            d3=norm(P-P5)
-            println("N:",i)
-            println("d0:",d0)
-            println("d1:",d1)
-            println("d3:",d3)
+function TR_RNS_R(P,A1::Vector,B1::Matrix,N::Int64=100)
+    d = maxdegree(P)
+    X = variables(P)
+    r = length(A1)
+    n = size(X,1)
+    A1+=fill(0.0im,r)
+    B1+=fill(0.0im,n,r)
+    P1 = hpol(A1,B1,X,d)
+    d1 = norm(P1-P)
+    for i in 1:r
+        y=abs(A1[i])
+        z=angle(A1[i])
+        A1[i]=y*norm(B1[:,i])^d
+        B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
+    end
+    a0=Delta(P,A1)
 
-            return A,B
-            end
+    De=fill(0.0,N)
+    E=fill(0.0+0.0im,N*r)
+    F=fill(0.0+0.0im,n,N*r)
+    De[1], E[1:r], F[1:n,1:r] = trustcomplexsym(a0,A1,B1,P)
+    W=fill(0.0+0.0im,r)
+    V=fill(0.0+0.0im,n,r)
+    i = 2
+    @time(while  i < N && De[i-1] > 1.e-3
+          De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=trustcomplexsym(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+          W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
+          i += 1
+          end)
+    P4=hpol(W,V,X,d)
+    d2=norm(P4-P)
+    A=fill(0.0+0.0im,r)
+    B=fill(0.0+0.0im,n,r)
+    if d2<d1
+        A,B=W,V
+    else
+        A,B=A1,B1
+    end
+    P5=hpol(A,B,X,d)
+    d3=norm(P-P5)
+    println("N: ",i)
+    println("dist0: ",d1)
+    println("dist*: ",d3)
+    
+    return A,B
+end
+
+
+function TR_RNS_C(P,r,N)
+    d = maxdegree(P)
+    X = variables(P)
+    n=size(X,1)
+    A0 = rand(ComplexF64,r)
+    B0 = rand(ComplexF64,n,r)
+    De=fill(0.0,N)
+    E=fill(0.0+0.0im,N*r)
+    F=fill(0.0+0.0im,n,N*r)
+    P0=hpol(A0,B0,X,d)
+    d0=norm(P-P0)
+    C=op(A0,B0,P)
+    A1=fill(0.0+0.0im,r)
+    B1=fill(0.0+0.0im,n,r)
+    B1=B0
+    for i in 1:r
+        A1[i]=A0[i]*C[i]
+    end
+    P1=hpol(A1,B1,X,d)
+    d1=norm(P1-P)
+    for i in 1:r
+        y=abs(A1[i])
+        z=angle(A1[i])
+        A1[i]=y*norm(B1[:,i])^d
+        B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
+    end
+    a0=Delta(P,A1)
+    De[1], E[1:r], F[1:n,1:r] = trustcomplexsym(a0,A1,B1,P)
+    W=fill(0.0+0.0im,r)
+    V=fill(0.0+0.0im,n,r)
+    i = 2
+    @time(while  i < N && De[i-1] > 1.e-3
+          De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=trustcomplexsym(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+          W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
+          i += 1
+          end)
+    P4=hpol(W,V,X,d)
+    d2=norm(P4-P)
+    A=fill(0.0+0.0im,r)
+    B=fill(0.0+0.0im,n,r)
+    if d2<d1
+        A,B=W,V
+    else A,B=A1,B1
+    end
+    P5=hpol(A,B,X,d)
+    d3=norm(P-P5)
+    println("N: ",i)
+    println("dist0: ",d0)
+    println("dist1: ",d1)
+    println("dist*: ",d3)
+    
+    return A,B
+end

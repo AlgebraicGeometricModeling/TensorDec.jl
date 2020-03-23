@@ -1,4 +1,4 @@
-export decompose, cst_rkf, eps_rkf, weights, normlz
+export decompose, decompose_qr, cst_rkf, eps_rkf, weights, normlz
 
 import LinearAlgebra: diagm
 
@@ -43,6 +43,116 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where 
     return w, Xi
 end
 
+
+#----------------------------------------------------------------------
+function decompose_mat(pol::Polynomial{true,C}, d0 = div(maxdegree(pol)-1,2)) where C
+    d     = maxdegree(pol)
+    X     = variables(pol)
+    sigma = dual(pol,d)
+
+    B0 = monomials(X, d0)
+    B1 = monomials(X, d-d0)
+
+    H = hankel(sigma, B0, B1)
+    return H, B1
+end
+
+function decompose_red(H, rkf::Function=MultivariateSeries.eps_rkf(1.e-6))
+
+    U, S, V = svd(H)       # H0= U*diag(S)*V'
+    r = rkf(S)
+    L = V[:,1:r]'
+    return L
+    
+end
+
+function decompose_qrbasis(D, L, X)
+
+    Idx = Dict{DynamicPolynomials.Monomial{true},Int64}()
+    i = 1;
+    for m in L
+        Idx[m] = i
+        i+=1
+    end
+    
+    L0 = Any[]
+    for m in L
+        if degree(m,X[1])>0 push!(L0,m) end
+    end
+    
+    D0 = fill(zero(D[1,1]), size(D,1),length(L0))
+    for i in 1:length(L0)
+        for j in 1:size(D,1)
+            D0[j,i]= D[j,get(Idx,L0[i],0)]
+        end
+    end
+    
+    F = qr(D0,Val(true))
+    
+    B = DynamicPolynomials.Monomial{true}[]
+    for i in 1:size(D0,1)
+        m = copy(L0[F.p[i]])
+        m.z[1]-=1
+        push!(B, m)
+    end
+
+    B, F.Q'*D, Idx
+end
+
+function decompose_pencil(D, Idx, B, X)
+    r = length(B)
+
+    R = []
+    for v in X
+        H = fill(0.0, r, r )
+        for i in 1:length(B)
+            m = B[i]
+            k = get(Idx, m*v, 0)
+            #println(m, " ", m*v, " ", k)
+            if k != 0
+                H[:,i] = D[:,k]
+            end
+        end
+        push!(R,H)
+    end
+    R
+end
+
+function decompose_eigen(M)
+    n = length(M)
+    r = size(M[1],1)
+    I0 = inv(M[1])
+    M0 = sum(I0*M[i]*rand(Float64) for i in 2:n);
+    E = eigvecs(M0)
+    Xi = fill(zero(E[1,1]),n,r)
+    for i in 1:r
+    	for j in 1:n
+	    Xi[j,i] = (E[:,i]\(M[j]*E[:,i]))[1]
+	end
+    end
+    Xi
+end
+
+function decompose_qr(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where C
+
+    d = maxdegree(pol)
+    X = variables(pol)
+    d0 = div(d-1,2)
+
+    H, L = decompose_mat(pol, d0)
+    D    = decompose_red(H, rkf)
+    
+    B, Rr, Idx = decompose_qrbasis(D, L, X)
+    
+    H  = decompose_pencil(D, Idx, B, X)
+    
+    I0 = inv(H[1])
+    for i in 1:length(H) H[i]*= I0 end
+    
+    Xi = decompose_eigen(H)
+    w = weights(pol,Xi);
+    w, Xi
+end
 #------------------------------------------------------------------------
 """
 ```
@@ -134,6 +244,7 @@ function weights(T::Polynomial{true,C}, Xi::AbstractMatrix) where C
     A\b
 end
 
-function normlz(M,i)
-    diagm(0 => [1/M[i,j] for j in 1:size(M,1)])*M
+#------------------------------------------------------------------------
+function normlz(M,i=1)
+   M*diagm(0 => [1/M[i,j] for j in 1:size(M,2)])
 end

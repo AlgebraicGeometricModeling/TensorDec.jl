@@ -1,14 +1,8 @@
+export Matrixindices, Vandermonde, Weierstrass1
 using LinearAlgebra
 using MultivariatePolynomials
-using TensorDec
 using DynamicPolynomials
 
-function gradeval(F,X,a)
-        [DynamicPolynomials.differentiate(F, X[i])(a) for i in 1:length(X)]
-end
-function hpol(W,A,X,d)
-    P = sum(W[i]*(transpose(A[:,i])*X)^d for i in 1:length(W))
-end
 function Matrixindices(B,X)
     n=size(X,1)
     r=size(B,1)

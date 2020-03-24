@@ -18,7 +18,7 @@ function opt(W::Vector, V::Matrix,P)
     C=A\B
 end
 
-function symr(delta,W::Vector, A::Matrix,P)
+function symr(delta, W::Vector, A::Matrix,P)
     r=size(W,1)
     n=size(A,1)
     d=maxdegree(P)
@@ -161,7 +161,11 @@ function symr(delta,W::Vector, A::Matrix,P)
             end
             delta,op1,op2
 end
-function Sym_R(P,r,N)
+
+"""
+ Newton-Riemman loop starting from a random decomposition 
+"""
+function Sym_R(P, r, N::Int64=500)
     d = maxdegree(P)
     X = variables(P)
     n=size(X,1)
@@ -211,4 +215,5 @@ function Sym_R(P,r,N)
     println("d3:",d3)
 
     return A,B
-    end
+
+end

@@ -3,7 +3,6 @@ using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
 
-
 function opt(W::Vector, V::Matrix,P)
     d=maxdegree(P)
     r=size(W,1)
@@ -163,7 +162,7 @@ function symr(delta, W::Vector, A::Matrix,P)
 end
 
 """
- Newton-Riemman loop starting from a random decomposition 
+ Newton-Riemman loop starting from a random decomposition
 """
 function Sym_R(P, r, N::Int64=500)
     d = maxdegree(P)
@@ -171,6 +170,7 @@ function Sym_R(P, r, N::Int64=500)
     n=size(X,1)
     A0 = rand(Float64,r)
     B0 = rand(Float64,n,r)
+    #A0, B0 = decompose_qr(P,cst_rkf(r))
     De=fill(0.0,N)
     E=fill(0.0,N*r)
     F=fill(0.0,n,N*r)

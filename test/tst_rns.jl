@@ -1,6 +1,6 @@
 include("../src/TR_RNS.jl")
 """
-test_pr_SHED(r,d,X,eps)
+test_C_SHED(r,d,X,eps)
 Take a complex symmetric decomposition of rank r of order d and dimension n=size(X,1) where X=@ring x1...xn.
 Make a noise of order eps 'P1'.
 Apply TR_RNS_SHED on P1 to find a rank r approximation.
@@ -24,7 +24,7 @@ function test_C_SHED(r,d,X,eps)
     W1,V1=TR_RNS_SHED(T1,r)
 end
 """
-test_pr_C(r,d,X,eps)
+test_C_C(r,d,X,eps)
 Take a complex symmetric decomposition of rank r of order d and dimension n=size(X,1) where X=@ring x1...xn.
 Make a noise of order eps 'P1'.
 Apply TR_RNS_C on P1 to find a rank r approximation.

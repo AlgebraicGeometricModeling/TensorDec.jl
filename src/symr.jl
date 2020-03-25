@@ -2,7 +2,14 @@ export opt, symr, Sym_R
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
+"""
+```
+opt(W,V,P) ⤍ Vector
+```
+This function solves the linear least square problem: 1/2 min_{α1,...,αr} ||∑αiW[i](V[:,i]'x)^d-P||^2 over the real field.
 
+```
+"""
 function opt(W::Vector, V::Matrix,P)
     d=maxdegree(P)
     r=size(W,1)
@@ -16,7 +23,17 @@ function opt(W::Vector, V::Matrix,P)
     end
     C=A\B
 end
+"""
+symr(delta, W::Vector, V::Matrix,P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
 
+Riemannian Newton method with trust region (one iteration) from real initial point W, V.
+
+W is a real vector and V is a real matrix and its columns are normalized.
+
+P is a real homogeneous polynomial, r must be strictly lower than the subgeneric rank.
+
+delta is the raduis of the sphere i.e. the trust region.
+"""
 function symr(delta, W::Vector, A::Matrix,P)
     r=size(W,1)
     n=size(A,1)
@@ -161,9 +178,17 @@ function symr(delta, W::Vector, A::Matrix,P)
             delta,op1,op2
 end
 
+
 """
- Newton-Riemman loop starting from a random decomposition
+symr_iter(P,r,N) ➡ gives symmetric decomposition of rank r.
+
+Riemannian Newton loop with trust region from random real initial point W, V.
+
+P is a real homogeneous polynomial, r must be strictly lower than the subgeneric rank.
+
+The default maximal number of iteration is N=500.
 """
+
 function symr_iter(P, r, N::Int64=500)
     d = maxdegree(P)
     X = variables(P)
@@ -210,13 +235,25 @@ function symr_iter(P, r, N::Int64=500)
     P5=hpol(A,B,X,d)
     d3=norm(P-P5)
     println("N:",i)
-    println("d0:",d0)
-    println("d1:",d1)
-    println("d3:",d3)
+    println("dist0: ",d0)
+    println("dist*: ",d3)
 
     return A,B
 
 end
+"""
+symr_iter(P, A0, B0, N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r=size(A0,1).
+
+Riemannian Newton loop with trust region from real initial point W, V.
+
+W is a real vector and V is a real matrix and its columns are normalized.
+
+P is a real homogeneous polynomial, r must be strictly lower than the subgeneric rank.
+
+The default maximal number of iteration is N=500.
+
+
+"""
 function symr_iter(P, A0, B0, N::Int64=500)
     d = maxdegree(P)
     X = variables(P)
@@ -261,9 +298,8 @@ function symr_iter(P, A0, B0, N::Int64=500)
     P5=hpol(A,B,X,d)
     d3=norm(P-P5)
     println("N:",i)
-    println("d0:",d0)
-    println("d1:",d1)
-    println("d3:",d3)
+    println("dist0: ",d0)
+    println("dist*: ",d3)
 
     return A,B
 

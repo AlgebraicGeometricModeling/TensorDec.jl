@@ -217,9 +217,10 @@ function symr_iter(P, r, N::Int64=500)
     return A,B
 
 end
-function symr_iter(P, r, A0, B0, N::Int64=500)
+function symr_iter(P, A0, B0, N::Int64=500)
     d = maxdegree(P)
     X = variables(P)
+    r=size(A0,1)
     n=size(X,1)
     De=fill(0.0,N)
     E=fill(0.0,N*r)

@@ -2,6 +2,11 @@ export cnewton11, RNS_SPED, RNS_R, RNS_C
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
+"""
+Riemannian Newton method (one iteration) from initial point W, V, where W is a real positif vector and V is a complex matrix and its columns are normalized.
+
+"""
+
 function cnewton11(W::Vector, V::Matrix,P)
     X=variables(P)
     r=size(W,1)
@@ -104,7 +109,14 @@ end
 
 return W2,V1,Ge
 end
-function RNS_SPED(P,r,N)
+"""
+Riemannian Newton loop starting from initial point W0, V0 chosen by the function decompose.
+The default maximal number of iteration is N=500.
+The decomposition given by this function is W, V where W is a real positif vector and V is a complex matrix and its columns are normalized.
+r which is the rank of the approximation given by the RNS_SHED must be strictly lower than the subgeneric rank and the interpolation degree must be lower than (d-1)/2 where d is the degree of the homogeneous polynomial P.
+"""
+
+function RNS_SHED(P,r,N)
     d = maxdegree(P)
     X = variables(P)
     n=size(X,1)
@@ -151,12 +163,17 @@ function RNS_SPED(P,r,N)
     P5=hpol(A,B,X,d)
     d3=norm(P-P5)
     println("N:",i)
-    println("d0:",d0)
-    println("d1:",d1)
-    println("d3:",d3)
+    println("dist0: ",d0)
+    println("dist*: ",d3)
 
     return A,B
     end
+    """
+    Riemannian Newton loop starting from random real initial point W0, V0.
+    The default maximal number of iteration is N=500.
+    The decomposition given by this function is W, V where W is a real positif vector and V is a complex matrix and its columns are normalized.
+    r which is the rank of the approximation given by the RNS_R must be strictly lower than the subgeneric rank.
+    """
     function RNS_R(P,r,N)
         d = maxdegree(P)
         X = variables(P)
@@ -205,12 +222,17 @@ function RNS_SPED(P,r,N)
         P5=hpol(A,B,X,d)
         d3=norm(P-P5)
         println("N:",i)
-        println("d0:",d0)
-        println("d1:",d1)
-        println("d3:",d3)
+        println("dist0: ",d0)
+        println("dist*: ",d3)
 
         return A,B
         end
+        """
+        Riemannian Newton loop starting from random complex initial point W0, V0.
+        The default maximal number of iteration is N=500.
+        The decomposition given by this function is W, V where W is a real positif vector and V is a complex matrix and its columns are normalized.
+        r which is the rank of the approximation given by the RNS_C must be strictly lower than the subgeneric rank.
+        """
         function RNS_C(P,r,N)
             d = maxdegree(P)
             X = variables(P)
@@ -257,9 +279,8 @@ function RNS_SPED(P,r,N)
             P5=hpol(A,B,X,d)
             d3=norm(P-P5)
             println("N:",i)
-            println("d0:",d0)
-            println("d1:",d1)
-            println("d3:",d3)
+            println("dist0: ",d0)
+            println("dist*: ",d3)
 
             return A,B
             end

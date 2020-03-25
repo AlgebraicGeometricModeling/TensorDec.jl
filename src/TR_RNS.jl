@@ -2,6 +2,18 @@ export trustcomplexsym, TR_RNS_SPED, TR_RNS_R, TR_RNS_C
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
+"""
+trustcomplexsym(delta, W, V, P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
+
+Riemannian Newton method with teurst region (one iteration) from initial point W, V.
+
+W is a real positif vector and V is a complex matrix and its columns are normalized.
+
+r must be strictly lower than the subgeneric rank
+
+delta is the raduis of the trust region
+
+"""
 
 function trustcomplexsym(delta, W::Vector, V::Matrix,P)
     X=variables(P)
@@ -147,7 +159,16 @@ S=M'*Ns
 
         delta,op1,op2
     end
-function TR_RNS_SPED(P,r,N)
+    """
+    TR_RNS_SHED(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
+
+    Riemannian Newton loop with trust region starting from initial point W0, V0 chosen by the function decompose.
+
+    The default maximal number of iteration is N=500.
+
+    r must be strictly lower than the subgeneric rank and the interpolation degree must be lower than (d-1)/2 where d is the degree of P.
+    """
+function TR_RNS_SHED(P,r,N::Int64=500)
     d = maxdegree(P)
     X = variables(P)
     n=size(X,1)
@@ -195,14 +216,22 @@ function TR_RNS_SPED(P,r,N)
     P5=hpol(A,B,X,d)
     d3=norm(P-P5)
     println("N:",i)
-    println("d0:",d0)
-    println("d1:",d1)
-    println("d3:",d3)
+    println("dist0: ",d0)
+    println("dist*: ",d3)
 
     return A,B
 end
+"""
+TR_RNS_R(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
 
-function TR_RNS_R(P,r,N)
+Riemannian Newton loop with trust region starting from random real initial point W0, V0.
+
+The default maximal number of iteration is N=500.
+
+r must be strictly lower than the subgeneric rank.
+"""
+
+function TR_RNS_R(P,r,N::Int64=500)
         d = maxdegree(P)
         X = variables(P)
         n=size(X,1)
@@ -251,18 +280,24 @@ function TR_RNS_R(P,r,N)
         P5=hpol(A,B,X,d)
         d3=norm(P-P5)
         println("N:",i)
-        println("d0:",d0)
-        println("d1:",d1)
-        println("d3:",d3)
+        println("dist0: ",d0)
+        println("dist*: ",d3)
 
         return A,B
 end
 
 """
-Riemman Newton loop with trust region starting from initial point A1, B1
-The default maximal number of iteration is N=100.
+TR_RNS_R(P, W, V, N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
+
+Riemannian Newton loop with trust region starting from random real initial point W, V.
+
+W is a real vector and V is a real matrix and its columns are normalized.
+
+The default maximal number of iteration is N=500.
+
+r must be strictly lower than the subgeneric rank.
 """
-function TR_RNS_R(P, A1::Vector, B1::Matrix, N::Int64=100)
+function TR_RNS_R(P, A1::Vector, B1::Matrix, N::Int64=500)
     d = maxdegree(P)
     X = variables(P)
     r = length(A1)
@@ -305,11 +340,19 @@ function TR_RNS_R(P, A1::Vector, B1::Matrix, N::Int64=100)
     println("N: ",i)
     println("dist0: ",d1)
     println("dist*: ",d3)
-    
+
     return A,B
 end
+"""
+TR_RNS_C(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
 
-function TR_RNS_C(P,r,N)
+Riemannian Newton loop starting from random complex initial point W0, V0.
+
+The default maximal number of iteration is N=500.
+
+r must be strictly lower than the subgeneric rank.
+"""
+function TR_RNS_C(P,r,N::Int64=500)
             d = maxdegree(P)
             X = variables(P)
             n=size(X,1)
@@ -356,9 +399,8 @@ function TR_RNS_C(P,r,N)
             P5=hpol(A,B,X,d)
             d3=norm(P-P5)
             println("N:",i)
-            println("d0:",d0)
-            println("d1:",d1)
-            println("d3:",d3)
+            println("dist0: ",d0)
+            println("dist*: ",d3)
 
             return A,B
             end

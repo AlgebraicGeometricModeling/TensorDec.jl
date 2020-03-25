@@ -3,10 +3,26 @@ using LinearAlgebra
 using MultivariatePolynomials
 using TensorDec
 using DynamicPolynomials
+"""
+```
+gradeval(F,X,a) ⤍ Vector
+```
+Compute the evaluation of the gradient vector of the polynomial F with n variables X=@ring x1...xn (i.e. (∂F/∂xi)_{1≤i≤n}) at vector 'a'.
+
+```
+"""
 
 function gradeval(F,X,a)
         [DynamicPolynomials.differentiate(F, X[i])(a) for i in 1:length(X)]
 end
+"""
+```
+hessianeval(F,X,a) ⤍ Matrix
+```
+Compute the evaluation of the Hessian matrix of the polynomial F with n variables X=@ring x1...xn (i.e.(∂^2(F)/∂xi∂xj)_{1≤i,j≤n}) at vector 'a'.
+
+```
+"""
 
 function hessianeval(F,X,a)
     n=length(a)
@@ -17,10 +33,25 @@ function hessianeval(F,X,a)
     end
     v
 end
+"""
+```
+hpol(W,A,X,d) ⤍ Homogeneous polynomial
+```
+This function gives the homogeneous polynomial associated to the symmetric decomposition W,A.
 
+```
+"""
 function hpol(W,A,X,d)
     P = sum(W[i]*(transpose(A[:,i])*X)^d for i in 1:length(W))
 end
+"""
+```
+op(W,V,P) ⤍ Vector
+```
+This function solves the linear least square problem: 1/2 min_{α1,...,αr} ||∑αiW[i](V[:,i]'x)^d-P||^2.
+
+```
+"""
 
 function op(W::Vector, V::Matrix,P)
     d=maxdegree(P)
@@ -35,6 +66,14 @@ function op(W::Vector, V::Matrix,P)
     end
     C=A\B
 end
+"""
+```
+Delta(P,W) ⤍ Float64
+```
+This function gives the initial raduis of the initial sphere in a trust region method for the symmetric tensor rank approximation problem.
+
+```
+"""
 function Delta(P,W::Vector)
     W0=real(W)
     r=size(W0,1)

@@ -83,7 +83,7 @@ end
 #-----------------------------------------------------------------------
 """
 ```
-apolarpro(P,Q) -> Float64
+apolarpro(P,Q) -> ComplexF64
 ```
 The apolar product of two homogeneous polynomials P=∑_{|α|=d} binom{d}{α} p_α x^α and
 Q=∑_{|α|=d} binom{d}{α} q_α  x^α, of degree d in n variables is given by

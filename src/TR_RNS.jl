@@ -5,7 +5,7 @@ using DynamicPolynomials
 """
 trustcomplexsym(delta, W, V, P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
 
-Riemannian Newton method with teurst region (one iteration) from initial point W, V.
+Riemannian Newton method with trust region (one iteration) from initial point W, V.
 
 W is a real positif vector and V is a complex matrix and its columns are normalized.
 

@@ -23,6 +23,7 @@ include("ahp.jl")
 include("prelim.jl")
 include("RNS.jl")
 include("TR_RNS.jl")
-
+include("symr.jl")
+include("weierstrass.jl")
 
 end # module

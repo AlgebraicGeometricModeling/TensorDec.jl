@@ -3,7 +3,7 @@ using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
 """
-cnewton11(W, V, P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
+rnewton_step(W, V, P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
 
 Riemannian Newton method (one iteration) from initial point W, V.
 
@@ -13,7 +13,7 @@ r must be strictly lower than the subgeneric rank
 
 """
 
-function cnewton11(W::Vector, V::Matrix,P)
+function rnewton_step(W::Vector, V::Matrix,P)
     X=variables(P)
     r=size(W,1)
     n=size(X,1)
@@ -116,7 +116,7 @@ end
 return W2,V1,Ge
 end
 """
-RNS_SHED(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
+rnewton_SHED_iter(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
 
 Riemannian Newton loop starting from initial point W0, V0 chosen by the function decompose.
 
@@ -125,7 +125,7 @@ The default maximal number of iteration is N=500.
 r must be strictly lower than the subgeneric rank and the interpolation degree must be lower than (d-1)/2 where d is the degree of P.
 """
 
-function RNS_SHED(P,r,N::Int64=500)
+function rnewton_SHED_iter(P,r,N::Int64=500)
     d = maxdegree(P)
     X = variables(P)
     n=size(X,1)
@@ -152,12 +152,12 @@ function RNS_SHED(P,r,N::Int64=500)
            A1[i]=y*norm(B1[:,i])^d
            B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
           end
-        E[1:r], F[1:n,1:r], Ge[1:r+(2n-1)*r] = cnewton11(A1,B1,P)
+        E[1:r], F[1:n,1:r], Ge[1:r+(2n-1)*r] = rnewton_step(A1,B1,P)
         W=fill(0.0+0.0im,r)
         V=fill(0.0+0.0im,n,r)
         i = 2
         @time(while norm(Ge[(i-2)*(r+(2*n-1)*r)+1:(i-1)*(r+(2*n-1)*r)])>1.e-1 && i<N
-        E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r], Ge[(i-1)*(r+(2*n-1)*r)+1:i*(r+(2*n-1)*r)]=cnewton11(E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+        E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r], Ge[(i-1)*(r+(2*n-1)*r)+1:i*(r+(2*n-1)*r)]=rnewton_step(E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
         W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
         i += 1
     end)
@@ -178,7 +178,7 @@ function RNS_SHED(P,r,N::Int64=500)
     return A,B
     end
     """
-    RNS_R(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
+    rnewton_R_iter(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
 
     Riemannian Newton loop starting from random real initial point W0, V0.
 
@@ -186,7 +186,7 @@ function RNS_SHED(P,r,N::Int64=500)
 
     r must be strictly lower than the subgeneric rank.
     """
-    function RNS_R(P,r,N::Int64=500)
+    function rnewton_R_iter(P,r,N::Int64=500)
         d = maxdegree(P)
         X = variables(P)
         n=size(X,1)
@@ -214,12 +214,12 @@ function RNS_SHED(P,r,N::Int64=500)
                A1[i]=y*norm(B1[:,i])^d
                B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
               end
-            E[1:r], F[1:n,1:r], Ge[1:r+(2n-1)*r] = cnewton11(A1,B1,P)
+            E[1:r], F[1:n,1:r], Ge[1:r+(2n-1)*r] = rnewton_step(A1,B1,P)
             W=fill(0.0+0.0im,r)
             V=fill(0.0+0.0im,n,r)
             i = 2
             @time(while norm(Ge[(i-2)*(r+(2*n-1)*r)+1:(i-1)*(r+(2*n-1)*r)])>1.e-1 && i<N
-            E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r], Ge[(i-1)*(r+(2*n-1)*r)+1:i*(r+(2*n-1)*r)]=cnewton11(E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+            E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r], Ge[(i-1)*(r+(2*n-1)*r)+1:i*(r+(2*n-1)*r)]=rnewton_step(E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
             W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
             i += 1
         end)
@@ -240,7 +240,7 @@ function RNS_SHED(P,r,N::Int64=500)
         return A,B
         end
         """
-        RNS_C(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
+        rnewton_C_iter(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
 
         Riemannian Newton loop starting from random complex initial point W0, V0.
 
@@ -248,7 +248,7 @@ function RNS_SHED(P,r,N::Int64=500)
 
         r must be strictly lower than the subgeneric rank.
         """
-        function RNS_C(P,r,N::Int64=500)
+        function rnewton_C_iter(P,r,N::Int64=500)
             d = maxdegree(P)
             X = variables(P)
             n=size(X,1)
@@ -274,12 +274,12 @@ function RNS_SHED(P,r,N::Int64=500)
                    A1[i]=y*norm(B1[:,i])^d
                    B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
                   end
-                E[1:r], F[1:n,1:r], Ge[1:r+(2n-1)*r] = cnewton11(A1,B1,P)
+                E[1:r], F[1:n,1:r], Ge[1:r+(2n-1)*r] = rnewton_step(A1,B1,P)
                 W=fill(0.0+0.0im,r)
                 V=fill(0.0+0.0im,n,r)
                 i = 2
                 @time(while norm(Ge[(i-2)*(r+(2*n-1)*r)+1:(i-1)*(r+(2*n-1)*r)])>1.e-1 && i<N
-                E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r], Ge[(i-1)*(r+(2*n-1)*r)+1:i*(r+(2*n-1)*r)]=cnewton11(E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+                E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r], Ge[(i-1)*(r+(2*n-1)*r)+1:i*(r+(2*n-1)*r)]=rnewton_step(E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
                 W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
                 i += 1
             end)

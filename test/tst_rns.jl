@@ -3,7 +3,7 @@ include("../src/TR_RNS.jl")
 test_C_SHED(r,d,X,eps)
 Take a complex symmetric decomposition of rank r of order d and dimension n=size(X,1) where X=@ring x1...xn.
 Make a noise of order eps 'P1'.
-Apply TR_RNS_SHED on P1 to find a rank r approximation.
+Apply sym_SHED_iter on P1 to find a rank r approximation.
 
 """
 function test_C_SHED(r,d,X,eps)
@@ -21,13 +21,13 @@ function test_C_SHED(r,d,X,eps)
     end
     T1=sum(t1[i] for i in 1:s)
     println("d*:",norm(T0-T1))
-    W1,V1=TR_RNS_SHED(T1,r)
+    W1,V1=sym_SHED_iter(T1,r)
 end
 """
 test_C_C(r,d,X,eps)
 Take a complex symmetric decomposition of rank r of order d and dimension n=size(X,1) where X=@ring x1...xn.
 Make a noise of order eps 'P1'.
-Apply TR_RNS_C on P1 to find a rank r approximation.
+Apply sym_C_iter on P1 to find a rank r approximation.
 
 """
 function test_C_C(r,d,X,eps)
@@ -45,13 +45,13 @@ function test_C_C(r,d,X,eps)
     end
     T1=sum(t1[i] for i in 1:s)
     println("d*:",norm(T0-T1))
-    W1,V1=TR_RNS_C(T1,r)
+    W1,V1=sym_C_iter(T1,r)
 end
 """
 test_R_SHED(r,d,X,eps)
 Take a real symmetric decomposition of rank r of order d and dimension n=size(X,1) where X=@ring x1...xn.
 Make a noise of order eps 'P1'.
-Apply TR_RNS_SHED on P1 to find a rank r approximation.
+Apply sym_SHED_iter on P1 to find a rank r approximation.
 
 """
 function test_R_SHED(r,d,X,eps)
@@ -69,13 +69,13 @@ function test_R_SHED(r,d,X,eps)
     end
     T1=sum(t1[i] for i in 1:s)
     println("d*:",norm(T0-T1))
-    W1,V1=TR_RNS_SHED(T1,r)
+    W1,V1=sym_SHED_iter(T1,r)
 end
 """
 test_R_R(r,d,X,eps)
 Take a real symmetric decomposition of rank r of order d and dimension n=size(X,1) where X=@ring x1...xn.
 Make a noise of order eps 'P1'.
-Apply TR_RNS_R on P1 to find a rank r approximation.
+Apply sym_R_iter on P1 to find a rank r approximation.
 
 """
 function test_R_R(r,d,X,eps)
@@ -93,13 +93,13 @@ function test_R_R(r,d,X,eps)
     end
     T1=sum(t1[i] for i in 1:s)
     println("d*:",norm(T0-T1))
-    W1,V1=TR_RNS_R(T1,r)
+    W1,V1=sym_R_iter(T1,r)
 end
 """
 test_R_C(r,d,X,eps)
 Take a real symmetric decomposition of rank r of order d and dimension n=size(X,1) where X=@ring x1...xn.
 Make a noise of order eps 'P1'.
-Apply TR_RNS_C on P1 to find a rank r approximation.
+Apply sym_C_iter on P1 to find a rank r approximation.
 
 """
 function test_R_C(r,d,X,eps)
@@ -117,5 +117,5 @@ function test_R_C(r,d,X,eps)
     end
     T1=sum(t1[i] for i in 1:s)
     println("d*:",norm(T0-T1))
-    W1,V1=TR_RNS_C(T1,r)
+    W1,V1=sym_C_iter(T1,r)
 end

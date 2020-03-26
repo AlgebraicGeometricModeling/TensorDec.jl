@@ -3,7 +3,7 @@ using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
 """
-trustcomplexsym(delta, W, V, P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
+sym_step(delta, W, V, P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
 
 Riemannian Newton method with trust region (one iteration) from initial point W, V.
 
@@ -15,7 +15,7 @@ delta is the raduis of the trust region
 
 """
 
-function trustcomplexsym(delta, W::Vector, V::Matrix,P)
+function sym_step(delta, W::Vector, V::Matrix,P)
     X=variables(P)
     r=size(W,1)
     n=size(X,1)
@@ -160,7 +160,64 @@ S=M'*Ns
         delta,op1,op2
     end
     """
-    TR_RNS_SHED(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
+    sym_iter(P, W, V, N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
+
+    Riemannian Newton loop with trust region starting from initial point W, V.
+
+    W is a vector of size r and V is a matrix of n rows (n=number of variables in P) and r columns.
+
+    The default maximal number of iteration is N=500.
+
+    r must be strictly lower than the subgeneric rank.
+    """
+    function sym_iter(P, A1::Vector, B1::Matrix, N::Int64=500)
+        d = maxdegree(P)
+        X = variables(P)
+        r = length(A1)
+        n = size(X,1)
+        A1+=fill(0.0im,r)
+        B1+=fill(0.0im,n,r)
+        P1 = hpol(A1,B1,X,d)
+        d1 = norm(P1-P)
+        for i in 1:r
+            y=abs(A1[i])
+            z=angle(A1[i])
+            A1[i]=y*norm(B1[:,i])^d
+            B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
+        end
+        a0=Delta(P,A1)
+
+        De=fill(0.0,N)
+        E=fill(0.0+0.0im,N*r)
+        F=fill(0.0+0.0im,n,N*r)
+        De[1], E[1:r], F[1:n,1:r] = sym_step(a0,A1,B1,P)
+        W=fill(0.0+0.0im,r)
+        V=fill(0.0+0.0im,n,r)
+        i = 2
+        @time(while  i < N && De[i-1] > 1.e-3
+              De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=sym_step(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+              W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
+              i += 1
+              end)
+        P4=hpol(W,V,X,d)
+        d2=norm(P4-P)
+        A=fill(0.0+0.0im,r)
+        B=fill(0.0+0.0im,n,r)
+        if d2<d1
+            A,B=W,V
+        else
+            A,B=A1,B1
+        end
+        P5=hpol(A,B,X,d)
+        d3=norm(P-P5)
+        println("N: ",i)
+        println("dist0: ",d1)
+        println("dist*: ",d3)
+
+        return A,B
+    end
+    """
+    sym_SHED_iter(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
 
     Riemannian Newton loop with trust region starting from initial point W0, V0 chosen by the function decompose.
 
@@ -168,7 +225,7 @@ S=M'*Ns
 
     r must be strictly lower than the subgeneric rank and the interpolation degree must be lower than (d-1)/2 where d is the degree of P.
     """
-function TR_RNS_SHED(P,r,N::Int64=500)
+function sym_SHED_iter(P,r,N::Int64=500)
     d = maxdegree(P)
     X = variables(P)
     n=size(X,1)
@@ -196,12 +253,12 @@ function TR_RNS_SHED(P,r,N::Int64=500)
            B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
           end
       a0=Delta(P,A1)
-     De[1], E[1:r], F[1:n,1:r] = trustcomplexsym(a0,A1,B1,P)
+     De[1], E[1:r], F[1:n,1:r] = sym_step(a0,A1,B1,P)
     W=fill(0.0+0.0im,r)
     V=fill(0.0+0.0im,n,r)
     i = 2
                  @time(while  i < N && De[i-1] > 1.e-3
-                De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=trustcomplexsym(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+                De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=sym_step(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
                 W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
                 i += 1
                 end)
@@ -222,7 +279,7 @@ function TR_RNS_SHED(P,r,N::Int64=500)
     return A,B
 end
 """
-TR_RNS_R(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
+sym_R_iter(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
 
 Riemannian Newton loop with trust region starting from random real initial point W0, V0.
 
@@ -231,7 +288,7 @@ The default maximal number of iteration is N=500.
 r must be strictly lower than the subgeneric rank.
 """
 
-function TR_RNS_R(P,r,N::Int64=500)
+function sym_R_iter(P,r,N::Int64=500)
         d = maxdegree(P)
         X = variables(P)
         n=size(X,1)
@@ -260,12 +317,12 @@ function TR_RNS_R(P,r,N::Int64=500)
                B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
               end
             a0=Delta(P,A1)
-            De[1], E[1:r], F[1:n,1:r] = trustcomplexsym(a0,A1,B1,P)
+            De[1], E[1:r], F[1:n,1:r] = sym_step(a0,A1,B1,P)
             W=fill(0.0+0.0im,r)
             V=fill(0.0+0.0im,n,r)
             i = 2
              @time(while  i < N && De[i-1] > 1.e-3
-            De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=trustcomplexsym(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+            De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=sym_step(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
             W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
             i += 1
         end)
@@ -285,66 +342,8 @@ function TR_RNS_R(P,r,N::Int64=500)
 
         return A,B
 end
-
 """
-TR_RNS_R(P, W, V, N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
-
-Riemannian Newton loop with trust region starting from random real initial point W, V.
-
-W is a real vector and V is a real matrix and its columns are normalized.
-
-The default maximal number of iteration is N=500.
-
-r must be strictly lower than the subgeneric rank.
-"""
-function TR_RNS_R(P, A1::Vector, B1::Matrix, N::Int64=500)
-    d = maxdegree(P)
-    X = variables(P)
-    r = length(A1)
-    n = size(X,1)
-    A1+=fill(0.0im,r)
-    B1+=fill(0.0im,n,r)
-    P1 = hpol(A1,B1,X,d)
-    d1 = norm(P1-P)
-    for i in 1:r
-        y=abs(A1[i])
-        z=angle(A1[i])
-        A1[i]=y*norm(B1[:,i])^d
-        B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
-    end
-    a0=Delta(P,A1)
-
-    De=fill(0.0,N)
-    E=fill(0.0+0.0im,N*r)
-    F=fill(0.0+0.0im,n,N*r)
-    De[1], E[1:r], F[1:n,1:r] = trustcomplexsym(a0,A1,B1,P)
-    W=fill(0.0+0.0im,r)
-    V=fill(0.0+0.0im,n,r)
-    i = 2
-    @time(while  i < N && De[i-1] > 1.e-3
-          De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=trustcomplexsym(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
-          W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
-          i += 1
-          end)
-    P4=hpol(W,V,X,d)
-    d2=norm(P4-P)
-    A=fill(0.0+0.0im,r)
-    B=fill(0.0+0.0im,n,r)
-    if d2<d1
-        A,B=W,V
-    else
-        A,B=A1,B1
-    end
-    P5=hpol(A,B,X,d)
-    d3=norm(P-P5)
-    println("N: ",i)
-    println("dist0: ",d1)
-    println("dist*: ",d3)
-
-    return A,B
-end
-"""
-TR_RNS_C(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
+sym_C_iter(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
 
 Riemannian Newton loop starting from random complex initial point W0, V0.
 
@@ -352,7 +351,7 @@ The default maximal number of iteration is N=500.
 
 r must be strictly lower than the subgeneric rank.
 """
-function TR_RNS_C(P,r,N::Int64=500)
+function sym_C_iter(P,r,N::Int64=500)
             d = maxdegree(P)
             X = variables(P)
             n=size(X,1)
@@ -379,12 +378,12 @@ function TR_RNS_C(P,r,N::Int64=500)
                    B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
                   end
                  a0=Delta(P,A1)
-                De[1], E[1:r], F[1:n,1:r] = trustcomplexsym(a0,A1,B1,P)
+                De[1], E[1:r], F[1:n,1:r] = sym_step(a0,A1,B1,P)
                 W=fill(0.0+0.0im,r)
                 V=fill(0.0+0.0im,n,r)
                 i = 2
                  @time(while  i < N && De[i-1] > 1.e-3
-                De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=trustcomplexsym(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+                De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=sym_step(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
                 W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
                 i += 1
             end)

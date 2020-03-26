@@ -3,6 +3,14 @@ using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
 
+"""
+```
+opt(W,V,P) ⤍ Vector
+```
+This function solves the linear least square problem: 1/2 min_{α1,...,αr} ||∑αiW[i](V[:,i]'x)^d-P||^2 over the real field.
+
+```
+"""
 function opt(W::Vector, V::Matrix,P)
     d=maxdegree(P)
     r=size(W,1)
@@ -17,6 +25,17 @@ function opt(W::Vector, V::Matrix,P)
     C=A\B
 end
 
+
+"""
+symr_step(delta, W::Vector, V::Matrix,P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
+
+Riemannian Newton method with trust region (one iteration) from real initial point W, V.
+
+W is a real vector and V is a real matrix and its columns are normalized.
+
+delta is the radius of the sphere i.e. the trust region.
+
+"""
 function symr_step(delta, W::Vector, A::Matrix, P)
     r=size(W,1)
     n=size(A,1)
@@ -85,18 +104,7 @@ function symr_step(delta, W::Vector, A::Matrix, P)
     Mat[1:r,r+1:r+n*r]=Mat2
     Mat[r+1:r+n*r,1:r]=Mat2'
     Mat[r+1:r+n*r,r+1:r+n*r]=Mat3
-    #Z=zeros(r+n*r,r+n*r)
-    #L=zeros(n*r,r)
-    #for i in 1:r
-        #L[(i-1)*n+1:i*n,i]=d*sum(W[l]*(dot(A[:,i],A[:,l]))^(d-1)*A[:,l] for l in 1:r)-gradeval(P,X,A[:,i])
-    #end
-    #Z[r+1:end,1:r]=L
-    #Z[1:r,r+1:end]=L'
-    #for i in 1:r
-        #h=hessianeval(P,X,A[:,i])
-        #Z[r+(i-1)*n+1:r+i*n,r+(i-1)*n+1:r+i*n]=W[i]*(d*(d-1)sum(W[l]*(dot(A[:,i],A[:,l]))^(d-2)*A[:,l]*A[:,l]' for l in 1:r)-h)
-    #end
-    #Mat=Mat+Z
+
     H=Q'*Mat*Q
     N1=-pinv(H)*G
     N1=Q*N1
@@ -108,18 +116,18 @@ function symr_step(delta, W::Vector, A::Matrix, P)
     xi=norm(N1)
     pi=norm(N2)
 
-        if xi <= delta
-            Ns=N1
-
-        elseif xi > delta && pi >= delta
-            Ns=-Q*((delta/norm(G))*G)
-        else
-            a1=(norm(N1-N2))^2
-            a2=2*(-(norm(N1))^2-2*(norm(N2))^2+3*dot(N1,N2))
-            a3=-delta^2+4*(norm(N2))^2-4*dot(N1,N2)+(norm(N1))^2
-            tau=solve(a1,a2,a3)
-            Ns=N2+(tau-1)*(N1-N2)
-        end
+    if xi <= delta
+        Ns=N1
+        
+    elseif xi > delta && pi >= delta
+        Ns=-Q*((delta/norm(G))*G)
+    else
+        a1=(norm(N1-N2))^2
+        a2=2*(-(norm(N1))^2-2*(norm(N2))^2+3*dot(N1,N2))
+        a3=-delta^2+4*(norm(N2))^2-4*dot(N1,N2)+(norm(N1))^2
+        tau=solve(a1,a2,a3)
+        Ns=N2+(tau-1)*(N1-N2)
+    end
     W1=zeros(r)
     W1=Ns[1:r]
     A1=fill(0.0,n,r)
@@ -162,15 +170,24 @@ function symr_step(delta, W::Vector, A::Matrix, P)
 end
 
 
+
 """
- Newton-Riemman loop starting from weights A0 and points B0.
- The default maximum number of iterations is N=500   
+symr_iter(P, A0, B0, N::Int64=500) ➡ symmetric decomposition of rank r=size(A0,1).
+
+Riemannian Newton loop with trust region from real initial point A0, B0.
+
+A0 is a real vector and B0 is a real matrix and its columns are normalized.
+
+P is a real homogeneous polynomial, r must be strictly lower than the subgeneric rank.
+
+The default maximal number of iteration is N=500.
+
 """
 function symr_iter(P, A0, B0, N::Int64=500)
     d = maxdegree(P)
     X = variables(P)
-    r = size(A0,1)
-    n = size(X,1)
+    r=size(A0,1)
+    n=size(X,1)
     De=fill(0.0,N)
     E=fill(0.0,N*r)
     F=fill(0.0,n,N*r)
@@ -196,7 +213,7 @@ function symr_iter(P, A0, B0, N::Int64=500)
     i = 2
     @time(while  i < N && De[i-1] > 1.e-3
           De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=symr_step(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
-        W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
+          W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
           i += 1
           end)
     P4=hpol(W,V,X,d)
@@ -211,25 +228,29 @@ function symr_iter(P, A0, B0, N::Int64=500)
     P5=hpol(A,B,X,d)
     d3=norm(P-P5)
     println("N:",i)
-    println("d0:",d0)
-    println("d1:",d1)
-    println("d*:",d3)
-
+    println("dist0: ",d0)
+    println("dist*: ",d3)
+    
     return A,B
 
 end
 
+"""
+symr_iter(P,r,N) ➡ symmetric decomposition of rank r.
 
+Riemannian Newton loop with trust region from random real initial point W, V.
+
+P is a real homogeneous polynomial, r must be strictly lower than the subgeneric rank.
+
+The default maximal number of iteration is N=500.
 """
- Newton-Riemman loop starting from a random decomposition of rank r.
- The default maximum number of iterations is N=500   
-"""
-function symr_iter(P, r, N::Int64=500)
+function symr_iter(P, r::Int64, N::Int64=500)
     d = maxdegree(P)
     X = variables(P)
     n = size(X,1)
     A0 = rand(Float64,r)
     B0 = rand(Float64,n,r)
+
     #A0, B0 = decompose_qr(P,cst_rkf(r))
     return symr_iter(P, A0,B0, N)
 end

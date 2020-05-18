@@ -68,9 +68,7 @@ function Weierstrass1(P,r,B,W,U)
         C[:,1]=0.5*U[:,i]
         C[1,2:n+1]=W[i]*conj(A)
         p,m,f=svd(C)
-        println("svd: ",m)
-        
-        C=C+50*m[1]*Matrix((1.0+0.0im)*I,n+1,n+1)
+        C=C+r^2*d*m[1]*Matrix((1.0+0.0im)*I,n+1,n+1)
         H=adjoint(C)*C
         #H=H+d^10*Matrix((1.0+0.0im)*I,n+1,n+1)
         G[1]=F(conj(U[:,i]))

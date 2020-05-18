@@ -30,7 +30,7 @@ Xi = rand(3,5)
 tensor(w,Xi,X,4)
 ```
 """
-function tensor(w::Vector{T}, Xi::AbstractMatrix{U}, V::Vector, d::Int64) where {T,U}
+function tensor(w::AbstractVector{T}, Xi::AbstractMatrix{U}, V, d::Int64) where {T,U}
     r = length(w)
     p = sum( w[i]* dot(Xi[:,i],V)^d for i in 1:r)
 end

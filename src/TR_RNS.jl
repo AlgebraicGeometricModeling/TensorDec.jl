@@ -2,6 +2,7 @@ export trustcomplexsym, TR_RNS_SPED, TR_RNS_R, TR_RNS_C
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
+
 """
 sym_step(delta, W, V, P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
 
@@ -11,7 +12,7 @@ W is a real positif vector and V is a complex matrix and its columns are normali
 
 r must be strictly lower than the subgeneric rank
 
-delta is the raduis of the trust region
+delta is the radius of the trust region
 
 """
 
@@ -216,7 +217,8 @@ S=M'*Ns
 
         return A,B
     end
-    """
+
+"""
     sym_SHED_iter(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
 
     Riemannian Newton loop with trust region starting from initial point W0, V0 chosen by the function decompose.

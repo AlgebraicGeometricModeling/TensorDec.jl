@@ -1,13 +1,16 @@
-export decompose, decompose_qr, cst_rkf, eps_rkf, weights, normlz
+export shd_decompose, qr_decompose, weights
 
 import LinearAlgebra: diagm
 
-decompose(sigma::Series, rkf::Function = MultivariateSeries.eps_rkf(1.e-6)) = MultivariateSeries.decompose(sigma, rkf)
+#------------------------------------------------------------------------
+function power_vec(d, L, pt)
+ [m(pt)*binomial(d,exponents(m)) for m in L]
+end
 
 #------------------------------------------------------------------------
 """
 ```
-decompose(p :: Polynomial{true,T},  rkf :: Function)
+shd_decompose(p :: Polynomial{true,T},  rkf :: Function)
 ```
 Decompose the homogeneous polynomial ``p`` as ``∑ ω_i (ξ_{i1} x_1 + ... + ξ_{in} x_n)ᵈ `` where ``d`` is the degree of ``p``.
 
@@ -15,37 +18,51 @@ The optional argument `rkf` is the rank function used to determine the numerical
 
 If the rank function `cst_rkf(r)` is used, the SVD is truncated at rank r.
 """
-function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where C
+function shd_decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where C
     d  = deg(pol)
     X = variables(pol)
+    n = length(X)
     sigma = dual(pol,d)
 
-    B0 = monomials(X, d-1-div(d-1,2))
-    B1 = monomials(X, div(d-1,2))
+    d0 = div(d-1,2); d1 = d-1-d0
+    B0 = monomials(X, d0)
+    B1 = monomials(X, d1)
 
     H = Matrix{C}[]
     for x in X
         push!(H, hankel(sigma, B0, [b*x for b in B1]))
     end
     
-    Xi, X, Y = MultivariateSeries.decompose(H, rkf)
-    r = size(Xi,2)
-    n = size(Xi,1)
-    w = [Xi[1,i]*X[1,i]*Y[1,i] for i in 1:r]
+    lambda = randn(n); lambda /= norm(lambda)
+
+    Xi, Uxi, Vxi = MultivariateSeries.decompose(H, lambda, rkf)
+
+    n, r = size(Xi)
+
+    w0 = Uxi'*power_vec(d0,B0,lambda)
+    w1 = Vxi *power_vec(d1,B1,lambda)
+    w  = w0.*w1
+
+    # normalize the vectors Xi
     for i in 1:r
-        # w[i]*= norm(Xi[:,i]);  Xi[:,i] /= norm(Xi[:,i])
-        # wi  = Xi[1,i];
-        Xi[:,i] /= Xi[1,i]
-        # wi  *= X[1,i]
-        # wi  *= Y[1,i]
-        # w[i] = w
+        w[i] *= norm(Xi[:,i])^d;
+        Xi[:,i] /= norm(Xi[:,i])
     end
+
     return w, Xi
 end
 
+function shd_decompose(pol::Polynomial{true,C}, r::Int64) where {C}
+    return shd_decompose(pol, cst_rkf(r))
+end
+
+function shd_decompose(pol::Polynomial{true,C}, eps::Float64) where {C}
+    return shd_decompose(pol, eps_rkf(eps))
+end
 
 #----------------------------------------------------------------------
-function decompose_mat(pol::Polynomial{true,C}, d0 = div(maxdegree(pol)-1,2)) where C
+#----------------------------------------------------------------------
+function dec_mat(pol::Polynomial{true,C}, d0 = div(maxdegree(pol)-1,2)) where C
     d     = maxdegree(pol)
     X     = variables(pol)
     sigma = dual(pol,d)
@@ -57,7 +74,7 @@ function decompose_mat(pol::Polynomial{true,C}, d0 = div(maxdegree(pol)-1,2)) wh
     return H, B1
 end
 
-function decompose_red(H, rkf::Function=MultivariateSeries.eps_rkf(1.e-6))
+function dec_red(H, rkf::Function=MultivariateSeries.eps_rkf(1.e-6))
 
     U, S, V = svd(H)       # H0= U*diag(S)*V'
     r = rkf(S)
@@ -66,7 +83,7 @@ function decompose_red(H, rkf::Function=MultivariateSeries.eps_rkf(1.e-6))
     
 end
 
-function decompose_qrbasis(D, L, X)
+function dec_qrbasis(D, L, X)
 
     Idx = Dict{DynamicPolynomials.Monomial{true},Int64}()
     i = 1;
@@ -99,7 +116,7 @@ function decompose_qrbasis(D, L, X)
     B, F.Q'*D, Idx
 end
 
-function decompose_pencil(D, Idx, B, X)
+function dec_pencil(D, Idx, B, X)
     r = length(B)
 
     R = []
@@ -118,7 +135,7 @@ function decompose_pencil(D, Idx, B, X)
     R
 end
 
-function decompose_eigen(M)
+function dec_eigen(M)
     n = length(M)
     r = size(M[1],1)
     I0 = inv(M[1])
@@ -133,23 +150,23 @@ function decompose_eigen(M)
     Xi
 end
 
-function decompose_qr(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where C
+function qr_decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where C
 
     d = maxdegree(pol)
     X = variables(pol)
     d0 = div(d-1,2)
 
-    H, L = decompose_mat(pol, d0)
-    D    = decompose_red(H, rkf)
+    H, L = dec_mat(pol, d0)
+    D    = dec_red(H, rkf)
     
-    B, Rr, Idx = decompose_qrbasis(D, L, X)
+    B, Rr, Idx = dec_qrbasis(D, L, X)
     
-    H  = decompose_pencil(D, Idx, B, X)
+    H  = dec_pencil(D, Idx, B, X)
     
     I0 = inv(H[1])
     for i in 1:length(H) H[i]*= I0 end
     
-    Xi = decompose_eigen(H)
+    Xi = dec_eigen(H)
     w = weights(pol,Xi);
     w, Xi
 end
@@ -178,7 +195,7 @@ function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); mode=1) where 
         push!(H, selectdim(T,mode,i))
     end
 
-    A, B, C = MultivariateSeries.decompose(H, rkf)
+    A, B, C = MultivariateSeries.decompose(H, [1.0], rkf)
     r = size(A,2)
     w = fill(one(R),r)
 

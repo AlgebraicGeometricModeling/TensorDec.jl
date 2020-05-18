@@ -1,4 +1,5 @@
-export cnewton11, RNS_SHD, RNS_R, RNS_C
+export cnewton11, RNS, RNS_SHD, RNS_R, RNS_C
+
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
@@ -114,6 +115,61 @@ function rnewton_step(W::Vector, V::Matrix,P)
     end
 
     return W2,V1,Ge
+end
+
+
+function RNS(P, A0, B0, N::Int64=500)
+    d = maxdegree(P)
+    X = variables(P)
+    n=size(X,1)
+    r = length(A0) #A0, B0 = shd_decompose(P,r)
+    E=fill(0.0+0.0im,N*r)
+    F=fill(0.0+0.0im,n,N*r)
+    Ge=fill(0.0,N*(r+(2*n-1)*r))
+    A0+=fill(0.0im,r)
+    B0+=fill(0.0im,n,r)
+    P0=hpol(A0,B0,X,d)
+    d0=norm(P-P0)
+    C=op(A0,B0,P)
+    A1=fill(0.0+0.0im,r)
+    B1=fill(0.0+0.0im,n,r)
+    B1=B0
+    for i in 1:r
+        A1[i]=A0[i]*C[i]
+    end
+    P1=hpol(A1,B1,X,d)
+    d1=norm(P1-P)
+    for i in 1:r
+        y=abs(A1[i])
+        z=angle(A1[i])
+        A1[i]=y*norm(B1[:,i])^d
+        B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
+    end
+    E[1:r], F[1:n,1:r], Ge[1:r+(2n-1)*r] = rnewton_step(A1,B1,P)
+    W=fill(0.0+0.0im,r)
+    V=fill(0.0+0.0im,n,r)
+    i = 2
+    @time(while norm(Ge[(i-2)*(r+(2*n-1)*r)+1:(i-1)*(r+(2*n-1)*r)])>1.e-1 && i<N
+          E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r], Ge[(i-1)*(r+(2*n-1)*r)+1:i*(r+(2*n-1)*r)]=rnewton_step(E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+          W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
+          i += 1
+          end)
+    P4=hpol(W,V,X,d)
+    d2=norm(P4-P)
+    A=fill(0.0+0.0im,r)
+    B=fill(0.0+0.0im,n,r)
+    if d2<d1
+        A,B=W,V
+    else
+        A,B=A1,B1
+    end
+    P5=hpol(A,B,X,d)
+    d3=norm(P-P5)
+    println("N:",i)
+    println("dist0: ",d0)
+    println("dist*: ",d3)
+
+    return A,B
 end
 
 """

@@ -129,7 +129,7 @@ function RNS(P, A0, B0, N::Int64=500)
     A0+=fill(0.0im,r)
     B0+=fill(0.0im,n,r)
     P0=hpol(A0,B0,X,d)
-    d0=norm(P-P0)
+    d0=norm_apolar(P-P0)
     C=op(A0,B0,P)
     A1=fill(0.0+0.0im,r)
     B1=fill(0.0+0.0im,n,r)
@@ -138,7 +138,7 @@ function RNS(P, A0, B0, N::Int64=500)
         A1[i]=A0[i]*C[i]
     end
     P1=hpol(A1,B1,X,d)
-    d1=norm(P1-P)
+    d1=norm_apolar(P1-P)
     for i in 1:r
         y=abs(A1[i])
         z=angle(A1[i])
@@ -164,7 +164,7 @@ function RNS(P, A0, B0, N::Int64=500)
         A,B=A1,B1
     end
     P5=hpol(A,B,X,d)
-    d3=norm(P-P5)
+    d3=norm_apolar(P-P5)
     println("N:",i)
     println("dist0: ",d0)
     println("dist*: ",d3)
@@ -202,7 +202,7 @@ function rnewton_SHD_iter(P,r,N::Int64=500)
         A1[i]=A0[i]*C[i]
     end
     P1=hpol(A1,B1,X,d)
-    d1=norm(P1-P)
+    d1=norm_apolar(P1-P)
     for i in 1:r
         y=abs(A1[i])
         z=angle(A1[i])

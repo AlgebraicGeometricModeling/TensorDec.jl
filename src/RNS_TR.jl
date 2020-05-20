@@ -471,6 +471,7 @@ function RNS_TR(P, A0::Vector, B0::Matrix, N::Int64=500)
     end
     P5=tensor(A,B,X,d)
     d3=norm_apolar(P-P5)
+
     println("N:",i)
     println("dist0: ",d0)
     println("dist*: ",d3)

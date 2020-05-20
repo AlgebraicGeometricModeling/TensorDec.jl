@@ -412,9 +412,9 @@ end
 
 
 """
-    sym_SHD_iter(P, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
+    RNS_TR(P, W0, V0, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
 
-    Riemannian Newton loop with trust region starting from initial point W0, V0 chosen by the function decompose.
+    Riemannian Newton loop with trust region starting from initial point W0, V0.
 
     The default maximal number of iteration is N=500.
 
@@ -425,14 +425,14 @@ function RNS_TR(P, A0::Vector, B0::Matrix, N::Int64=500)
     d = maxdegree(P)
     X = variables(P)
     n=size(X,1)
-    #A0, B0 = shd_decompose(P,r)
+
     De=fill(0.0,N)
-    E=fill(0.0+0.0im,N*r)
-    F=fill(0.0+0.0im,n,N*r)
+    E=fill(0.0+0.0im,r)
+    F=fill(0.0+0.0im,n,r)
     A0+=fill(0.0im,r)
     B0+=fill(0.0im,n,r)
-    P0=hpol(A0,B0,X,d)
-    d0=norm(P-P0)
+    P0=tensor(A0,B0,X,d)
+    d0=norm_apolar(P-P0)
     C=op(A0,B0,P)
     A1=fill(0.0+0.0im,r)
     B1=fill(0.0+0.0im,n,r)
@@ -440,8 +440,9 @@ function RNS_TR(P, A0::Vector, B0::Matrix, N::Int64=500)
     for i in 1:r
         A1[i]=A0[i]*C[i]
     end
-    P1=hpol(A1,B1,X,d)
-    d1=norm(P1-P)
+    
+    P1=tensor(A1,B1,X,d)
+    d1=norm_apolar(P1-P)
     for i in 1:r
         y=abs(A1[i])
         z=angle(A1[i])
@@ -449,25 +450,27 @@ function RNS_TR(P, A0::Vector, B0::Matrix, N::Int64=500)
         B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
     end
     a0=Delta(P,A1)
-    De[1], E[1:r], F[1:n,1:r] = sym_step(a0,A1,B1,P)
-    W=fill(0.0+0.0im,r)
-    V=fill(0.0+0.0im,n,r)
+    De, E, F = sym_step(a0,A1,B1,P)
+
+    W = fill(0.0+0.0im,r)
+    V = fill(0.0+0.0im,n,r)
     i = 2
-    @time(while  i < N && De[i-1] > 1.e-3
-          De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=sym_step(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
-          W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
-          i += 1
-          end)
-    P4=hpol(W,V,X,d)
-    d2=norm(P4-P)
+    while  i < N && De > 1.e-3
+        De, E, F = sym_step(De,E,F,P)
+        W, V = E, F
+        i += 1
+    end
+    P4 = tensor(W,V,X,d)
+    d2 = norm_apolar(P4-P)
     A=fill(0.0+0.0im,r)
     B=fill(0.0+0.0im,n,r)
     if d2<d1
         A,B=W,V
-    else A,B=A1,B1
+    else
+        A,B=A1,B1
     end
-    P5=hpol(A,B,X,d)
-    d3=norm(P-P5)
+    P5=tensor(A,B,X,d)
+    d3=norm_apolar(P-P5)
     println("N:",i)
     println("dist0: ",d0)
     println("dist*: ",d3)

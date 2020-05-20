@@ -35,7 +35,7 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where 
     
     lambda = randn(n); lambda /= norm(lambda)
 
-    Xi, Uxi, Vxi = MultivariateSeries.ms_decompose(H, lambda, rkf)
+    Xi, Uxi, Vxi, Info = MultivariateSeries.ms_decompose(H, lambda, rkf)
 
     n, r = size(Xi)
 
@@ -49,7 +49,7 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where 
         Xi[:,i] /= norm(Xi[:,i])
     end
 
-    return w, Xi
+    return w, Xi, Info
 end
 
 function decompose(pol::Polynomial{true,C}, r::Int64) where {C}

@@ -412,21 +412,29 @@ end
 
 
 """
-    RNS_TR(P, W0, V0, r,N::Int64=500) ➡ gives symmetric decomposition W1, V1 of rank r.
+    RNS_TR(P, W0, V0, Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3) 
+  
+    ➡ gives symmetric decomposition W1, V1 of rank r = length(W0).
 
     Riemannian Newton loop with trust region starting from initial point W0, V0.
 
-    The default maximal number of iteration is N=500.
+    The default maximal number of iteration is N = 500.
 
-    r must be strictly lower than the subgeneric rank and the interpolation degree must be lower than (d-1)/2 where d is the degree of P.
+    r must be strictly lower than the generic rank and the interpolation degree must be lower than (d-1)/2 where d is the degree of P.
 """
-function RNS_TR(P, A0::Vector, B0::Matrix, N::Int64=500)
+function RNS_TR(P, A0::Vector, B0::Matrix,
+                Info = Dict(
+                    "maxIter" => 500,
+                    "epsIter" => 1.e-3))
     r = length(A0)
     d = maxdegree(P)
     X = variables(P)
     n=size(X,1)
 
-    De=fill(0.0,N)
+    N   = (haskey(Info,"maxIter") ? Info["maxIter"] : 500)
+    eps = (haskey(Info,"epsIter") ? Info["epsIter"] : 1.e-3)
+    
+    De=0.0 #fill(0.0,N)
     E=fill(0.0+0.0im,r)
     F=fill(0.0+0.0im,n,r)
     A0+=fill(0.0im,r)
@@ -455,7 +463,7 @@ function RNS_TR(P, A0::Vector, B0::Matrix, N::Int64=500)
     W = fill(0.0+0.0im,r)
     V = fill(0.0+0.0im,n,r)
     i = 2
-    while  i < N && De > 1.e-3
+    while  i < N && De > eps
         De, E, F = sym_step(De,E,F,P)
         W, V = E, F
         i += 1
@@ -472,9 +480,12 @@ function RNS_TR(P, A0::Vector, B0::Matrix, N::Int64=500)
     P5=tensor(A,B,X,d)
     d3=norm_apolar(P-P5)
 
-    println("N:",i)
-    println("dist0: ",d0)
-    println("dist*: ",d3)
-    
-    return A,B
+    Info["nIter"] = i
+    Info["d0"] = d0
+    Info["d*"] = d3
+    #println("N:",i)
+    #println("dist0: ",d0)
+    #println("dist*: ",d3)
+
+    return A,B, Info
 end

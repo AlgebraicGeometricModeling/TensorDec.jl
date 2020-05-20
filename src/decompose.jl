@@ -1,4 +1,4 @@
-export shd_decompose, qr_decompose, weights
+export decompose, qr_decompose, weights
 
 import LinearAlgebra: diagm
 
@@ -10,7 +10,7 @@ end
 #------------------------------------------------------------------------
 """
 ```
-shd_decompose(p :: Polynomial{true,T},  rkf :: Function)
+decompose(p :: Polynomial{true,T},  rkf :: Function)
 ```
 Decompose the homogeneous polynomial ``p`` as ``∑ ω_i (ξ_{i1} x_1 + ... + ξ_{in} x_n)ᵈ `` where ``d`` is the degree of ``p``.
 
@@ -18,7 +18,7 @@ The optional argument `rkf` is the rank function used to determine the numerical
 
 If the rank function `cst_rkf(r)` is used, the SVD is truncated at rank r.
 """
-function shd_decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where C
+function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where C
     d  = deg(pol)
     X = variables(pol)
     n = length(X)
@@ -35,7 +35,7 @@ function shd_decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) wh
     
     lambda = randn(n); lambda /= norm(lambda)
 
-    Xi, Uxi, Vxi = MultivariateSeries.decompose(H, lambda, rkf)
+    Xi, Uxi, Vxi = MultivariateSeries.ms_decompose(H, lambda, rkf)
 
     n, r = size(Xi)
 
@@ -52,12 +52,12 @@ function shd_decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) wh
     return w, Xi
 end
 
-function shd_decompose(pol::Polynomial{true,C}, r::Int64) where {C}
-    return shd_decompose(pol, cst_rkf(r))
+function decompose(pol::Polynomial{true,C}, r::Int64) where {C}
+    return decompose(pol, cst_rkf(r))
 end
 
-function shd_decompose(pol::Polynomial{true,C}, eps::Float64) where {C}
-    return shd_decompose(pol, eps_rkf(eps))
+function decompose(pol::Polynomial{true,C}, eps::Float64) where {C}
+    return decompose(pol, eps_rkf(eps))
 end
 
 #----------------------------------------------------------------------

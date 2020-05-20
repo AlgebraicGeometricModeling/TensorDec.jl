@@ -412,7 +412,7 @@ end
 
 
 """
-    RNS_TR(P, W0, V0, Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3) 
+    RNS_TR(P, W0, V0, Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3)) 
   
     ➡ gives symmetric decomposition W1, V1 of rank r = length(W0).
 
@@ -483,6 +483,7 @@ function RNS_TR(P, A0::Vector, B0::Matrix,
     Info["nIter"] = i
     Info["d0"] = d0
     Info["d*"] = d3
+
     #println("N:",i)
     #println("dist0: ",d0)
     #println("dist*: ",d3)

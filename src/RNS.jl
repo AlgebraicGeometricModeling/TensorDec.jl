@@ -1,4 +1,4 @@
-export cnewton11, RNS, RNS_SHD, RNS_R, RNS_C
+export cnewton11, RNS, RNS_R, RNS_C
 
 using LinearAlgebra
 using MultivariatePolynomials
@@ -357,4 +357,81 @@ function rnewton_C_iter(P,r,N::Int64=500)
     println("dist*: ",d3)
     
     return A,B
+end
+
+
+"""
+RNS(P, W0, V0, r, Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3)) 
+
+ ➡ gives symmetric decomposition W1, V1 of rank r.
+
+Riemannian Newton loop starting from initial point W0, V0 chosen by the function decompose.
+
+The default maximal number of iteration is N=500.
+
+r must be strictly lower than the subgeneric rank and the interpolation degree must be lower than (d-1)/2 where d is the degree of P.
+"""
+
+function RNS(P, A0, B0,
+             Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3) )
+
+    d = maxdegree(P)
+    X = variables(P)
+    n=size(X,1)
+    r = length(A0) #A0, B0 = shd_decompose(P,r)
+
+    N   = (haskey(Info,"maxIter") ? Info["maxIter"] : 500)
+    eps = (haskey(Info,"epsIter") ? Info["epsIter"] : 1.e-1)
+
+    E=fill(0.0+0.0im,N*r)
+    F=fill(0.0+0.0im,n,N*r)
+    Ge=fill(0.0,N*(r+(2*n-1)*r))
+    A0+=fill(0.0im,r)
+    B0+=fill(0.0im,n,r)
+    P0=tensor(A0,B0,X,d)
+    d0=norm_apolar(P-P0)
+
+    C=op(A0,B0,P)
+    A1=fill(0.0+0.0im,r)
+    B1=fill(0.0+0.0im,n,r)
+    B1=B0
+    for i in 1:r
+        A1[i]=A0[i]*C[i]
+    end
+    P1=tensor(A1,B1,X,d)
+    d1=norm_apolar(P1-P)
+
+    for i in 1:r
+        y=abs(A1[i])
+        z=angle(A1[i])
+        A1[i]=y*norm(B1[:,i])^d
+        B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
+    end
+    E[1:r], F[1:n,1:r], Ge[1:r+(2n-1)*r] = rnewton_step(A1,B1,P)
+    W=fill(0.0+0.0im,r)
+    V=fill(0.0+0.0im,n,r)
+    i = 2
+    while norm(Ge[(i-2)*(r+(2*n-1)*r)+1:(i-1)*(r+(2*n-1)*r)])>eps && i<N
+        E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r], Ge[(i-1)*(r+(2*n-1)*r)+1:i*(r+(2*n-1)*r)]=rnewton_step(E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+        W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
+        i += 1
+    end
+
+    P4=tensor(W,V,X,d)
+    d2=norm(P4-P)
+    A=fill(0.0+0.0im,r)
+    B=fill(0.0+0.0im,n,r)
+    if d2<d1
+        A,B=W,V
+    else
+        A,B=A1,B1
+    end
+    P5=tensor(A,B,X,d)
+    d3=norm_apolar(P-P5)
+
+    Info["nIter"] = i
+    Info["d0"] = d0
+    Info["d*"] = d3
+    
+    return A,B, Info
 end

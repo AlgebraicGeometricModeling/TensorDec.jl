@@ -1,14 +1,15 @@
-include("../src/weierstrass1.jl")
+include("../src/weierstrass.jl")
 include("../src/prelim.jl")
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
-W0=rand(ComplexF64,3)
-V0=rand(ComplexF64,3,3)
-V1=V0+1.e-1*rand(ComplexF64,3,3)
+W0=randn(ComplexF64,3)
+V0=randn(ComplexF64,3,3)
+V1=V0+1.e-1*randn(ComplexF64,3,3)
+W1=W0+1.e-1*randn(ComplexF64,3)
 X=@ring x0 x1 x2
 P0=hpol(W0,V0,X,5)
-P1=hpol(W0,V1,X,5)
+P1=hpol(W1,V1,X,5)
 println("d0:", norm(P1-P0))
 for i in 1:3
     W0[i]=W0[i]*(V0[1,i])^5

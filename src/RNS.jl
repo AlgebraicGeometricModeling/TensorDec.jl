@@ -90,8 +90,9 @@ M[r+1:r+n*r,r+1:r+r*(2*n-1)]=M1
 M[r+n*r+1:r+2*n*r,r+1:r+r*(2*n-1)]=M2
 Ge=M'*G
 He=M'*H*M
-Fe=pinv(He)
-N=-Fe*Ge
+#Fe=pinv(He)
+#N=-Fe*Ge
+N=-He\Ge
 N1=M*N
 W1=zeros(r)
 W1=N1[1:r]
@@ -252,13 +253,13 @@ function rnewton_SHED_iter(P,r,N::Int64=500)
             d = maxdegree(P)
             X = variables(P)
             n=size(X,1)
-            A0=rand(ComplexF64,r)
-            B0 =rand(ComplexF64,n,r)
+            A0=randn(ComplexF64,r)
+            B0 =randn(ComplexF64,n,r)
             E=fill(0.0+0.0im,N*r)
             F=fill(0.0+0.0im,n,N*r)
             Ge=fill(0.0,N*(r+(2*n-1)*r))
             P0=hpol(A0,B0,X,d)
-            d0=norm(P-P0)
+            d0=norm_apolar(P-P0)
             C=op(A0,B0,P)
             A1=fill(0.0+0.0im,r)
             B1=fill(0.0+0.0im,n,r)
@@ -267,7 +268,7 @@ function rnewton_SHED_iter(P,r,N::Int64=500)
                   A1[i]=A0[i]*C[i]
               end
                 P1=hpol(A1,B1,X,d)
-                d1=norm(P1-P)
+                d1=norm_apolar(P1-P)
                 for i in 1:r
                   y=abs(A1[i])
                   z=angle(A1[i])
@@ -284,7 +285,7 @@ function rnewton_SHED_iter(P,r,N::Int64=500)
                 i += 1
             end)
             P4=hpol(W,V,X,d)
-            d2=norm(P4-P)
+            d2=norm_apolar(P4-P)
             A=fill(0.0+0.0im,r)
             B=fill(0.0+0.0im,n,r)
             if d2<d1
@@ -292,9 +293,10 @@ function rnewton_SHED_iter(P,r,N::Int64=500)
             else A,B=A1,B1
             end
             P5=hpol(A,B,X,d)
-            d3=norm(P-P5)
+            d3=norm_apolar(P-P5)
             println("N:",i)
             println("dist0: ",d0)
+            println("dist1: ",d1)
             println("dist*: ",d3)
 
             return A,B

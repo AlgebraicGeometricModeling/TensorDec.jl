@@ -93,8 +93,9 @@ M[r+n*r+1:r+2*n*r,r+1:r+r*(2*n-1)]=M2
 Ge=M'*G
 He=M'*H*M
 N=zero(Ge)
-Fe=pinv(He)
-N=-Fe*Ge
+#Fe=pinv(He)
+#N=-Fe*Ge
+N=-He\Ge
 N1=M*N
 l1=Ge'*Ge
 l2=Ge'*He*Ge
@@ -178,7 +179,7 @@ S=M'*Ns
         A1+=fill(0.0im,r)
         B1+=fill(0.0im,n,r)
         P1 = hpol(A1,B1,X,d)
-        d1 = norm(P1-P)
+        d1 = norm_apolar(P1-P)
         for i in 1:r
             y=abs(A1[i])
             z=angle(A1[i])
@@ -191,6 +192,7 @@ S=M'*Ns
         E=fill(0.0+0.0im,N*r)
         F=fill(0.0+0.0im,n,N*r)
         De[1], E[1:r], F[1:n,1:r] = sym_step(a0,A1,B1,P)
+        De[1]=5555*De[1]
         W=fill(0.0+0.0im,r)
         V=fill(0.0+0.0im,n,r)
         i = 2
@@ -200,7 +202,7 @@ S=M'*Ns
               i += 1
               end)
         P4=hpol(W,V,X,d)
-        d2=norm(P4-P)
+        d2=norm_apolar(P4-P)
         A=fill(0.0+0.0im,r)
         B=fill(0.0+0.0im,n,r)
         if d2<d1
@@ -209,8 +211,9 @@ S=M'*Ns
             A,B=A1,B1
         end
         P5=hpol(A,B,X,d)
-        d3=norm(P-P5)
+        d3=norm_apolar(P-P5)
         println("N: ",i)
+        println("De: ",De[1])
         println("dist0: ",d1)
         println("dist*: ",d3)
 

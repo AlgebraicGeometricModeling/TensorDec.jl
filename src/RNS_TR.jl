@@ -94,8 +94,9 @@ function sym_step(delta, W::Vector, V::Matrix,P)
     Ge=M'*G
     He=M'*H*M
     N=zero(Ge)
-    Fe=pinv(He)
-    N=-Fe*Ge
+    #Fe=pinv(He)
+    #N=-Fe*Ge
+    N=-He\Ge
     N1=M*N
     l1=Ge'*Ge
     l2=Ge'*He*Ge
@@ -104,10 +105,10 @@ function sym_step(delta, W::Vector, V::Matrix,P)
     N2=M*N2
     xi=norm(N1)
     pi=norm(N2)
-    
+
     if xi <= delta
         Ns=N1
-        
+
     elseif xi > delta && pi >= delta
         Ns=-M*((delta/norm(Ge))*Ge)
     else
@@ -136,8 +137,8 @@ function sym_step(delta, W::Vector, V::Matrix,P)
         W2[i]=abs(a)
     end
     S=M'*Ns
-    w1=0.5*(norm(hpol(W,V,X,d)-P))^2
-    w2=0.5*(norm(hpol(W2,V1,X,d)-P))^2
+    w1=0.5*(norm_apolar(hpol(W,V,X,d)-P))^2
+    w2=0.5*(norm_apolar(hpol(W2,V1,X,d)-P))^2
     w3=w1+Ge'*S+0.5*S'*He*S
     r1=w1-w2
     r2=w1-w3
@@ -147,8 +148,8 @@ function sym_step(delta, W::Vector, V::Matrix,P)
     else
         op1,op2=W,V
     end
-    
-    al=0.5*(norm(P))
+
+    al=0.5*(norm_apolar(P))
     t=exp(-14*(ki-1/3))
     er=(1/3+(2/3)*(1/(1+t)))*delta
     if ki > 0.6
@@ -156,8 +157,8 @@ function sym_step(delta, W::Vector, V::Matrix,P)
     else
         delta=min(er,al)
     end
-    
-    
+
+
     delta,op1,op2
 end
 
@@ -180,7 +181,7 @@ function sym_iter(P, A1::Vector, B1::Matrix, N::Int64=500)
     A1+=fill(0.0im,r)
     B1+=fill(0.0im,n,r)
     P1 = hpol(A1,B1,X,d)
-    d1 = norm(P1-P)
+    d1 = norm_apolar(P1-P)
     for i in 1:r
         y=abs(A1[i])
         z=angle(A1[i])
@@ -188,7 +189,7 @@ function sym_iter(P, A1::Vector, B1::Matrix, N::Int64=500)
         B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
     end
     a0=Delta(P,A1)
-    
+
     De=fill(0.0,N)
     E=fill(0.0+0.0im,N*r)
     F=fill(0.0+0.0im,n,N*r)
@@ -202,7 +203,7 @@ function sym_iter(P, A1::Vector, B1::Matrix, N::Int64=500)
           i += 1
           end)
     P4=hpol(W,V,X,d)
-    d2=norm(P4-P)
+    d2=norm_apolar(P4-P)
     A=fill(0.0+0.0im,r)
     B=fill(0.0+0.0im,n,r)
     if d2<d1
@@ -211,11 +212,11 @@ function sym_iter(P, A1::Vector, B1::Matrix, N::Int64=500)
         A,B=A1,B1
     end
     P5=hpol(A,B,X,d)
-    d3=norm(P-P5)
+    d3=norm_apolar(P-P5)
     println("N: ",i)
     println("dist0: ",d1)
     println("dist*: ",d3)
-    
+
     return A,B
 end
 
@@ -239,7 +240,7 @@ function sym_SHD_iter(P,r,N::Int64=500)
     A0+=fill(0.0im,r)
     B0+=fill(0.0im,n,r)
     P0=hpol(A0,B0,X,d)
-    d0=norm(P-P0)
+    d0=norm_apolar(P-P0)
     C=op(A0,B0,P)
     A1=fill(0.0+0.0im,r)
     B1=fill(0.0+0.0im,n,r)
@@ -248,7 +249,7 @@ function sym_SHD_iter(P,r,N::Int64=500)
         A1[i]=A0[i]*C[i]
     end
     P1=hpol(A1,B1,X,d)
-    d1=norm(P1-P)
+    d1=norm_apolar(P1-P)
     for i in 1:r
         y=abs(A1[i])
         z=angle(A1[i])
@@ -266,7 +267,7 @@ function sym_SHD_iter(P,r,N::Int64=500)
           i += 1
           end)
     P4=hpol(W,V,X,d)
-    d2=norm(P4-P)
+    d2=norm_apolar(P4-P)
     A=fill(0.0+0.0im,r)
     B=fill(0.0+0.0im,n,r)
     if d2<d1
@@ -274,11 +275,11 @@ function sym_SHD_iter(P,r,N::Int64=500)
     else A,B=A1,B1
     end
     P5=hpol(A,B,X,d)
-    d3=norm(P-P5)
+    d3=norm_apolar(P-P5)
     println("N:",i)
     println("dist0: ",d0)
     println("dist*: ",d3)
-    
+
     return A,B
 end
 
@@ -304,7 +305,7 @@ function sym_R_iter(P,r,N::Int64=500)
     A0+=fill(0.0im,r)
     B0+=fill(0.0im,n,r)
     P0=hpol(A0,B0,X,d)
-    d0=norm(P-P0)
+    d0=norm_apolar(P-P0)
     C=op(A0,B0,P)
     A1=fill(0.0+0.0im,r)
     B1=fill(0.0+0.0im,n,r)
@@ -313,7 +314,7 @@ function sym_R_iter(P,r,N::Int64=500)
         A1[i]=A0[i]*C[i]
     end
     P1=hpol(A1,B1,X,d)
-    d1=norm(P1-P)
+    d1=norm_apolar(P1-P)
     for i in 1:r
         y=abs(A1[i])
         z=angle(A1[i])
@@ -331,7 +332,7 @@ function sym_R_iter(P,r,N::Int64=500)
           i += 1
           end)
     P4=hpol(W,V,X,d)
-    d2=norm(P4-P)
+    d2=norm_apolar(P4-P)
     A=fill(0.0+0.0im,r)
     B=fill(0.0+0.0im,n,r)
     if d2<d1
@@ -339,11 +340,11 @@ function sym_R_iter(P,r,N::Int64=500)
     else A,B=A1,B1
     end
     P5=hpol(A,B,X,d)
-    d3=norm(P-P5)
+    d3=norm_apolar(P-P5)
     println("N:",i)
     println("dist0: ",d0)
     println("dist*: ",d3)
-    
+
     return A,B
 end
 
@@ -366,7 +367,7 @@ function sym_C_iter(P,r,N::Int64=500)
     E=fill(0.0+0.0im,N*r)
     F=fill(0.0+0.0im,n,N*r)
     P0=hpol(A0,B0,X,d)
-    d0=norm(P-P0)
+    d0=norm_apolar(P-P0)
     C=op(A0,B0,P)
     A1=fill(0.0+0.0im,r)
     B1=fill(0.0+0.0im,n,r)
@@ -375,7 +376,7 @@ function sym_C_iter(P,r,N::Int64=500)
         A1[i]=A0[i]*C[i]
     end
     P1=hpol(A1,B1,X,d)
-    d1=norm(P1-P)
+    d1=norm_apolar(P1-P)
     for i in 1:r
         y=abs(A1[i])
         z=angle(A1[i])
@@ -393,7 +394,7 @@ function sym_C_iter(P,r,N::Int64=500)
           i += 1
           end)
     P4=hpol(W,V,X,d)
-    d2=norm(P4-P)
+    d2=norm_apolar(P4-P)
     A=fill(0.0+0.0im,r)
     B=fill(0.0+0.0im,n,r)
     if d2<d1
@@ -401,19 +402,19 @@ function sym_C_iter(P,r,N::Int64=500)
     else A,B=A1,B1
     end
     P5=hpol(A,B,X,d)
-    d3=norm(P-P5)
+    d3=norm_apolar(P-P5)
     println("N:",i)
     println("dist0: ",d0)
     println("dist*: ",d3)
-    
+
     return A,B
 end
 
 
 
 """
-    RNS_TR(P, W0, V0, Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3)) 
-  
+    RNS_TR(P, W0, V0, Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3))
+
     ➡ gives symmetric decomposition W1, V1 of rank r = length(W0).
 
     Riemannian Newton loop with trust region starting from initial point W0, V0.
@@ -433,7 +434,7 @@ function RNS_TR(P, A0::Vector, B0::Matrix,
 
     N   = (haskey(Info,"maxIter") ? Info["maxIter"] : 500)
     eps = (haskey(Info,"epsIter") ? Info["epsIter"] : 1.e-3)
-    
+
     De=0.0 #fill(0.0,N)
     E=fill(0.0+0.0im,r)
     F=fill(0.0+0.0im,n,r)
@@ -448,9 +449,12 @@ function RNS_TR(P, A0::Vector, B0::Matrix,
     for i in 1:r
         A1[i]=A0[i]*C[i]
     end
-    
+
     P1=tensor(A1,B1,X,d)
     d1=norm_apolar(P1-P)
+    if d0<d1
+        A1=A0
+    end
     for i in 1:r
         y=abs(A1[i])
         z=angle(A1[i])

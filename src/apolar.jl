@@ -87,7 +87,7 @@ apolarpro(P,Q) -> ComplexF64
 ```
 The apolar product of two homogeneous polynomials P=∑_{|α|=d} binom{d}{α} p_α x^α and
 Q=∑_{|α|=d} binom{d}{α} q_α  x^α, of degree d in n variables is given by
-⟨P,Q⟩_d=∑_{|α|=d} binom{d}{α}̅p_αq_α.
+⟨P,Q⟩_d=∑_{|α|=d} binom{d}{α}̅conj(p_α) q_α.
 
 
 Example
@@ -112,6 +112,7 @@ function apolarpro(P,Q)
     X=variables(P)
     n=size(X,1)
     d=maxdegree(P)
+    
     t1=terms(P)
     t2=terms(Q)
     s=size(t1,1)

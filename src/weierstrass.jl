@@ -25,6 +25,7 @@ function Vandermonde(A,B)
     end
     return V
 end
+
 function Weierstrass1(P,r,B,W,U)
     Y=variables(P)
     X=Y[2:end]

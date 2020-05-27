@@ -15,10 +15,12 @@ for i in 1:3
     W0[i]=W0[i]*(V0[1,i])^5
     V0[:,i]=(1/V0[1,i])*V0[:,i]
 end
-B = DynamicPolynomials.Monomial{true}[1, x1^2, x1*x2]
+
+B = DynamicPolynomials.Monomial{true}[1, x1, x2]
 w = [W0]
 A = [V0]
-for j in 1:500
+N = 50
+for j in 1:50
     nw, nA =  Weierstrass1(P1, 3, B, w[j], A[j])
     push!(w,nw)
     push!(A,nA)

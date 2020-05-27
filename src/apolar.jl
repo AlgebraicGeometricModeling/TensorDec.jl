@@ -1,4 +1,4 @@
-export hilbert, perp, apolarpro
+export hilbert, perp, apolarpro, norm_apolar
 
 import MultivariateSeries: hankel, dual
 """
@@ -126,4 +126,17 @@ function apolarpro(P,Q)
         t3=t3+dot(a1,a2)/alpha
     end
     return t3
+end
+
+function norm_apolar(P)
+    X=variables(P)
+    n=size(X,1)
+    d=maxdegree(P)
+
+    nrm=0.0
+    for t in terms(P)
+        c=coefficient(t)
+        nrm += abs(c)^2/binomial(d,exponents(t)) 
+    end
+    return sqrt(nrm)
 end

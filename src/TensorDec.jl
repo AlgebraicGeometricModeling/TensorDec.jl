@@ -22,7 +22,7 @@ include("decompose.jl")
 include("ahp.jl")
 include("prelim.jl")
 include("RNS.jl")
-include("TR_RNS.jl")
+include("RNS_TR.jl")
 include("symr.jl")
 include("weierstrass.jl")
 

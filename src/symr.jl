@@ -106,7 +106,7 @@ function symr_step(delta, W::Vector, A::Matrix, P)
     Mat[r+1:r+n*r,r+1:r+n*r]=Mat3
 
     H=Q'*Mat*Q
-    N1=-pinv(H)*G
+    N1=-H\G
     N1=Q*N1
     l1=G'*G
     l2=G'*H*G
@@ -183,11 +183,16 @@ P is a real homogeneous polynomial, r must be strictly lower than the subgeneric
 The default maximal number of iteration is N=500.
 
 """
-function symr_iter(P, A0, B0, N::Int64=500)
+function symr_iter(P, A0::Vector, B0::Matrix,
+                Info = Dict(
+                    "maxIter" => 500,
+                    "epsIter" => 1.e-3))
     d = maxdegree(P)
     X = variables(P)
     r=size(A0,1)
     n=size(X,1)
+    N   = (haskey(Info,"maxIter") ? Info["maxIter"] : 500)
+    eps = (haskey(Info,"epsIter") ? Info["epsIter"] : 1.e-3)
     De=fill(0.0,N)
     E=fill(0.0,N*r)
     F=fill(0.0,n,N*r)
@@ -230,11 +235,14 @@ function symr_iter(P, A0, B0, N::Int64=500)
     end
     P5=hpol(A,B,X,d)
     d3=norm_apolar(P-P5)
-    println("N:",i)
-    println("dist0: ",d0)
-    println("dist*: ",d3)
+    #println("N:",i)
+    #println("dist0: ",d0)
+    #println("dist*: ",d3)
+    Info["nIter"] = i
+    Info["d0"] = d0
+    Info["d*"] = d3
 
-    return A,B
+    return A,B,Info
 
 end
 

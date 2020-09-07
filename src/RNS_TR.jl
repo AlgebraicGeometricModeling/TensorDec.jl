@@ -426,14 +426,14 @@ end
 function RNS_TR(P, A0::Vector, B0::Matrix,
                 Info = Dict(
                     "maxIter" => 500,
-                    "epsIter" => 1.e-3))
+                    "epsIter" => 1.e-7))
     r = length(A0)
     d = maxdegree(P)
     X = variables(P)
     n=size(X,1)
 
     N   = (haskey(Info,"maxIter") ? Info["maxIter"] : 500)
-    eps = (haskey(Info,"epsIter") ? Info["epsIter"] : 1.e-3)
+    eps = (haskey(Info,"epsIter") ? Info["epsIter"] : 1.e-7)
 
     De=0.0 #fill(0.0,N)
     E=fill(0.0+0.0im,r)

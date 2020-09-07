@@ -86,6 +86,9 @@ end
 
 function solve(a::Float64,b::Float64,c::Float64)
     D=b^2-4*a*c
+    if D < 0
+        D = - D
+    end 
     x1=(-b+sqrt(D))/(2*a)
     x2=(-b-sqrt(D))/(2*a)
     if x1>=1 && x1<=2

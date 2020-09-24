@@ -425,8 +425,8 @@ end
 """
 function RNS_TR(P, A0::Vector, B0::Matrix,
                 Info = Dict(
-                    "maxIter" => 1000,
-                    "epsIter" => 1.e-7))
+                    "maxIter" => 500,
+                    "epsIter" => 1.e-3))
     r = length(A0)
     d = maxdegree(P)
     X = variables(P)

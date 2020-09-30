@@ -219,11 +219,11 @@ function symr_iter(P, A0::Vector, B0::Matrix,
     W=fill(0.0,r)
     V=fill(0.0,n,r)
     i = 2
-    @time(while  i < N && De[i-1] > 1.e-3
+    while  i < N && De[i-1] > 1.e-3
           De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=symr_step(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
           W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
           i += 1
-          end)
+     end
     P4=hpol(W,V,X,d)
     d2=norm_apolar(P4-P)
     A=fill(0.0,r)

@@ -1,4 +1,4 @@
-export sym_step_mat, RNS_TR_MAT
+export sym_step_mat, rns_tr_mat
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
@@ -184,7 +184,7 @@ end
 
 
 """
-    RNS_TR_MAT(P, W0, V0, Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3))
+    rns_tr_mat(P, W0, V0, Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3))
 
     ➡ gives symmetric decomposition W1, V1 of rank r = length(W0).
 
@@ -194,7 +194,7 @@ end
 
     r must be strictly lower than the generic rank and the interpolation degree must be lower than (d-1)/2 where d is the degree of P.
 """
-function RNS_TR_MAT(P, A0::Vector, B0::Matrix,
+function rns_tr_mat(P, A0::Vector, B0::Matrix,
                 Info = Dict(
                     "maxIter" => 500,
                     "epsIter" => 1.e-3))

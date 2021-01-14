@@ -1,10 +1,10 @@
-export sym_step_mat, RNS_TR_MAT 
+export sym_step_mat, RNS_TR_MAT
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
 
 """
-sym_step(delta, W, V, P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
+sym_step_mat(delta, W, V, P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
 
 Riemannian Newton method with trust region (one iteration) from initial point W, V.
 
@@ -184,7 +184,7 @@ end
 
 
 """
-    RNS_TR(P, W0, V0, Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3))
+    RNS_TR_MAT(P, W0, V0, Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3))
 
     ➡ gives symmetric decomposition W1, V1 of rank r = length(W0).
 

@@ -1,10 +1,10 @@
-export sym_step_mat, rns_tr_mat
+export trustcomplexsym, RNS_TR, TR_RNS_SHD, TR_RNS_R, TR_RNS_C
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
 
 """
-sym_step_mat(delta, W, V, P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
+sym_step2(delta, W, V, P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
 
 Riemannian Newton method with trust region (one iteration) from initial point W, V.
 
@@ -16,17 +16,16 @@ delta is the radius of the trust region
 
 """
 
-function sym_step_mat(delta, W::Vector, V::Matrix,P)
+function sym_step2(delta, W::Vector, V::Matrix,P)
     X=variables(P)
     r=size(W,1)
     n=size(X,1)
     d=maxdegree(P)
     c= typeof(V[1,1])
     G1=fill(0.0, r)
-    G2=fill(zero(c), n,r)
+    G2=fill(zero(c), n*r)
     A=fill(0.0, r, r)
     B=fill(zero(c), n*r, r)
-    B1=fill(0.0, 2*n*r,r)
     C=fill(zero(c), n*r, n*r)
     D=fill(zero(c), n*r, n*r)
     for j in 1:r
@@ -35,7 +34,7 @@ function sym_step_mat(delta, W::Vector, V::Matrix,P)
     for j in 1:r
         u=W[j]*conj(gradeval(P,X,conj(V[:,j])))
         a=0.5*(d*sum(W[j]*W[l]*(dot(V[:,l],V[:,j]))^(d-1)*conj(V[:,l]) for l in 1:r)-u)
-        G2[:,j]=a
+        G2[(j-1)*n+1:j*n]=a
     end
     for i in 1:r
         A[i,:]=[real((dot(V[:,i],V[:,j]))^d) for j in 1:r]
@@ -51,12 +50,6 @@ function sym_step_mat(delta, W::Vector, V::Matrix,P)
             end
         end
     end
-    for i in 1:r
-        for j in 1:r
-            B1[2*(i-1)*n+1:2*(i-1)*n+n,j]=2*real(B[(i-1)*n+1:i*n, j])
-            B1[2*(i-1)*n+n+1:2*(i-1)*n+2n,j]=-2*imag(B[(i-1)*n+1:i*n, j])
-        end
-    end
 
     for j in 1:r
         b=fill(zero(c), n, n)
@@ -70,53 +63,59 @@ function sym_step_mat(delta, W::Vector, V::Matrix,P)
             D[(i-1)*n+1:i*n,(j-1)*n+1:j*n]=0.5*(d*W[i]*W[j]*(dot(V[:,i],V[:,j]))^(d-2)*(dot(V[:,i],V[:,j])*Matrix(one(c)*I, n, n)+(d-1)*V[:,j]*V[:,i]'))
         end
     end
-    CD=fill(0.0,2*n*r,2*n*r)
-    for i in 1:r
-        for j in 1:r
-            CD[2*(i-1)*n+1:2*(i-1)*n+n,2*(i-1)*n+1:2*(i-1)*n+n]=
-        2*real(C[(i-1)*n+1:i*n,(j-1)*n+1:j*n]+D[(i-1)*n+1:i*n,(j-1)*n+1:j*n])
-            CD[2*(i-1)*n+1:2*(i-1)*n+n,2*(i-1)*n+n+1:2*(i-1)*n+2*n]=
-        -2*imag(C[(i-1)*n+1:i*n,(j-1)*n+1:j*n]+D[(i-1)*n+1:i*n,(j-1)*n+1:j*n])
-            CD[2*(i-1)*n+n+1:2*(i-1)*n+2*n,2*(i-1)*n+1:2*(i-1)*n+n]=
-        2*imag(-C[(i-1)*n+1:i*n,(j-1)*n+1:j*n]+D[(i-1)*n+1:i*n,(j-1)*n+1:j*n])
-            CD[2*(i-1)*n+n+1:2*(i-1)*n+2*n,2*(i-1)*n+n+1:2*(i-1)*n+2*n]=
-        2*real(-C[(i-1)*n+1:i*n,(j-1)*n+1:j*n]+D[(i-1)*n+1:i*n,(j-1)*n+1:j*n])
-        end
-    end
     G=zeros(r+2*n*r)
     H=zeros(r+2*n*r,r+2*n*r)
-    DEL=zeros(r+2*n*r,r+2*n*r)
-    H1=zeros(r+2*n*r,r+2*n*r)
     G[1:r]=G1
-    for i in 1:r
-    G[r+2*(i-1)*n+1:r+2*(i-1)*n+n]=2*real(G2[:,i])
-    G[r+2*(i-1)*n+n+1:r+2*(i-1)*n+2*n]=-2*imag(G2[:,i])
-    end
+    G[r+1:r+r*n]=2*real(G2)
+    G[r+r*n+1:r+2*r*n]=-2*imag(G2)
     H[1:r,1:r]=A
-    H[r+1:r+2*n*r,1:r]=B1
-    H[1:r,r+1:r+2*n*r]=B1'
-    H[r+1:r+2*n*r,r+1:r+2*n*r]=CD
-    for i in 1:r
-        v=zeros(2*n)
-        v[1:n]=real(V[:,i])
-        v[n+1:2*n]=imag(V[:,i])
-        je=G[r+2*(i-1)*n+1:r+2*(i-1)*n+2*n]
-        de=diagm(-dot(v,je)*ones(2*n))
-        DEL[r+2*(i-1)*n+1:r+2*(i-1)*n+2*n,r+2*(i-1)*n+1:r+2*(i-1)*n+2*n]=de
-    end
-    H1=H+DEL
+    H[1:r,r+1:r+n*r]=2*transpose(real(B))
+    H[1:r,r+n*r+1:r+2*n*r]=-2*transpose(imag(B))
+    H[r+1:r+n*r,1:r]=2*real(B)
+    H[r+1:r+n*r,r+1:r+n*r]=2*(real(C)+real(D))
+    H[r+1:r+n*r,r+n*r+1:r+2*n*r]=-2*(imag(C)+imag(D))
+    H[r+n*r+1:r+2*n*r,1:r]=-2*imag(B)
+    H[r+n*r+1:r+2*n*r,r+1:r+n*r]=2*(imag(D)-imag(C))
+    H[r+n*r+1:r+2*n*r,r+n*r+1:r+2*n*r]=2*(real(D)-real(C))
     M=zeros(r+2*n*r,r+r*(2*n-1))
-    M[1:r,1:r]=Matrix(1.0*I, r, r)
+    M1=zeros(n*r,r*(2*n-1))
+    M2=zeros(n*r,r*(2*n-1))
     for i in 1:r
         v=zeros(2*n)
         v[1:n]=real(V[:,i])
         v[n+1:2*n]=imag(V[:,i])
         q,s=qr(Matrix(1.0*I, 2*n, 2*n)-v*v',Val(true))
-        M[r+2*(i-1)*n+1:r+2*(i-1)*n+2*n,r+(2*n-1)*(i-1)+1:r+(2*n-1)*(i-1)+(2*n-1)]=q[1:2*n,1:2*n-1]
+        M1[(i-1)*n+1:i*n,(i-1)*(2*n-1)+1:i*(2*n-1)]=q[1:n,1:2*n-1]
+        M2[(i-1)*n+1:i*n,(i-1)*(2*n-1)+1:i*(2*n-1)]=q[n+1:2*n,1:2*n-1]
+    end
+    M[1:r,1:r]=Matrix(1.0*I, r, r)
+    M[r+1:r+n*r,r+1:r+r*(2*n-1)]=M1
+    M[r+n*r+1:r+2*n*r,r+1:r+r*(2*n-1)]=M2
 
+    #Weingarten term computation
+    #-----------------------------------------------------------------
+    GL=zeros(2*n,r)
+
+    for i in 1:r
+        GL[1:n,i]=G[r+(i-1)*n+1:r+(i-1)*n+n]
+        GL[n+1:2*n,i]=G[r+r*n+(i-1)*n+1:r+r*n+(i-1)*n+n]
     end
 
+    VR=zeros(2*n,r)
 
+    for i in 1:r
+        VR[1:n,i]=real(V[:,i])
+        VR[n+1:2*n,i]=imag(V[:,i])
+    end
+
+    VS=zeros(r+2*n*r)
+    for i in 1:r
+        VS[r+(i-1)*n+1:r+(i-1)*n+n]=dot(VR[:,i],GL[:,i])*ones(n)
+        VS[r+r*n+(i-1)*n+1:r+r*n+(i-1)*n+n]=dot(VR[:,i],GL[:,i])*ones(n)
+    end
+    DEL=-diagm(VS)
+    H1=H+DEL
+    #----------------------------------------------------------
     Ge=M'*G
     He=M'*H1*M
     N=zero(Ge)
@@ -146,14 +145,16 @@ function sym_step_mat(delta, W::Vector, V::Matrix,P)
     end
     W1=zeros(r)
     W1=Ns[1:r]
+    A=fill(0.0+0.0*im,n*r)
     B=fill(0.0+0.0*im, n, r)
+    A=Ns[r+1:r+n*r]+Ns[r+n*r+1:r+2*n*r]*im
     for i in 1:r
-        B[:,i]=Ns[r+2*(i-1)*n+1:r+2*(i-1)*n+n]+Ns[r+2*(i-1)*n+n+1:r+2*(i-1)*n+2*n]*im
+        B[:,i]=A[(i-1)*n+1:i*n]
     end
     W2=zeros(r)
     V1=fill(0.0+0.0*im, n, r)
-    W2=[abs(W[i]+W1[i]) for i in 1:r]
     for i in 1:r
+        W2[i]=abs(W[i]+W1[i])
         V1[:,i]=(V[:,i]+B[:,i])/(norm(V[:,i]+B[:,i]))
     end
     S=M'*Ns
@@ -181,10 +182,8 @@ function sym_step_mat(delta, W::Vector, V::Matrix,P)
 
     delta,op1,op2
 end
-
-
 """
-    rns_tr_mat(P, W0, V0, Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3))
+    rns_tr_mat2(P, W0, V0, Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3))
 
     ➡ gives symmetric decomposition W1, V1 of rank r = length(W0).
 
@@ -194,7 +193,7 @@ end
 
     r must be strictly lower than the generic rank and the interpolation degree must be lower than (d-1)/2 where d is the degree of P.
 """
-function rns_tr_mat(P, A0::Vector, B0::Matrix,
+function rns_tr_mat2(P, A0::Vector, B0::Matrix,
                 Info = Dict(
                     "maxIter" => 500,
                     "epsIter" => 1.e-3))
@@ -233,13 +232,13 @@ function rns_tr_mat(P, A0::Vector, B0::Matrix,
         B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
     end
     a0=Delta(P,A1)
-    De, E, F = sym_step_mat(a0,A1,B1,P)
+    De, E, F = sym_step2(a0,A1,B1,P)
 
     W = fill(0.0+0.0im,r)
     V = fill(0.0+0.0im,n,r)
     i = 2
     while  i < N && De > eps
-        De, E, F = sym_step_mat(De,E,F,P)
+        De, E, F = sym_step2(De,E,F,P)
         W, V = E, F
         i += 1
     end

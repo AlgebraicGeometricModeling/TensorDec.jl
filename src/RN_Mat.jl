@@ -1,22 +1,9 @@
-export trustcomplexsym, RNS_TR, TR_RNS_SHD, TR_RNS_R, TR_RNS_C
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
 
-"""
-sym_step2(delta, W, V, P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
 
-Riemannian Newton method with trust region (one iteration) from initial point W, V.
-
-W is a real positif vector and V is a complex matrix and its columns are normalized.
-
-r must be strictly lower than the subgeneric rank
-
-delta is the radius of the trust region
-
-"""
-
-function sym_step2(delta, W::Vector, V::Matrix,P)
+function rn_tr_mat_step(delta, W::Vector, V::Matrix,P)
     X=variables(P)
     r=size(W,1)
     n=size(X,1)
@@ -122,27 +109,28 @@ function sym_step2(delta, W::Vector, V::Matrix,P)
     #Fe=pinv(He)
     #N=-Fe*Ge
     N=-He\Ge
-    N1=M*N
+    #N1=M*N
     l1=Ge'*Ge
     l2=Ge'*He*Ge
     l=l1/l2
     N2=-l*Ge
-    N2=M*N2
-    xi=norm(N1)
+    #N2=M*N2
+    xi=norm(N)
     pi=norm(N2)
 
     if xi <= delta
-        Ns=N1
+        Ns=N
 
     elseif xi > delta && pi >= delta
-        Ns=-M*((delta/norm(Ge))*Ge)
+        Ns=-((delta/norm(Ge))*Ge)
     else
-        a1=(norm(N1-N2))^2
-        a2=2*(-(norm(N1))^2-2*(norm(N2))^2+3*dot(N1,N2))
-        a3=-delta^2+4*(norm(N2))^2-4*dot(N1,N2)+(norm(N1))^2
+        a1=(norm(N-N2))^2
+        a2=2*(-(norm(N))^2-2*(norm(N2))^2+3*dot(N,N2))
+        a3=-delta^2+4*(norm(N2))^2-4*dot(N,N2)+(norm(N))^2
         tau=solve(a1,a2,a3)
-        Ns=N2+(tau-1)*(N1-N2)
+        Ns=N2+(tau-1)*(N-N2)
     end
+    Ns=M*Ns
     W1=zeros(r)
     W1=Ns[1:r]
     A=fill(0.0+0.0*im,n*r)
@@ -154,9 +142,14 @@ function sym_step2(delta, W::Vector, V::Matrix,P)
     W2=zeros(r)
     V1=fill(0.0+0.0*im, n, r)
     for i in 1:r
-        W2[i]=abs(W[i]+W1[i])
+        W2[i]=W[i]+W1[i]
         V1[:,i]=(V[:,i]+B[:,i])/(norm(V[:,i]+B[:,i]))
+        if W2[i]<0
+            W2[i]=-W2[i]
+            V1[:,i]=exp((pi/d)*im)*V1[:,i]
+        end
     end
+
     S=M'*Ns
     w1=0.5*(norm_apolar(hpol(W,V,X,d)-P))^2
     w2=0.5*(norm_apolar(hpol(W2,V1,X,d)-P))^2
@@ -182,18 +175,8 @@ function sym_step2(delta, W::Vector, V::Matrix,P)
 
     delta,op1,op2
 end
-"""
-    rns_tr_mat2(P, W0, V0, Info = Dict( "maxIter" => 500, "epsIter" => 1.e-3))
 
-    ➡ gives symmetric decomposition W1, V1 of rank r = length(W0).
-
-    Riemannian Newton loop with trust region starting from initial point W0, V0.
-
-    The default maximal number of iteration is N = 500.
-
-    r must be strictly lower than the generic rank and the interpolation degree must be lower than (d-1)/2 where d is the degree of P.
-"""
-function rns_tr_mat2(P, A0::Vector, B0::Matrix,
+function rn_tr_mat(P, A0::Vector, B0::Matrix,
                 Info = Dict(
                     "maxIter" => 500,
                     "epsIter" => 1.e-3))
@@ -232,13 +215,13 @@ function rns_tr_mat2(P, A0::Vector, B0::Matrix,
         B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
     end
     a0=Delta(P,A1)
-    De, E, F = sym_step2(a0,A1,B1,P)
+    De, E, F = rn_tr_mat_step(a0,A1,B1,P)
 
     W = fill(0.0+0.0im,r)
     V = fill(0.0+0.0im,n,r)
     i = 2
     while  i < N && De > eps
-        De, E, F = sym_step2(De,E,F,P)
+        De, E, F = rn_tr_mat_step(De,E,F,P)
         W, V = E, F
         i += 1
     end

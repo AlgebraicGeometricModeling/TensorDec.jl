@@ -128,7 +128,7 @@ function rqn_tr_ver_step(delta,P,W,V)
        end
 
 
-       delta,op1,op2
+       delta,op1,op2,H
 
 end
 

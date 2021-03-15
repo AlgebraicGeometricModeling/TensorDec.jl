@@ -25,6 +25,7 @@ include("RNS.jl")
 include("RNS_TR.jl")
 include("RN_Mat.jl")
 include("RQN_Ver.jl")
+include("RQN_Ver_C.jl")
 include("symr.jl")
 include("weierstrass.jl")
 

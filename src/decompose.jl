@@ -188,7 +188,7 @@ decompose(T, eps_rkf(1.e-10), mode=3)
 ```
 """
 
-function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); mode=1) where R
+function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); mode=findmin(size(T))[2]) where R
 
     H = Matrix{R}[]
     for i in 1:size(T,mode)

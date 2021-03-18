@@ -62,7 +62,6 @@ function decompose(pol::Polynomial{true,C}, eps::Float64) where {C}
 end
 
 #----------------------------------------------------------------------
-#----------------------------------------------------------------------
 function dec_mat(pol::Polynomial{true,C}, d0 = div(maxdegree(pol)-1,2)) where C
     d     = maxdegree(pol)
     X     = variables(pol)
@@ -196,7 +195,9 @@ function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); mode=1) where 
         push!(H, selectdim(T,mode,i))
     end
 
-    A, B, C = MultivariateSeries.decompose(H, [1.0], rkf)
+    A, B, C = MultivariateSeries.ms_decompose(H, [1.0], rkf)
+    C = C'
+    
     r = size(A,2)
     w = fill(one(R),r)
 

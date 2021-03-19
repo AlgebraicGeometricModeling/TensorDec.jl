@@ -1,3 +1,4 @@
+export rn_tr_mat
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
@@ -177,9 +178,9 @@ function rn_tr_mat_step(delta, W::Vector, V::Matrix,P)
 end
 
 function rn_tr_mat(P, A0::Vector, B0::Matrix,
-                Info = Dict(
-                    "maxIter" => 500,
-                    "epsIter" => 1.e-3))
+                   Info = Dict(
+                       "maxIter" => 500,
+                       "epsIter" => 1.e-3))
     r = length(A0)
     d = maxdegree(P)
     X = variables(P)

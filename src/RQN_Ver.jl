@@ -1,3 +1,5 @@
+export rqn_tr_ver
+    
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
@@ -136,9 +138,9 @@ end
 
 
 function rqn_tr_ver(P, A0::Vector, B0::Matrix,
-                Info = Dict(
-                    "maxIter" => 500,
-                    "epsIter" => 1.e-3))
+                    Info = Dict(
+                        "maxIter" => 500,
+                        "epsIter" => 1.e-3))
     r = length(A0)
     d = maxdegree(P)
     X = variables(P)

@@ -33,7 +33,17 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where 
         push!(H, hankel(sigma, B0, [b*x for b in B1]))
     end
 
-    lambda = randn(n); lambda /= norm(lambda)
+    M = cat(H...; dims=2)
+    U,S,V = svd(M)
+    v = V[:,1]
+    s = size(H[1])[2]
+    lambda = zeros(n);    
+    for i in 1:n
+        lambda[i] = sum(v[(i-1)*s+1:i*s])
+    end
+    lambda /= norm(lambda)
+    
+    #lambda = randn(n); lambda /= norm(lambda)
 
     Xi, Uxi, Vxi, Info = MultivariateSeries.ms_decompose(H, lambda, rkf)
 

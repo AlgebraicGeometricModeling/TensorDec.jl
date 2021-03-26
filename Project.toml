@@ -1,7 +1,7 @@
 name = "TensorDec"
 uuid = "7072bc9d-1451-47b4-b0a6-486e8452399b"
 authors = ["mourrain <bernard.mourrain@inria.fr>"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 DynamicPolynomials = "7c1d4256-1411-5781-91ec-d7bc3513ac07"

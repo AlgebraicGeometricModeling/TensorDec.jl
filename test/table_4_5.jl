@@ -2,7 +2,7 @@
 #Nevertheless, for some examples of table 4 (in particular when the order of perturbation is less than 1.e-3 i.e. 1.e-4, 1.e-6);
 #we choose this criterion to be 1.e-7 to get relative errors factors less than 1.
 
-using DynamicPolynomials, TensorDec, MultivariateSeries,JuliaDB
+using DynamicPolynomials, MultivariateSeries,JuliaDB
 
 include("sym_tens_fct.jl")
 include("../src/RNE_N_TR.jl")

@@ -1,4 +1,4 @@
-using DynamicPolynomials, TensorDec, MultivariateSeries, JuliaDB
+using DynamicPolynomials, MultivariateSeries, JuliaDB
 
 include("sym_tens_fct.jl")
 include("spm.jl")

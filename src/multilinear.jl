@@ -1,4 +1,4 @@
-export tensor
+export tensor, multilinear, tensorsplit
 
 import LinearAlgebra: norm
 """
@@ -31,6 +31,25 @@ function tensor(w::Vector, A::AbstractMatrix, B::AbstractMatrix, C::AbstractMatr
 end
 
 """
+```
+multilinear(T, X, Y, Z) -> Polynomial{true,C}
+```
+Compute the multilinear polynomial ``T=(∑_{i,j,k} T[i,j,k]*X[i]*Y[j]*Z[k]``. 
+"""
+function multilinear(T::Array{C,3}, X::AbstractVector, Y::AbstractVector, Z::AbstractVector) where C
+    res = zero(Polynomial{true,C})
+    for i in 1:size(T,1)
+        for j in 1:size(T,2)
+            for k in 1:size(T,3)
+                res+= T[i,j,k]*X[i]*Y[j]*Z[k]
+            end
+        end
+    end
+    res     
+end
+
+
+"""
 L``^p`` norm of the coefficient of the tensor `T`. The default value of p is 2.
 """
 function LinearAlgebra.norm(T::Array{C,3}, p::Int64=2) where C
@@ -59,3 +78,20 @@ function LinearAlgebra.norm(T::Array{C,3}, Infiny::Float64) where C
     end
     return r
 end
+
+
+"""
+  Decompose V as ``u \\otimes v`` where u is of dimension n1 and v of dimension n2.
+
+  It is based on the svd decomposition of the ``n1 \\times n2`` matrix associated to `V`.
+"""
+function tensorsplit(V, n1::Int64, n2::Int64)
+
+    M = reshape(V,n2,n1)'
+    U,S,V =  svd(M)
+    u = U[:,1]
+    v = V[:,1]
+    w = S[1]
+    w, u, v
+end
+    

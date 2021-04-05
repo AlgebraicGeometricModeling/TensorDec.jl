@@ -1,5 +1,6 @@
-export decompose, qr_decompose, weights
+export decompose, decompose_qr, weights
 
+import MultivariateSeries: decompose
 import LinearAlgebra: diagm
 
 #------------------------------------------------------------------------
@@ -18,7 +19,7 @@ The optional argument `rkf` is the rank function used to determine the numerical
 
 If the rank function `cst_rkf(r)` is used, the SVD is truncated at rank r.
 """
-function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where C
+function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6), lbd = "Random"  ) where C
     d  = deg(pol)
     X = variables(pol)
     n = length(X)
@@ -33,9 +34,26 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where 
         push!(H, hankel(sigma, B0, [b*x for b in B1]))
     end
 
-    lambda = randn(n); lambda /= norm(lambda)
+    if lbd == "Random"
+        lambda = randn(n);
+    else
+        # Choose a specific lambda from the SVD of M = [H1; ... ;Hn]
+        M = cat(H...; dims=2)
+        U,S,V = svd(M)
+        v = V[:,1]
+        s = size(H[1])[2]
+        Lambda = zeros(size(M,2),n);    
+        for i in 1:n
+            Lambda[(i-1)*s+1:i*s] = fill(1.0,s)
+        end
+        lambda = Lambda\v
+    end
 
-    Xi, Uxi, Vxi, Info = MultivariateSeries.ms_decompose(H, lambda, rkf)
+    lambda /= norm(lambda)
+
+
+    # Simulatneous Diagonalisation of the pencil
+    Xi, Uxi, Vxi, Info = MultivariateSeries.decompose(H, lambda, rkf)
 
     n, r = size(Xi)
 
@@ -61,7 +79,6 @@ function decompose(pol::Polynomial{true,C}, eps::Float64) where {C}
     return decompose(pol, eps_rkf(eps))
 end
 
-#----------------------------------------------------------------------
 #----------------------------------------------------------------------
 function dec_mat(pol::Polynomial{true,C}, d0 = div(maxdegree(pol)-1,2)) where C
     d     = maxdegree(pol)
@@ -151,7 +168,7 @@ function dec_eigen(M)
     Xi
 end
 
-function qr_decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where C
+function decompose_qr(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where C
 
     d = maxdegree(pol)
     X = variables(pol)
@@ -188,8 +205,7 @@ decompose(T, mode=2)
 decompose(T, eps_rkf(1.e-10), mode=3)
 ```
 """
-
-function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); mode=1) where R
+function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); mode=findmin(size(T))[2]) where R
 
     H = Matrix{R}[]
     for i in 1:size(T,mode)
@@ -197,6 +213,8 @@ function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); mode=1) where 
     end
 
     A, B, C = MultivariateSeries.decompose(H, [1.0], rkf)
+    C = C'
+    
     r = size(A,2)
     w = fill(one(R),r)
 
@@ -266,3 +284,9 @@ end
 function normlz(M,i=1)
    M*diagm(0 => [1/M[i,j] for j in 1:size(M,2)])
 end
+
+#------------------------------------------------------------------------
+
+
+
+

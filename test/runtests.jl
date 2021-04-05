@@ -1,4 +1,4 @@
-include("tst0.jl")
-include("tst1.jl")
-include("tst2.jl")
-include("tst3.jl")
+include("test0.jl")
+include("test1.jl")
+include("test2.jl")
+include("test3.jl")

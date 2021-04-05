@@ -11,7 +11,7 @@ w0  = rand(r)
 
 sigma = series(w0, Xi0, L)
 
-w, Xi = decompose(sigma)
+w, Xi = ms_decompose(sigma)
 
 sigma1 = series(w, Xi, L)
 

@@ -59,3 +59,31 @@ function tensor(w::Vector{T}, Xi::Vector{AbstractMatrix{U}}, V::Vector, d::Vecto
     r = length(w)
     sum( w[i]*prod( dot(Xi[j][:,i],V[j])^d[j] for j in 1:length(d)) for i in 1:r)
 end
+
+
+"""
+```
+tensor(H, L1, L2) -> MultivariatePolynomial
+```
+Compute the symmetric tensor or homogeneous polynomial which Hankel matrix in the bases L1, L2 is H.
+"""
+function tensor(H::Array{C,2} , L1::AbstractVector{M}, L2::AbstractVector{M}) where {C, M}
+    res = zero(DynamicPolynomials.Polynomial{true,C})
+    dict = Dict{M,Bool}()
+    d = maxdegree(L1)+ maxdegree(L2)
+
+    i = 1
+    for m1  in L1
+        j=1
+        for m2 in L2
+            m = m1*m2
+            if !get(dict,m,false)
+	        res = res + H[i,j]*m*TensorDec.binomial(d,exponents(m))
+                dict[m]=true
+	    end
+            j+=1
+        end
+        i+=1
+    end
+   res
+end

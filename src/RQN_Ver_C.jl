@@ -1,10 +1,12 @@
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
-include("decompose.jl")
-include("ahp.jl")
-include("apolar.jl")
-include("prelim.jl")
+
+# include("decompose.jl")
+# include("ahp.jl")
+# include("apolar.jl")
+# include("prelim.jl")
+
 #Riemannian Gauss-Newton iteration on r-cartesian product of Veronese manifold.
 function rqn_ver_c_step(P,V)
     X=variables(P)

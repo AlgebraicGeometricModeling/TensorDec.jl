@@ -1,7 +1,6 @@
 export gradeval, hessianeval, hpol, op, Delta, solve
 using LinearAlgebra
 using MultivariatePolynomials
-using TensorDec
 using DynamicPolynomials
 """
 ```
@@ -54,8 +53,8 @@ This function solves the linear least square problem: 1/2 min_{α1,...,αr} ||�
 """
 
 function op(W::Vector, V::Matrix,P)
-    d=maxdegree(P)
     r=size(W,1)
+    d=maxdegree(P)
     A=fill(0.0+0.0im,r,r)
     B=fill(0.0+0.0im,r)
     for i in 1:r
@@ -78,7 +77,7 @@ function Delta(P,W::Vector)
     W0=real(W)
     r=size(W0,1)
     d=maxdegree(P)
-    delta1=(1/10)*sqrt((d/r)*sum(W0[i]^2 for i in 1:r))
+    delta1=(1/10)*sqrt((d/r)*sum(W0[i]^(2) for i in 1:r))
     delta2=(1/2)*(norm_apolar(P))
     delta=min(delta1,delta2)
 
@@ -86,7 +85,7 @@ end
 function Delta1(P,V::Matrix)
     r=size(V,2)
     d=maxdegree(P)
-    delta1=(1/10)*sqrt((d/r)*sum((norm(V[:,i]))^2 for i in 1:r))
+    delta1=(1/10)*sqrt((d/r)*sum((norm(V[:,i]))^(2*d) for i in 1:r))
     delta2=(1/2)*(norm_apolar(P))
     delta=min(delta1,delta2)
 

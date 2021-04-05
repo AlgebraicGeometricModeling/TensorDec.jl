@@ -18,10 +18,10 @@ function rqn_tr_ver_step(delta,P,W,V)
     r=size(W,1)
     n=size(X,1)
     d=maxdegree(P)
-    C=opt(W,V,P)
-    for i in 1:r
-        W[i]=W[i]*C[i]
-    end
+    #C=opt(W,V,P)
+    #for i in 1:r
+        #W[i]=W[i]*C[i]
+    #end
 
 
     #B=[v_1,u_1,1,...,u_1,n-1,...,v_r,u_r,1,...,u_r,n-1]
@@ -58,14 +58,14 @@ function rqn_tr_ver_step(delta,P,W,V)
        end
        end
        end
-       H1=Symmetric(A,:U)
-       H1=convert(Array,H1)
+       H=Symmetric(A,:U)
+       H=convert(Array,H)
        # solve Gauss-Newton equation
-       f=norm_apolar(hpol(W,V,X,d)-P)
-       S=10^(-1)*(f/norm_apolar(P))^(3/4)*norm(H1)
-       H=H1+S*Matrix(1.0*I, n*r, n*r)
+       #f=norm_apolar(hpol(W,V,X,d)-P)
+       #S=10^(-1)*(f/norm_apolar(P))^(3/4)*norm(H1)
+       #H=H1+S*Matrix(1.0*I, n*r, n*r)
        N=zeros(n*r)
-       N=-H\G
+       N=-pinv(H)*G
        #trust region
        l1=G'*G
        l2=G'*H*G
@@ -102,8 +102,8 @@ function rqn_tr_ver_step(delta,P,W,V)
            Q=(V[:,i]'*X)^(d-1)*((W[i]+W1[i])*(V[:,i]'*X)+sqrt(d)*tg)
            U=transpose(hankel(Q,1))
            u,s,v=svd(U)
-           W2[i]=Q(u[:,1])
-           V2[:,i]=u[:,1]
+           W2[i]=Q(u[:,1]*(sqrt(d)))
+           V2[:,i]=u[:,1]/(sqrt(d))
        end
        #Accept or reject solution W2,V2
        w1=0.5*(norm_apolar(hpol(W,V,X,d)-P))^2
@@ -128,7 +128,7 @@ function rqn_tr_ver_step(delta,P,W,V)
        end
 
 
-       delta,op1,op2,H
+       delta,op1,op2
 
 end
 
@@ -154,8 +154,8 @@ function rqn_tr_ver(P, A0::Vector, B0::Matrix,
     P0=tensor(A0,B0,X,d)
     d0=norm_apolar(P-P0)
     for i in 1:r
-        A0[i]=norm(B0[:,i])^d
-        B0[:,i]=(B0[:,i]/norm(B0[:,i]))
+        A0[i]=A0[i]*(sqrt(d)*norm(B0[:,i]))^d
+        B0[:,i]=B0[:,i]/(sqrt(d)*norm(B0[:,i]))
     end
 
 

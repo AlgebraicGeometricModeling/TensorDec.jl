@@ -108,7 +108,7 @@ function rn_tr_mat_step(delta, W::Vector, V::Matrix,P)
     N=zero(Ge)
     #Fe=pinv(He)
     #N=-Fe*Ge
-    N=-He\Ge
+    N=-pinv(He)*Ge
     #N1=M*N
     l1=Ge'*Ge
     l2=Ge'*He*Ge

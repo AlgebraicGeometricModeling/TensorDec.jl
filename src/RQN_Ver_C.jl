@@ -134,7 +134,9 @@ function rqn_tr_ver_c_step(delta,V,P)
         end
     end
     #solve Gauss-Newton equation
+
     N1=-pinv(H)*G
+
     l1=G'*G
     l2=G'*H*G
     l=l1/l2
@@ -181,7 +183,7 @@ function rqn_tr_ver_c_step(delta,V,P)
     if ki>=0.2
         sol=V2
     else
-        sol=V1
+        sol=V
     end
 #update trut region radius
     al=0.5*(norm_apolar(P))

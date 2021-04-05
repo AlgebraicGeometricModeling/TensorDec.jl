@@ -17,13 +17,10 @@ include("decompose.jl")
 
 include("ahp.jl")
 include("prelim.jl")
-include("RNS.jl")
-include("RNS_TR.jl")
-include("RN_Mat.jl")
-include("RQN_Ver.jl")
-include("RQN_Ver_C.jl")
+include("RNE_N_TR.jl")
+include("RGN_V_TR.jl")
 include("symr.jl")
 
-include("weierstrass.jl")
+
 
 end # module

@@ -1,6 +1,10 @@
 using DynamicPolynomials, MultivariateSeries
 include("sym_tens_fct.jl")
 include("../src/RNE_N_TR.jl")
+include("../src/apolar.jl")
+include("../src/decompose.jl")
+include("../src/multilinear.jl")
+include("../src/prelim.jl")
 
 function tst_ex51(n)
 d=3

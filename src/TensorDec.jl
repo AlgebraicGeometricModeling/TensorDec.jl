@@ -13,8 +13,6 @@ include("multilinear.jl")
 include("apolar.jl")
 include("decompose.jl")
 
-#include("newton.jl")
-
 include("ahp.jl")
 include("prelim.jl")
 include("RNS.jl")
@@ -24,6 +22,6 @@ include("RQN_Ver.jl")
 include("RQN_Ver_C.jl")
 include("symr.jl")
 
-include("weierstrass.jl")
+#include("weierstrass.jl")
 
 end # module

@@ -5,7 +5,7 @@ n = length(X)
 
 d = 3
 
-r0 = 6
+r0 = 3
 w  = randn(r0)
 Xi = randn(n,r0)
 
@@ -22,3 +22,10 @@ w2, V2, I = approximate(T0, r; mthd = :RNE)
 
 T2 = tensor(w2,V2,X,d)
 println("T2: ",norm(T0-T2))
+
+
+
+w3, V3, I = approximate(T0, r; mthd = :SPM)
+
+T3 = tensor(w3,V3,X,d)
+println("T3: ",norm(T0-T3))

@@ -1,5 +1,4 @@
 using MultivariateSeries, DynamicPolynomials, LinearAlgebra
-include("../src/multilinear.jl")
 
 function normalize!(Xi::Matrix)
     for i in 1:size(Xi,2)

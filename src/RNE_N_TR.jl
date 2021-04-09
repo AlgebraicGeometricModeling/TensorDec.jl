@@ -1,10 +1,10 @@
-export rn_tr_mat
+export rne_n_tr
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
 
 
-function rn_tr_mat_step(delta, W::Vector, V::Matrix,P)
+function rne_n_tr_step(delta, W::Vector, V::Matrix,P)
     X=variables(P)
     r=size(W,1)
     n=size(X,1)
@@ -109,7 +109,7 @@ function rn_tr_mat_step(delta, W::Vector, V::Matrix,P)
     N=zero(Ge)
     #Fe=pinv(He)
     #N=-Fe*Ge
-    N=-He\Ge
+    N=-pinv(He)*Ge
     #N1=M*N
     l1=Ge'*Ge
     l2=Ge'*He*Ge
@@ -177,7 +177,7 @@ function rn_tr_mat_step(delta, W::Vector, V::Matrix,P)
     delta,op1,op2
 end
 
-function rn_tr_mat(P, A0::Vector, B0::Matrix,
+function rne_n_tr(P, A0::Vector, B0::Matrix,
                    Info = Dict(
                        "maxIter" => 500,
                        "epsIter" => 1.e-3))
@@ -216,13 +216,13 @@ function rn_tr_mat(P, A0::Vector, B0::Matrix,
         B1[:,i]=exp((z/d)*im)*(B1[:,i]/norm(B1[:,i]))
     end
     a0=Delta(P,A1)
-    De, E, F = rn_tr_mat_step(a0,A1,B1,P)
+    De, E, F = rne_n_tr_step(a0,A1,B1,P)
 
     W = fill(0.0+0.0im,r)
     V = fill(0.0+0.0im,n,r)
     i = 2
     while  i < N && De > eps
-        De, E, F = rn_tr_mat_step(De,E,F,P)
+        De, E, F = rne_n_tr_step(De,E,F,P)
         W, V = E, F
         i += 1
     end

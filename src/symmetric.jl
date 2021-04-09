@@ -1,4 +1,7 @@
+import Base: binomial
+
 export tensor
+
 
 function Base.binomial(d, alpha::Vector{Int64})
   r = binomial(d, alpha[1])

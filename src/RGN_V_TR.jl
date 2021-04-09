@@ -2,13 +2,10 @@ using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
 
-# include("decompose.jl")
-# include("ahp.jl")
-# include("apolar.jl")
-# include("prelim.jl")
+export rgn_v_tr
 
 #Riemannian Gauss-Newton iteration on r-cartesian product of Veronese manifold.
-function rqn_ver_c_step(P,V)
+function rgn_v_step(P,V)
     X=variables(P)
     r=size(V,2)
     n=size(V,1)
@@ -82,7 +79,7 @@ function rqn_ver_c_step(P,V)
 end
 
 #Riemannian Gauss-Newton with trust region iteration on r-cartesian product of Veronese manifold.
-function rqn_tr_ver_c_step(delta,V,P)
+function rgn_v_tr_step(delta,V,P)
     X=variables(P)
     n=size(V,1)
     r=size(V,2)
@@ -136,7 +133,9 @@ function rqn_tr_ver_c_step(delta,V,P)
         end
     end
     #solve Gauss-Newton equation
+
     N1=-pinv(H)*G
+
     l1=G'*G
     l2=G'*H*G
     l=l1/l2
@@ -183,7 +182,7 @@ function rqn_tr_ver_c_step(delta,V,P)
     if ki>=0.2
         sol=V2
     else
-        sol=V1
+        sol=V
     end
 #update trut region radius
     al=0.5*(norm_apolar(P))
@@ -200,11 +199,12 @@ function rqn_tr_ver_c_step(delta,V,P)
 
     end
 
-    #loop RGN with trust region
-    function rqn_tr_ver_c(P, B0,
-                    Info = Dict(
-                        "maxIter" => 500,
-                        "epsIter" => 1.e-3))
+#loop RGN with trust region
+function rgn_v_tr(P, B0,
+                  Info = Dict(
+                      "maxIter" => 500,
+                      "epsIter" => 1.e-3))
+    
         r = size(B0,2)
         d = maxdegree(P)
         X = variables(P)
@@ -219,13 +219,12 @@ function rqn_tr_ver_c_step(delta,V,P)
         P0=sum((transpose(B0[:,i])*X)^d for i in 1:r)
         d0=norm_apolar(P-P0)
         a0=Delta1(P,B0)
-        De, F = rqn_tr_ver_c_step(a0,B0,P)
-
+        De, F = rgn_v_tr_step(a0,B0,P)
 
         V = zeros(ComplexF64,n,r)
         i = 2
         while  i < N && De > eps
-            De, F = rqn_tr_ver_c_step(De,F,P)
+            De, F = rgn_v_tr_step(De,F,P)
             V = F
             i += 1
         end
@@ -245,4 +244,6 @@ function rqn_tr_ver_c_step(delta,V,P)
         Info["d*"] = d3
 
         return B, Info
-    end
+end
+
+

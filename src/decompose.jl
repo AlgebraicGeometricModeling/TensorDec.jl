@@ -19,7 +19,7 @@ The optional argument `rkf` is the rank function used to determine the numerical
 
 If the rank function `cst_rkf(r)` is used, the SVD is truncated at rank r.
 """
-function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6), lbd = "Random"  ) where C
+function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6), lbd = :Random  ) where C
     d  = deg(pol)
     X = variables(pol)
     n = length(X)
@@ -34,7 +34,7 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6), lbd = 
         push!(H, hankel(sigma, B0, [b*x for b in B1]))
     end
 
-    if lbd == "Random"
+    if lbd == :Random
         lambda = randn(n);
     else
         # Choose a specific lambda from the SVD of M = [H1; ... ;Hn]

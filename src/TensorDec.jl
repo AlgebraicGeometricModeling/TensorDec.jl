@@ -12,7 +12,6 @@ include("symmetric.jl")
 include("multilinear.jl")
 include("apolar.jl")
 include("decompose.jl")
-
 include("approximate.jl")
 
 end # module

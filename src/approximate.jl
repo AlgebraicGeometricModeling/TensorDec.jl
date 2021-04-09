@@ -7,9 +7,15 @@ include("spm.jl")
 
 export approximate
 
-function approximate(P, r:: Int64; mthd = :RNE)
+function approximate(P, r:: Int64; mthd = :RNE, sdm = :Random)
 
-    w0, V0, Info = decompose(P,r)
+    if mthd == :SPM
+        V0 = randn(length(variables(P)))
+        return spm_decompose(P,r,V0)
+    end
+
+    
+    w0, V0, Info = decompose(P,cst_rkf(r), sdm)
     d = maxdegree(P)
 
     if mthd == :RNE
@@ -21,8 +27,5 @@ function approximate(P, r:: Int64; mthd = :RNE)
         end
         w1 = fill(1.,r)
         return w1, rgn_v_tr(P,C0)...
-    elseif mthd == :SPM
-        V0 = randn(length(variables(P)))
-        return spm_decompose(P,r,V0)
     end
 end

@@ -8,7 +8,7 @@ end
 
 function trk_svd(H,r)
     U,S,V = svd(H)
-    println("Svd: ", S)
+    # println("Svd: ", S)
     return U[:,1:r], S[1:r], V[:,1:r]
 end
 
@@ -64,7 +64,7 @@ function spm_loop!(Ur, Sr, Vr, L,  r, v, X, Info)
         u0 = u1
         i+=1
     end
-    println("nit: ",i,"   eps: ", delta)
+    # println("nit: ",i,"   eps: ", delta)
     push!(Info["nIter"], i)
     return conj(u0)
 end

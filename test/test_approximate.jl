@@ -1,7 +1,7 @@
 using LinearAlgebra, MultivariateSeries, DynamicPolynomials, TensorDec
 
-X = @polyvar x y z t 
-n = length(X)
+n = 4 
+X = (@polyvar x[1:n])[1]
 
 d = 3
 
@@ -19,7 +19,7 @@ T1r = tensor(w1r,V1r,X,d)
 println("RGNr: ",norm(T0-T1r))
 
 
-w1, V1, I = approximate(T0, r; mthd = :RGN, sdm = :NR)
+w1, V1, I = approximate(T0, r; mthd = :RGN, sdm = :NRnd)
 T1 = tensor(w1,V1,X,d)
 println("RGNn: ",norm(T0-T1))
 
@@ -27,7 +27,7 @@ w2r, V2r, I = approximate(T0, r; mthd = :RNE)
 T2r = tensor(w2r,V2r,X,d)
 println("RNEr: ",norm(T0-T2r))
 
-w2, V2, I = approximate(T0, r; mthd = :RNE, sdm = :NR)
+w2, V2, I = approximate(T0, r; mthd = :RNE, sdm = :NRnd)
 T2 = tensor(w2,V2,X,d)
 println("RNEn: ",norm(T0-T2))
 

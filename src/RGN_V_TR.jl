@@ -2,8 +2,7 @@ using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
 
-include("prelim.jl")
-include("apolar.jl")
+export rgn_v_tr
 
 #Riemannian Gauss-Newton iteration on r-cartesian product of Veronese manifold.
 function rgn_v_step(P,V)
@@ -200,11 +199,12 @@ function rgn_v_tr_step(delta,V,P)
 
     end
 
-    #loop RGN with trust region
-    function rgn_v_tr(P, B0,
-                    Info = Dict(
-                        "maxIter" => 500,
-                        "epsIter" => 1.e-3))
+#loop RGN with trust region
+function rgn_v_tr(P, B0,
+                  Info = Dict(
+                      "maxIter" => 500,
+                      "epsIter" => 1.e-3))
+
         r = size(B0,2)
         d = maxdegree(P)
         X = variables(P)
@@ -220,7 +220,6 @@ function rgn_v_tr_step(delta,V,P)
         d0=norm_apolar(P-P0)
         a0=Delta1(P,B0)
         De, F = rgn_v_tr_step(a0,B0,P)
-
 
         V = zeros(ComplexF64,n,r)
         i = 2
@@ -245,4 +244,4 @@ function rgn_v_tr_step(delta,V,P)
         Info["d*"] = d3
 
         return B, Info
-    end
+end

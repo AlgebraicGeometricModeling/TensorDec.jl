@@ -1,4 +1,9 @@
+using MultivariateSeries
+
+import Base: binomial
 export tensor
+
+
 
 function Base.binomial(d, alpha::Vector{Int64})
   r = binomial(d, alpha[1])
@@ -9,7 +14,7 @@ function Base.binomial(d, alpha::Vector{Int64})
   r
 end
 
-
+ 
 """
 ```
 tensor(w, Xi, V, d) -> Polynomial{true,T} 
@@ -86,4 +91,27 @@ function tensor(H::Array{C,2} , L1::AbstractVector{M}, L2::AbstractVector{M}) wh
         i+=1
     end
    res
+end
+
+
+
+function _monomial(X, E)
+    prod(X[i]^E[i] for i in 1:length(E))
+end
+
+"""
+```
+tensor(s, X, d) -> MultivariatePolynomial
+```
+Compute the symmetric tensor or homogeneous polynomial in the variables `X` corresponding to the series s.
+The coefficients ``s_{\\alpha}`` of are multiplied by ``binomial(d,\\alpha)``. The monomials are homogenised in degree d with respect to the **last variable** of X0.
+"""
+function tensor(s::MultivariateSeries.Series{T}, X, d = maxdegree(s)) where {T}
+    P = zero(Polynomial{true,T})
+    for (m,c) in s
+        alpha = exponent(m)
+        alpha = cat(alpha,[d-sum(alpha)]; dims =1)
+        P += c*binomial(d, alpha)*_monomial(X,alpha)
+    end
+    return P
 end

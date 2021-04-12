@@ -200,6 +200,7 @@ function rne_n_tr(P, A0::Vector, B0::Matrix,
     A1=fill(0.0+0.0im,r)
     B1=fill(0.0+0.0im,n,r)
     B1=B0
+
     for i in 1:r
         A1[i]=A0[i]*C[i]
     end

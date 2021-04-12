@@ -1,4 +1,4 @@
-export opt, symr_step, symr_iter
+export opt, rne_n_tr_r_step, rne_n_tr_r
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
@@ -27,7 +27,7 @@ end
 
 
 """
-symr_step(delta, W::Vector, V::Matrix,P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
+rne_n_tr_r_step(delta, W::Vector, V::Matrix,P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
 
 Riemannian Newton method with trust region (one iteration) from real initial point W, V.
 
@@ -36,7 +36,7 @@ W is a real vector and V is a real matrix and its columns are normalized.
 delta is the radius of the sphere i.e. the trust region.
 
 """
-function symr_step(delta, W::Vector, A::Matrix, P)
+function rne_n_tr_r_step(delta, W::Vector, A::Matrix, P)
     r=size(W,1)
     n=size(A,1)
     d=maxdegree(P)
@@ -104,7 +104,17 @@ function symr_step(delta, W::Vector, A::Matrix, P)
     Mat[1:r,r+1:r+n*r]=Mat2
     Mat[r+1:r+n*r,1:r]=Mat2'
     Mat[r+1:r+n*r,r+1:r+n*r]=Mat3
+    GL=zeros(n,r)
 
+    for i in 1:r
+        GL[1:n,i]=M3[r+(i-1)*n+1:r+(i-1)*n+n]
+    end
+    VS=zeros(r+n*r)
+    for i in 1:r
+        VS[r+(i-1)*n+1:r+(i-1)*n+n]=dot(A[:,i],GL[:,i])*ones(n)
+    end
+    DEL=-diagm(VS)
+    Mat+=DEL
     H=Q'*Mat*Q
     N1=-H\G
     N1=Q*N1
@@ -138,12 +148,14 @@ function symr_step(delta, W::Vector, A::Matrix, P)
     A2=zeros(n, r)
 
     for i in 1:r
-        tg=(W1[i]+W[i])*(transpose(A[:,i])*X)^d+d*W[i]*(((transpose(A[:,i])*X)^(d-1))*(transpose(A1[:,i])*X))
+        #tg=(W1[i]+W[i])*(transpose(A[:,i])*X)^d+d*W[i]*(((transpose(A[:,i])*X)^(d-1))*(transpose(A1[:,i])*X))
         #println(tg)
-        V=transpose(hankel(tg,1))
-        u,s,v=svd(V)
-        A2[:,i]=u[:,1]
-        W2[i]=(W1[i]+W[i])*(dot(A2[:,i],A[:,i]))^d+d*W[i]*((dot(A2[:,i],A[:,i]))^(d-1))*(dot(A2[:,i],A1[:,i]))
+        #V=transpose(hankel(tg,1))
+        #u,s,v=svd(V)
+        #A2[:,i]=u[:,1]
+        #W2[i]=(W1[i]+W[i])*(dot(A2[:,i],A[:,i]))^d+d*W[i]*((dot(A2[:,i],A[:,i]))^(d-1))*(dot(A2[:,i],A1[:,i]))
+        W2[i]=W1[i]+W[i]
+        A2[:,i]=(A[:,i]+A1[:,i])/(norm(A[:,i]+A1[:,i]))
     end
     S=Q'*Ns
     w1=0.5*(norm_apolar(hpol(W,A,X,d)-P))^2
@@ -172,7 +184,7 @@ end
 
 
 """
-symr_iter(P, A0, B0, N::Int64=500) ➡ symmetric decomposition of rank r=size(A0,1).
+rne_n_tr_r(P, A0, B0, N::Int64=500) ➡ symmetric decomposition of rank r=size(A0,1).
 
 Riemannian Newton loop with trust region from real initial point A0, B0.
 
@@ -183,7 +195,7 @@ P is a real homogeneous polynomial, r must be strictly lower than the subgeneric
 The default maximal number of iteration is N=500.
 
 """
-function symr_iter(P, A0::Vector, B0::Matrix,
+function rne_n_tr_r(P, A0::Vector, B0::Matrix,
                 Info = Dict(
                     "maxIter" => 500,
                     "epsIter" => 1.e-3))
@@ -215,12 +227,12 @@ function symr_iter(P, A0::Vector, B0::Matrix,
         B1[:,i]=B1[:,i]/norm(B1[:,i])
     end
     a0=Delta(P,A1)
-    De[1], E[1:r], F[1:n,1:r] = symr_step(a0,A1,B1,P)
+    De[1], E[1:r], F[1:n,1:r] = rne_n_tr_r_step(a0,A1,B1,P)
     W=fill(0.0,r)
     V=fill(0.0,n,r)
     i = 2
     while  i < N && De[i-1] > 1.e-3
-          De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=symr_step(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
+          De[i], E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]=rne_n_tr_r_step(De[i-1],E[(i-2)*r+1:(i-1)*r],F[1:n,(i-2)*r+1:(i-1)*r],P)
           W,V=E[(i-1)*r+1:i*r], F[1:n,(i-1)*r+1:i*r]
           i += 1
      end
@@ -247,7 +259,7 @@ function symr_iter(P, A0::Vector, B0::Matrix,
 end
 
 """
-symr_iter(P,r,N) ➡ symmetric decomposition of rank r.
+rne_n_tr_r(P,r,N) ➡ symmetric decomposition of rank r.
 
 Riemannian Newton loop with trust region from random real initial point W, V.
 
@@ -255,7 +267,7 @@ P is a real homogeneous polynomial, r must be strictly lower than the subgeneric
 
 The default maximal number of iteration is N=500.
 """
-function symr_iter(P, r::Int64, N::Int64=500)
+function rne_n_tr_r(P, r::Int64, N::Int64=500)
     d = maxdegree(P)
     X = variables(P)
     n = size(X,1)
@@ -263,5 +275,5 @@ function symr_iter(P, r::Int64, N::Int64=500)
     B0 = rand(Float64,n,r)
 
     #A0, B0 = decompose_qr(P,cst_rkf(r))
-    return symr_iter(P, A0,B0, N)
+    return rne_n_tr_r(P, A0,B0, N)
 end

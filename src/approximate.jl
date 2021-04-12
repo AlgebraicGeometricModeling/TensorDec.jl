@@ -1,5 +1,5 @@
 include("prelim.jl")
-include("symr.jl")
+include("RNE_N_TR_R.jl")
 include("RNE_N_TR.jl")
 include("RGN_V_TR.jl")
 include("spm.jl")

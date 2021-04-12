@@ -13,12 +13,6 @@ function approximate(P::Polynomial, r:: Int64; mthd = :RNE, sdm = :Random)
         return spm_decompose(P,r,V0)
     end
 
-    if mthd == :SPM
-        V0 = randn(length(variables(P)))
-        return spm_decompose(P,r,V0)
-    end
-
-
     w0, V0, Info = decompose(P,cst_rkf(r), sdm)
     d = maxdegree(P)
     if mthd == :Symr

@@ -1,7 +1,7 @@
 export decompose, decompose_qr, weights
-
 import MultivariateSeries: decompose
 import LinearAlgebra: diagm
+include("symmetric.jl")
 
 #------------------------------------------------------------------------
 function power_vec(d, L, pt)
@@ -42,7 +42,7 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6), lbd = 
         U,S,V = svd(M)
         v = V[:,1]
         s = size(H[1])[2]
-        Lambda = zeros(size(M,2),n);    
+        Lambda = zeros(size(M,2),n);
         for i in 1:n
             Lambda[(i-1)*s+1:i*s] = fill(1.0,s)
         end
@@ -98,7 +98,7 @@ function dec_red(H, rkf::Function=MultivariateSeries.eps_rkf(1.e-6))
     r = rkf(S)
     L = V[:,1:r]'
     return L
-    
+
 end
 
 function dec_qrbasis(D, L, X)
@@ -109,21 +109,21 @@ function dec_qrbasis(D, L, X)
         Idx[m] = i
         i+=1
     end
-    
+
     L0 = Any[]
     for m in L
         if degree(m,X[1])>0 push!(L0,m) end
     end
-    
+
     D0 = fill(zero(D[1,1]), size(D,1),length(L0))
     for i in 1:length(L0)
         for j in 1:size(D,1)
             D0[j,i]= D[j,get(Idx,L0[i],0)]
         end
     end
-    
+
     F = qr(D0,Val(true))
-    
+
     B = DynamicPolynomials.Monomial{true}[]
     for i in 1:size(D0,1)
         m = copy(L0[F.p[i]])
@@ -176,14 +176,14 @@ function decompose_qr(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) whe
 
     H, L = dec_mat(pol, d0)
     D    = dec_red(H, rkf)
-    
+
     B, Rr, Idx = dec_qrbasis(D, L, X)
-    
+
     H  = dec_pencil(D, Idx, B, X)
-    
+
     I0 = inv(H[1])
     for i in 1:length(H) H[i]*= I0 end
-    
+
     Xi = dec_eigen(H)
     w = weights(pol,Xi);
     w, Xi
@@ -214,7 +214,7 @@ function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); mode=findmin(s
 
     A, B, C = MultivariateSeries.decompose(H, [1.0], rkf)
     C = C'
-    
+
     r = size(A,2)
     w = fill(one(R),r)
 
@@ -286,7 +286,3 @@ function normlz(M,i=1)
 end
 
 #------------------------------------------------------------------------
-
-
-
-

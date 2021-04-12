@@ -2,7 +2,8 @@ using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
 
-
+include("prelim.jl")
+include("apolar.jl")
 
 #Riemannian Gauss-Newton iteration on r-cartesian product of Veronese manifold.
 function rgn_v_step(P,V)

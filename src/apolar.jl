@@ -1,5 +1,5 @@
 export hilbert, perp, apolarpro, norm_apolar
-
+include("symmetric.jl")
 import MultivariateSeries: hankel, dual
 """
 ```

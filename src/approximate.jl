@@ -1,10 +1,11 @@
+export approximate
 include("prelim.jl")
 include("RNE_N_TR_R.jl")
 include("RNE_N_TR.jl")
 include("RGN_V_TR.jl")
 include("spm.jl")
 
-export approximate
+
 """
 ```
 approximate(P::Polynomial, r:: Int64; mthd = :RNE, sdm = :Random)

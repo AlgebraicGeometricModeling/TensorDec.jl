@@ -221,7 +221,7 @@ function rgn_v_tr_step(delta,V,P)
        approximation rank. This matrix contains the r vectors of the symmetric
        decomposition of the approximation.\\
     Info: 'd0' (resp. 'd*') represents the initial (resp. the final) residual error,
-          'nIter' is for the number of itarations needed to find the approximation.
+          'nIter' is for the number of iterations needed to find the approximation.
 
     ```
     """

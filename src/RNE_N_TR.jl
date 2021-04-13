@@ -176,6 +176,35 @@ function rne_n_tr_step(delta, W::Vector, V::Matrix,P)
 
     delta,op1,op2
 end
+"""
+```
+rne_n_tr(P, A0, B0, Dict{String,Any}("maxIter" => N,"epsIter" => ϵ))⤍ A, B, Info
+```
+This function gives a low symmetric rank approximation of a complex valued
+symmetric tensor by applying an exact Riemannian Newton iteration with
+dog-leg trust region steps to the associate non-linear-least-squares
+problem. The optimization set is parameterized by weights and unit vectors.
+Let r be the approximation rank. The approximation is of the form
+of linear combination of r linear forms to the d-th power ∑w_i*(v_i^tx)^d, with i=1,...,r.
+This approximation is represented by a vector of strictly positive real numbers W=(w_i) (weight vector), and matrix
+of normalized columns V=[v_1;...;v_r].\\
+Input:\\
+P: Homogeneous polynomial (associated to the symmetric tensor to
+                            approximate).\\
+A0: Initial weight vector of size equal to the approximation rank.
+B0: Initial matrix of row size equal to the dimension of P and column size equal to the
+    approximation rank.\\
+N: Maximal number of iterations (by default 500).\\
+ϵ: The radius of the trust region (by default 1.e-3).\\
+Output:\\
+A: Weight vector of size equal to the approximation rank.
+B: Matrix of row size equal to the dimension of P and column size equal to the
+   approximation rank. The columns vectors of B are normalized.\\
+Info: 'd0' (resp. 'd*') represents the initial (resp. the final) residual error,
+      'nIter' is for the number of iterations needed to find the approximation.
+
+```
+"""
 
 function rne_n_tr(P, A0::Vector, B0::Matrix,
                    Info = Dict(

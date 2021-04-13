@@ -225,7 +225,6 @@ function rgn_v_tr_step(delta,V,P)
 
     ```
     """
-#loop RGN with trust region
 function rgn_v_tr(P, B0,
                   Info = Dict(
                       "maxIter" => 500,

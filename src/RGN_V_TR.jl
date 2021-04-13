@@ -200,7 +200,7 @@ function rgn_v_tr_step(delta,V,P)
     end
     """
     ```
-    rgn_v_tr(P, B0, Dict{String,Any}("maxIter" => N,"epsIter" => ϵ))⤍ B, Info
+    rgn_v_tr(P, B0)⤍ B, Info
     ```
     This function gives a low symmetric rank approximation of a complex valued
     symmetric tensor by applying a Riemannian Gauss-Newton iteration with

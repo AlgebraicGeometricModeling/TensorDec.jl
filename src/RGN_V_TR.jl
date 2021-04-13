@@ -202,7 +202,7 @@ function rgn_v_tr_step(delta,V,P)
     ```
     rgn_v_tr(P, B0, Dict{String,Any}("maxIter" => N,"epsIter" => ϵ))⤍ B, Info
     ```
-    This function gives a low symmetric rank approximation of a complex valued 
+    This function gives a low symmetric rank approximation of a complex valued
     symmetric tensor by applying a Riemannian Gauss-Newton iteration with
     dog-leg trust region steps to the associate non-linear-least-squares
     problem. The optimization set is a cartesian product of Veronese
@@ -212,12 +212,12 @@ function rgn_v_tr_step(delta,V,P)
     Input:
     P: Homogeneous polynomial (associated to the symmetric tensor to
                                 approximate).
-    B0: Matrix of row size equal the dimension of P and column size equal the
+    B0: Matrix of row size equal to the dimension of P and column size equal to the
         approximation rank (initial point).
     N: Maximal number of iterations (by default 500)
     ϵ: The radius of the trust region (by default 1.e-3)
     Output:
-    B: Matrix of row size equal the dimension of P and column size equal the
+    B: Matrix of row size equal to the dimension of P and column size equal to the
        approximation rank. This matrix contains the r vectors of the symmetric
        decomposition of the approximation.
     Info: 'd0' (resp. 'd*') represents the initial (resp. the final) residual error,

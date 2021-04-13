@@ -51,7 +51,7 @@ function approximate(P::Polynomial, r:: Int64; mthd = :RNE, sdm = :Random)
 end
 
 
-function approximate(s::MultivariateSeries.Series, r:: Int64; args...)
+function approximate1(s::MultivariateSeries.Series, r:: Int64; args...)
 
     d = maxdegree(s)
     @polyvar x0

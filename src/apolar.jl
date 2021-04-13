@@ -126,7 +126,17 @@ function apolarpro(P,Q,X)
     end
     return t3
 end
+"""
+```
+norm_apolar(P) -> Float64
+```
+Gives the apolar norm of a homogeneous polynomial P=∑_{|α|=d} binom{d}{α} p_α x^α
+as: norm_apolar(P)=∑_{|α|=d} binom{d}{α} p_α*̄p_α.
 
+
+
+```
+"""
 function norm_apolar(P)
     X=variables(P)
     n=size(X,1)

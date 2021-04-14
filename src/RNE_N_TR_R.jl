@@ -1,4 +1,5 @@
 export opt, rne_n_tr_r_step, rne_n_tr_r
+
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
@@ -194,25 +195,27 @@ problem. The optimization set is parameterized by weights and unit vectors.
 Let r be the approximation rank. The approximation is of the form
 of linear combination of r linear forms to the d-th power ∑w_i*(v_i^tx)^d, with i=1,...,r.
 This approximation is represented by a vector of r real numbers W=(w_i) (weight vector), and a matrix
-of normalized columns V=[v_1;...;v_r].\\
-Input:\\
-P: Homogeneous polynomial (associated to the symmetric tensor to
-                            approximate).\\
-A0: Initial weight vector of size equal to the approximation rank.
-B0: Initial matrix of row size equal to the dimension of P and column size equal to the
-    approximation rank.\\
-N: Maximal number of iterations (by default 500).\\
-ϵ: The radius of the trust region (by default 1.e-3).\\
-Output:\\
-A: Weight vector of size equal to the approximation rank.
-B: Matrix of row size equal to the dimension of P and column size equal to the
-   approximation rank. The columns vectors of B are normalized.\\
-Info: 'd0' (resp. 'd*') represents the initial (resp. the final) residual error,
+of normalized columns V=[v_1;...;v_r].
+
+Input:
+ - P: Homogeneous polynomial (associated to the symmetric tensor to approximate).
+ - A0: Initial weight vector of size equal to the approximation rank.
+ - B0: Initial matrix of row size equal to the dimension of P and column size equal to the
+    approximation rank.
+
+The options are
+ - N: Maximal number of iterations (by default 500).
+ - ϵ: The radius of the trust region (by default 1.e-3).
+
+Output:
+  - A: Weight vector of size equal to the approximation rank.
+  - B: Matrix of row size equal to the dimension of P and column size equal to the
+   approximation rank. The columns vectors of B are normalized.
+  - Info: 'd0' (resp. 'd*') represents the initial (resp. the final) residual error,
       'nIter' is for the number of iterations needed to find the approximation.
 
-```
-"""
 
+"""
 function rne_n_tr_r(P, A0::Vector, B0::Matrix,
                 Info = Dict(
                     "maxIter" => 500,

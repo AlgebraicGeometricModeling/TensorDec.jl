@@ -1,7 +1,8 @@
 export decompose, decompose_qr, weights
 import MultivariateSeries: decompose
 import LinearAlgebra: diagm
-include("symmetric.jl")
+
+#include("symmetric.jl")
 
 #------------------------------------------------------------------------
 function power_vec(d, L, pt)

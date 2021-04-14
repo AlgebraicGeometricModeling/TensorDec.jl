@@ -196,35 +196,33 @@ function rgn_v_tr_step(delta,V,P)
 
 
     delta,sol
+end
 
-    end
-    """
-    ```
+"""
+```
     rgn_v_tr(P, B0, Dict{String,Any}("maxIter" => N,"epsIter" => ϵ))⤍ B, Info
-    ```
+```
     This function gives a low symmetric rank approximation of a complex valued
     symmetric tensor by applying a Riemannian Gauss-Newton iteration with
     dog-leg trust region steps to the associate non-linear-least-squares
     problem. The optimization set is a cartesian product of Veronese
     manifolds. Let r be the approximation rank. The approximation is of the form
     of linear combination of r linear forms to the d-th power ∑(v_i^tx)^d, with i=1,...,r.
-    This approximation is represented by a matrix [v_1;...;v_r].\\
-    Input:\\
-    P: Homogeneous polynomial (associated to the symmetric tensor to
-                                approximate).\\
-    B0: Matrix of row size equal to the dimension of P and column size equal to the
-        approximation rank (initial point).\\
-    N: Maximal number of iterations (by default 500).\\
-    ϵ: The radius of the trust region (by default 1.e-3).\\
-    Output:\\
-    B: Matrix of row size equal to the dimension of P and column size equal to the
-       approximation rank. This matrix contains the r vectors of the symmetric
-       decomposition of the approximation.\\
-    Info: 'd0' (resp. 'd*') represents the initial (resp. the final) residual error,
+    This approximation is represented by a matrix [v_1;...;v_r].
+
+Input:
+  - P: Homogeneous polynomial (associated to the symmetric tensor to approximate).
+  - B0: Matrix of row size equal to the dimension of P and column size equal to the
+        approximation rank (initial point).
+  - N: Maximal number of iterations (by default 500).
+  - ϵ: The radius of the trust region (by default 1.e-3).
+
+Output:
+  - B: Matrix of row size equal to the dimension of P and column size equal to the approximation rank. This matrix contains the r vectors of the symmetric decomposition of the approximation.
+  - Info: 'd0' (resp. 'd*') represents the initial (resp. the final) residual error,
           'nIter' is for the number of iterations needed to find the approximation.
 
-    ```
-    """
+"""
 function rgn_v_tr(P, B0,
                   Info = Dict(
                       "maxIter" => 500,

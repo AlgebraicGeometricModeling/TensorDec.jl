@@ -6,6 +6,7 @@ include("RGN_V_TR.jl")
 include("spm.jl")
 
 
+
 """
 ```
 approximate(P::Polynomial, r:: Int64; mthd = :RNE, sdm = :Random)
@@ -38,6 +39,7 @@ function approximate(P::Polynomial, r:: Int64; mthd = :RNE, sdm = :Random)
     if mthd == :RNER
         return rne_n_tr_r(P, w0, V0)
     end
+    
 
     if mthd == :RNE
         return rne_n_tr(P, w0, V0)

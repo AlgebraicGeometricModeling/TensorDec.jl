@@ -13,7 +13,6 @@ T0 = tensor(w, Xi, X, d)
 
 r = 3
 
-
 w1r, V1r, I = approximate(T0, r; mthd = :RGN)
 T1r = tensor(w1r,V1r,X,d)
 println("RGNr: ",norm_apolar(T0-T1r))
@@ -31,9 +30,15 @@ w2, V2, I = approximate(T0, r; mthd = :RNE, sdm = :NRnd)
 T2 = tensor(w2,V2,X,d)
 println("RNEn: ",norm_apolar(T0-T2))
 
-
-
 w3, V3, I = approximate(T0, r; mthd = :SPM)
 
 T3 = tensor(w3,V3,X,d)
 println("SPM:  ",norm_apolar(T0-T3))
+
+w4r, V4r, I = approximate(T0, r; mthd = :RNER)
+T4r = tensor(w4r,V4r,X,d)
+println("RNERr: ",norm_apolar(T0-T4r))
+
+w4, V4, I = approximate(T0, r; mthd = :RNER, sdm = :NRnd)
+T4 = tensor(w4,V4,X,d)
+println("RNERn: ",norm_apolar(T0-T4))

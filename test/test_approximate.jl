@@ -28,7 +28,7 @@ T1 = tensor(w1,V1,X,d)
 println("RGNn : ",norm_apolar(T0-T1))
 
 
-print("RGNr :")
+print("RNEr :")
 for i in 1:Nt
     w2r, V2r, Info = approximate(T0, r; mthd = :RNE)
     T2r = tensor(w2r,V2r,X,d)

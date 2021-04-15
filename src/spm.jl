@@ -1,5 +1,5 @@
 using MultivariateSeries, DynamicPolynomials, LinearAlgebra
-
+export spm_decompose
 function normalize!(Xi::Matrix)
     for i in 1:size(Xi,2)
         Xi[:,i]/= norm(Xi[:,i])

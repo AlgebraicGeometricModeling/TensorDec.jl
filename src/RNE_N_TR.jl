@@ -197,7 +197,7 @@ Input:
  - ϵ: The radius of the trust region (by default 1.e-3).
 
 Output:
- - A: Weight vector of size equal to the approximation rank.
+ - A: Weight vector of size equal to the approximation rank. It is a real strictly positive vector.
  - B: Matrix of row size equal to the dimension of P and column size equal to the
    approximation rank. The columns vectors of B are normalized.
  - Info: 'd0' (resp. 'd*') represents the initial (resp. the final) residual error,

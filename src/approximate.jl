@@ -16,7 +16,8 @@ Input:
    - P: The homogeneous polynomial associated to the symmetric tensor to approximate.
    - r: Approximation rank.
 
-The option `mthd` specifies the method to apply in order to find the approximation, there are 4 options (the default is 'rne_n_tr'):
+The option `mthd` specifies the method to apply in order to find the approximation, there are 4 options
+(the default is rne_n_tr):
 
      * RNE: To apply the function 'rne_n_tr';
      * RNER: To apply the function 'rne_n_tr_r'(when the symmetric tensor is real and the symmetric tensor approximation is required to be real);

@@ -203,13 +203,13 @@ end
     rgn_v_tr(P, B0, Dict{String,Any}("maxIter" => N,"epsIter" => ϵ))⤍ B, Info
 ```
 
-    This function gives a low symmetric rank approximation of a complex valued
-    symmetric tensor by applying a Riemannian Gauss-Newton iteration with
-    dog-leg trust region steps to the associate non-linear-least-squares
-    problem. The optimization set is a cartesian product of Veronese
-    manifolds. Let r be the approximation rank. The approximation is of the form
-    of linear combination of r linear forms to the d-th power ∑(v_i^tx)^d, with i=1,...,r.
-    This approximation is represented by a matrix [v_1;...;v_r].
+This function gives a low symmetric rank approximation of a complex valued
+symmetric tensor by applying a Riemannian Gauss-Newton iteration with
+dog-leg trust region steps to the associate non-linear-least-squares
+problem. The optimization set is a cartesian product of Veronese
+manifolds. Let r be the approximation rank. The approximation is of the form
+of linear combination of r linear forms to the d-th power ∑(v_i^tx)^d, with i=1,...,r.
+This approximation is represented by a matrix [v_1;...;v_r].
 
 Input:
   - P: Homogeneous polynomial (associated to the symmetric tensor to approximate).

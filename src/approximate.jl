@@ -41,7 +41,15 @@ function approximate(P::Polynomial, r:: Int64; mthd = :RNE, sdm = :Random)
 
     if mthd == :RNER
 
-        return rne_n_tr_r(P, real(w0), real(V0))
+        c = 0
+        while c<5 && !isreal(V0)
+            w0, V0, Info = decompose(P,cst_rkf(r))
+            c += 1
+        end
+        if c >0
+           println("\n[ initial decomposition repeated (", string(c),") ]")
+        end
+        return rne_n_tr_r(P, w0, V0)
 
     elseif mthd == :RNE
 

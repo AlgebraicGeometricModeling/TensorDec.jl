@@ -5,13 +5,13 @@ X = (@polyvar x[1:n])[1]
 
 d = 3
 
-r0 = 10
+r0 = 5
 w  = randn(r0)
 Xi = randn(n,r0)
 
 T0 = tensor(w, Xi, X, d)
 
-r = 3
+r = 4
 
 Nt = 5
 

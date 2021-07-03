@@ -5,7 +5,7 @@ X = (@polyvar x[1:n])[1]
 
 d = 3
 
-r0 = 5
+r0 = 10
 w  = randn(r0)
 Xi = randn(n,r0)
 
@@ -47,7 +47,7 @@ println("SPM  : ",norm_apolar(T0-T3))
 
 print("RNERr:")
 for i in 1:Nt
-    try 
+    try
         w4r, V4r, Info = approximate(T0, r; mthd = :RNER)
         T4r = tensor(w4r,V4r,X,d)
         print(" ",norm_apolar(T0-T4r))

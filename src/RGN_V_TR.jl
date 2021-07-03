@@ -23,7 +23,7 @@ function rgn_v_step(P,V)
         M=Matrix(1.0*I,2*n,2*n)+(d-1)*(norm(V[:,i]))^(-2)*((vR*vR')+(vI*vI'))
         u,s,v=svd(M)
         u1=vR/(sqrt(d)*norm(vR))
-        u11=(diagm(s))^(1/2)*u'*u1
+        u11=(diagm(s))^(-1/2)*u'*u1
         q,l=qr(Matrix(1.0*I,2*n,2*n)-u11*u11',Val(true))
         Q1[:,1]=u1
         Q1[:,2:end]=u*(diagm(s))^(-1/2)*q[:,1:2*n-1]
@@ -97,7 +97,7 @@ function rgn_v_tr_step(delta,V,P)
         M=Matrix(1.0*I,2*n,2*n)+(d-1)*(norm(V[:,i]))^(-2)*((vR*vR')+(vI*vI'))
         u,s,v=svd(M)
         u1=vR/(sqrt(d)*norm(vR))
-        u11=(diagm(s))^(1/2)*u'*u1
+        u11=(diagm(s))^(-1/2)*u'*u1
         q,l=qr(Matrix(1.0*I,2*n,2*n)-u11*u11',Val(true))
         Q1[:,1]=u1
         Q1[:,2:end]=u*(diagm(s))^(-1/2)*q[:,1:2*n-1]

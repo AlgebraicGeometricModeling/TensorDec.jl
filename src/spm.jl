@@ -1,5 +1,5 @@
 using MultivariateSeries, DynamicPolynomials, LinearAlgebra
-
+export spm_decompose
 function normalize!(Xi::Matrix)
     for i in 1:size(Xi,2)
         Xi[:,i]/= norm(Xi[:,i])
@@ -89,7 +89,14 @@ function spm_deflate(U, S, V, L0, L1, u)
     return w, U*U1[:,1:r-1], S1[1:r-1], V*V1[:,1:r-1]
 end
 
+
+
+
 """
+```
+spm_decompose(T, r::Int64, v0::Vector)
+```
+
 Decomposition of the tensor T in rank r with the Power Method.
 """
 function spm_decompose(T,

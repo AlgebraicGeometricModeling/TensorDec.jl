@@ -1,6 +1,6 @@
 name = "TensorDec"
 uuid = "7072bc9d-1451-47b4-b0a6-486e8452399b"
-authors = ["mourrain <bernard.mourrain@inria.fr>"]
+authors = ["mourrain <bernard.mourrain@inria.fr>", "Rima Khouja <Rima.Khouja@inria.fr>"]
 version = "0.1.2"
 
 [deps]

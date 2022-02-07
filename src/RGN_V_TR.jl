@@ -22,6 +22,10 @@ function rgn_v_step(P,V)
         vI[n+1:2*n]=real(V[:,i])
         M=Matrix(1.0*I,2*n,2*n)+(d-1)*(norm(V[:,i]))^(-2)*((vR*vR')+(vI*vI'))
         u,s,v=svd(M)
+        #U1=vR/norm(V[:,i])
+        #U2=vI/norm(V[:,i])
+        #u=[U1 U2 nullspace([U1 U2]')]
+        #s=[1+(d-1);1+(d-1);ones(2n-2)]
         u1=vR/(sqrt(d)*norm(vR))
         u11=(diagm(s))^(-1/2)*u'*u1
         q,l=qr(Matrix(1.0*I,2*n,2*n)-u11*u11',Val(true))
@@ -96,6 +100,10 @@ function rgn_v_tr_step(delta,V,P)
         vI[n+1:2*n]=real(V[:,i])
         M=Matrix(1.0*I,2*n,2*n)+(d-1)*(norm(V[:,i]))^(-2)*((vR*vR')+(vI*vI'))
         u,s,v=svd(M)
+        #U1=vR/norm(V[:,i])
+        #U2=vI/norm(V[:,i])
+        #u=[U1 U2 nullspace([U1 U2]')]
+        #s=[1+(d-1);1+(d-1);ones(2n-2)]
         u1=vR/(sqrt(d)*norm(vR))
         u11=(diagm(s))^(-1/2)*u'*u1
         q,l=qr(Matrix(1.0*I,2*n,2*n)-u11*u11',Val(true))

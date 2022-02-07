@@ -105,7 +105,9 @@ This function gives the homogeneous polynomial associated to the symmetric decom
 ```
 """
 function hpol(W,A,X,d)
-    P = sum(W[i]*(transpose(A[:,i])*X)^d for i in 1:length(W))
+    #P = sum(W[i]*(transpose(A[:,i])*X)^d for i in 1:length(W))
+    r = length(W)
+    P=sum( W[i]*dot(X,A[:,i])^d for i in 1:r)
 end
 """
 ```

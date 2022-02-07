@@ -2,6 +2,11 @@ export rne_n_tr
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
+include("sym_tens_fct.jl")
+include("apolar.jl")
+include("decompose.jl")
+include("multilinear.jl")
+include("prelim.jl")
 
 
 function rne_n_tr_step(delta, W::Vector, V::Matrix,P)
@@ -221,7 +226,7 @@ function rne_n_tr(P, A0::Vector, B0::Matrix,
     F=fill(0.0+0.0im,n,r)
     A0+=fill(0.0im,r)
     B0+=fill(0.0im,n,r)
-    P0=tensor(A0,B0,X,d)
+    P0=hpol(A0,B0,X,d)
     d0=norm_apolar(P-P0)
     C=op(A0,B0,P)
     A1=fill(0.0+0.0im,r)
@@ -232,7 +237,7 @@ function rne_n_tr(P, A0::Vector, B0::Matrix,
         A1[i]=A0[i]*C[i]
     end
 
-    P1=tensor(A1,B1,X,d)
+    P1=hpol(A1,B1,X,d)
     d1=norm_apolar(P1-P)
     if d0<d1
         A1=A0
@@ -254,7 +259,7 @@ function rne_n_tr(P, A0::Vector, B0::Matrix,
         W, V = E, F
         i += 1
     end
-    P4 = tensor(W,V,X,d)
+    P4 = hpol(W,V,X,d)
     d2 = norm_apolar(P4-P)
     A=fill(0.0+0.0im,r)
     B=fill(0.0+0.0im,n,r)
@@ -263,7 +268,7 @@ function rne_n_tr(P, A0::Vector, B0::Matrix,
     else
         A,B=A1,B1
     end
-    P5=tensor(A,B,X,d)
+    P5=hpol(A,B,X,d)
     d3=norm_apolar(P-P5)
 
     Info["nIter"] = i

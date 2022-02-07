@@ -2,8 +2,6 @@ export decompose, decompose_qr, weights
 import MultivariateSeries: decompose
 import LinearAlgebra: diagm
 
-#include("symmetric.jl")
-
 #------------------------------------------------------------------------
 function power_vec(d, L, pt)
  [m(pt)*binomial(d,exponents(m)) for m in L]
@@ -54,7 +52,7 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6), lbd = 
 
 
     # Simulatneous Diagonalisation of the pencil
-    Xi, Uxi, Vxi, Info = MultivariateSeries.decompose(H, lambda, rkf)
+    Xi, Uxi, Vxi, Info = simdiag(H, lambda, rkf)
 
     n, r = size(Xi)
 
@@ -71,6 +69,7 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6), lbd = 
 
     return w, Xi, Info
 end
+
 
 function decompose(pol::Polynomial{true,C}, r::Int64) where {C}
     return decompose(pol, cst_rkf(r))

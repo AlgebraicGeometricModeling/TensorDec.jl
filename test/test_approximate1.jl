@@ -17,8 +17,8 @@ Nt = 5
 
 print("RGNr :")
 for i in 1:Nt
-    w1r, V1r, Info = approximate(T0, r; mthd = :RGN)
-    T1r = tensor(w1r,V1r,X,d)
+    local w1r, V1r, Info = approximate(T0, r; mthd = :RGN)
+    local T1r = tensor(w1r,V1r,X,d)
     print(" ",norm_apolar(T0-T1r))
 end
 println()
@@ -30,8 +30,8 @@ println("RGNn : ",norm_apolar(T0-T1))
 
 print("RNEr :")
 for i in 1:Nt
-    w2r, V2r, Info = approximate(T0, r; mthd = :RNE)
-    T2r = tensor(w2r,V2r,X,d)
+    local w2r, V2r, Info = approximate(T0, r; mthd = :RNE)
+    local T2r = tensor(w2r,V2r,X,d)
     print(" ",norm_apolar(T0-T2r))
 end
 println()
@@ -48,8 +48,8 @@ println("SPM  : ",norm_apolar(T0-T3))
 print("RNERr:")
 for i in 1:Nt
     try
-        w4r, V4r, Info = approximate(T0, r; mthd = :RNER)
-        T4r = tensor(w4r,V4r,X,d)
+        local w4r, V4r, Info = approximate(T0, r; mthd = :RNER)
+        local T4r = tensor(w4r,V4r,X,d)
         print(" ",norm_apolar(T0-T4r))
     catch
         print(" ******")

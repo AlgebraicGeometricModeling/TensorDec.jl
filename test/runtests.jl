@@ -1,4 +1,12 @@
-include("test0.jl")
-include("test1.jl")
-include("test2.jl")
-include("test3.jl")
+for f in readdir(pwd())
+    if startswith(f,"test")
+        @info "Reading "*f
+        try
+            include(f)
+        catch
+            @error "Problem with "*f
+            continue 
+        end
+    end
+end
+

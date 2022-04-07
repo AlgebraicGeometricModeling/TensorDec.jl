@@ -27,7 +27,7 @@ The option `mthd` specifies the method to apply in order to find the approximati
 The option `sdm` specifies the way the initial point for the first three methods is chosen by the function decompose:
 
      * Random: To choose a random combination (default option);
-     * NRnd: To choose non-random combination.
+     * Rnd: To choose non-random combination.
 
 """
 function approximate(P::Polynomial, r:: Int64; mthd = :RNE, sdm = :Random)
@@ -67,6 +67,62 @@ function approximate(P::Polynomial, r:: Int64; mthd = :RNE, sdm = :Random)
 
     end
 end
+
+"""
+```
+approximate(P::Polynomial, w0, V0; mthd = :RNE, sdm = :Random)
+```
+This function approximates a symmetric tensor (real or complex valued) into a low rank symmetric
+tensor starting from an initial decomposition (w0, V0)
+
+Input:
+   - P: The homogeneous polynomial associated to the symmetric tensor to approximate.
+   - w0: Initial weights of the decomposition
+   - V0: Initial vectors of the decomposition
+
+The option `mthd` specifies the method to apply in order to find the approximation, there are 4 options
+(the default is :RNE):
+
+     * RNE: To apply the function 'rne_n_tr';
+     * RNER: To apply the function 'rne_n_tr_r'(when the symmetric tensor is real and the symmetric tensor approximation is required to be real);
+     * RGN: To apply the function 'rgn_v_tr';
+     * SPM: To apply the function 'spm_decompose'.
+
+"""
+function approximate(P::Polynomial, w0, V0; mthd = :RNE)
+
+    r = length(w0)
+    d = maxdegree(P)
+    
+    if mthd == :SPM
+        C0 = fill(zero(Complex{Float64}), size(V0,1), size(V0,2))
+        for i in 1:r
+            C0[:,i]=complex(w0[i])^(1/d)*V0[:,i]
+        end
+        return spm_decompose(P,r,C0[:,1])
+    end
+
+    if mthd == :RNE
+        if isreal(V0) && isreal(w0)
+
+            return rne_n_tr_r(P, w0, V0)
+
+        else
+
+            return rne_n_tr(P, w0, V0)
+        end
+    elseif mthd == :RGN
+
+        C0 = fill(zero(Complex{Float64}), size(V0,1), size(V0,2))
+        for i in 1:r
+            C0[:,i]=complex(w0[i])^(1/d)*V0[:,i]
+        end
+        w1 = fill(one(Complex{Float64}),r)
+        return w1, rgn_v_tr(P,C0)...
+
+    end
+end
+
 
 
 function approximate(s::MultivariateSeries.Series, r:: Int64; args...)

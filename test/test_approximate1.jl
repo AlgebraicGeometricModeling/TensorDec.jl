@@ -1,4 +1,4 @@
-using LinearAlgebra, MultivariateSeries, DynamicPolynomials, TensorDec
+using LinearAlgebra, DynamicPolynomials, TensorDec
 
 n = 4
 X = (@polyvar x[1:n])[1]

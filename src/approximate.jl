@@ -8,7 +8,7 @@ export approximate
 
 """
 ```
-approximate(P::Polynomial, r:: Int64; mthd = :RNE, sdm = :Random)
+approximate(P::Polynomial, r:: Int64; iter = :RNE, init = :Random)
 ```
 This function approximates a symmetric tensor (real or complex valued) into a low rank symmetric tensor.
 
@@ -16,7 +16,7 @@ Input:
    - P: The homogeneous polynomial associated to the symmetric tensor to approximate.
    - r: Approximation rank.
 
-The option `mthd` specifies the method to apply in order to find the approximation, there are 4 options
+The option `iter` specifies the method to apply in order to find the approximation, there are 4 options
 (the default is rne_n_tr):
 
      * RNE: To apply the function 'rne_n_tr';
@@ -24,23 +24,23 @@ The option `mthd` specifies the method to apply in order to find the approximati
      * RGN: To apply the function 'rgn_v_tr';
      * SPM: To apply the function 'spm_decompose'.
 
-The option `sdm` specifies the way the initial point for the first three methods is chosen by the function decompose:
+The option `init` specifies the way the initial point for the first three methods is chosen by the function decompose:
 
      * Random: To choose a random combination (default option);
      * Rnd: To choose non-random combination.
 
 """
-function approximate(P::Polynomial, r:: Int64; mthd = :RNE, sdm = :Random)
+function approximate(P::Polynomial, r:: Int64; iter = :RNE, init = :Random)
 
-    if mthd == :SPM
+    if iter == :SPM
         V0 = randn(length(variables(P)))
         return spm_decompose(P,r,V0)
     end
 
-    w0, V0, Info = decompose(P,cst_rkf(r), sdm)
+    w0, V0, Info = decompose(P,cst_rkf(r), init)
     d = maxdegree(P)
 
-    if mthd == :RNER
+    if iter == :RNER
 
         c = 0
         while c<5 && !isreal(V0)
@@ -52,11 +52,11 @@ function approximate(P::Polynomial, r:: Int64; mthd = :RNE, sdm = :Random)
         end
         return rne_n_tr_r(P, w0, V0)
 
-    elseif mthd == :RNE
+    elseif iter == :RNE
 
         return rne_n_tr(P, w0, V0)
 
-    elseif mthd == :RGN
+    elseif iter == :RGN
 
         C0 = fill(zero(Complex{Float64}), size(V0,1), size(V0,2))
         for i in 1:r
@@ -70,7 +70,7 @@ end
 
 """
 ```
-approximate(P::Polynomial, w0, V0; mthd = :RNE, sdm = :Random)
+approximate(P::Polynomial, w0, V0; iter = :RNE, init = :Random)
 ```
 This function approximates a symmetric tensor (real or complex valued) into a low rank symmetric
 tensor starting from an initial decomposition (w0, V0)
@@ -80,7 +80,7 @@ Input:
    - w0: Initial weights of the decomposition
    - V0: Initial vectors of the decomposition
 
-The option `mthd` specifies the method to apply in order to find the approximation, there are 4 options
+The option `iter` specifies the method to apply in order to find the approximation, there are 4 options
 (the default is :RNE):
 
      * RNE: To apply the function 'rne_n_tr';
@@ -89,12 +89,12 @@ The option `mthd` specifies the method to apply in order to find the approximati
      * SPM: To apply the function 'spm_decompose'.
 
 """
-function approximate(P::Polynomial, w0, V0; mthd = :RNE)
+function approximate(P::Polynomial, w0, V0; iter = :RNE)
 
     r = length(w0)
     d = maxdegree(P)
     
-    if mthd == :SPM
+    if iter == :SPM
         C0 = fill(zero(Complex{Float64}), size(V0,1), size(V0,2))
         for i in 1:r
             C0[:,i]=complex(w0[i])^(1/d)*V0[:,i]
@@ -102,7 +102,7 @@ function approximate(P::Polynomial, w0, V0; mthd = :RNE)
         return spm_decompose(P,r,C0[:,1])
     end
 
-    if mthd == :RNE
+    if iter == :RNE
         if isreal(V0) && isreal(w0)
 
             return rne_n_tr_r(P, w0, V0)
@@ -111,7 +111,7 @@ function approximate(P::Polynomial, w0, V0; mthd = :RNE)
 
             return rne_n_tr(P, w0, V0)
         end
-    elseif mthd == :RGN
+    elseif iter == :RGN
 
         C0 = fill(zero(Complex{Float64}), size(V0,1), size(V0,2))
         for i in 1:r

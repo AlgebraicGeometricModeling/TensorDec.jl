@@ -37,7 +37,7 @@ function approximate(P::Polynomial, r:: Int64; iter = :RNE, init = :Random)
         return spm_decompose(P,r,V0)
     end
 
-    w0, V0, Info = decompose(P,cst_rkf(r), init)
+    w0, V0, Info = decompose(P, cst_rkf(r), init)
     d = maxdegree(P)
 
     if iter == :RNER

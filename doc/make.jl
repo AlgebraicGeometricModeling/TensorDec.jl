@@ -6,7 +6,7 @@ Expl = map(file -> joinpath("expl", file), filter(x ->endswith(x, "md"), readdir
 Code = map(file -> joinpath("code", file), filter(x ->endswith(x, "md"), readdir(dir*"/code")))
 
 makedocs(
-         format = :html,
+         #format = :html,
          sitename = "TensorDec",
          authors = "B. Mourrain",
          modules = [TensorDec],
@@ -20,11 +20,12 @@ makedocs(
          repo = "https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl/tree/master",
          doctest = false
          )
-
+#=
 deploydocs(
            repo = "gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl.git",
            target = "site",
-           julia  = "1.0",
+#julia  = "1.0",
            deps = nothing,
            make = nothing
            )
+=#

@@ -188,6 +188,7 @@ function decompose_qr(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) whe
     w = weights(pol,Xi);
     w, Xi
 end
+
 #------------------------------------------------------------------------
 """
 ```
@@ -212,7 +213,7 @@ function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); mode=findmin(s
         push!(H, selectdim(T,mode,i))
     end
 
-    A, B, C = MultivariateSeries.decompose(H, [1.0], rkf)
+    A, B, C = simdiag(H, [1.0], rkf)
     C = C'
 
     r = size(A,2)

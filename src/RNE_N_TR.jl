@@ -2,10 +2,7 @@ export rne_n_tr
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
-include("apolar.jl")
-include("decompose.jl")
-include("multilinear.jl")
-include("prelim.jl")
+
 
 
 function rne_n_tr_step(delta, W::Vector, V::Matrix,P)

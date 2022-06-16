@@ -2,7 +2,6 @@ export rne_n_tr
 using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
-include("sym_tens_fct.jl")
 include("apolar.jl")
 include("decompose.jl")
 include("multilinear.jl")

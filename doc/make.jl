@@ -14,7 +14,7 @@ makedocs(
          source = dir,
          pages = Any[
                      "Home" => "index.md",
-                     "Example" => Expl,
+                     "Examples" => Expl,
                      "Functions & types" => Code
                      ],
          repo = "https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl/tree/master",

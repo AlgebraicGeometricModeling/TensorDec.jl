@@ -10,7 +10,6 @@ opt(W,V,P) ⤍ Vector
 ```
 This function solves the linear least square problem: 1/2 min_{α1,...,αr} ||∑αiW[i](V[:,i]'x)^d-P||^2 over the real field.
 
-```
 """
 function opt(W::Vector, V::Matrix,P)
     d=maxdegree(P)

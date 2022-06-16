@@ -3,7 +3,7 @@ using MultivariatePolynomials
 using DynamicPolynomials
 
 export ahp
-export gradeval, hessianeval, hpol, op, Delta, solve
+export gradeval, hessianeval, hpol, op, Delta, solve_tr
 
 #-----------------------------------------------------------------------
 """
@@ -156,7 +156,7 @@ function Delta1(P,V::Matrix)
     delta=min(delta1,delta2)
 end
 
-function solve(a::Float64,b::Float64,c::Float64)
+function solve_tr(a::Float64,b::Float64,c::Float64)
     D=b^2-4*a*c
     if D < 0
         D = - D

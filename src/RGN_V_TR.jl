@@ -160,7 +160,7 @@ function rgn_v_tr_step(delta,V,P)
         a1=(norm(N1-N2))^2
         a2=2*(-(norm(N1))^2-2*(norm(N2))^2+3*dot(N1,N2))
         a3=-delta^2+4*(norm(N2))^2-4*dot(N1,N2)+(norm(N1))^2
-        tau=solve(a1,a2,a3)
+        tau=solve_tr(a1,a2,a3)
         Ns=N2+(tau-1)*(N1-N2)
     end
     V1=zeros(2*n,r)

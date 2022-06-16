@@ -132,7 +132,7 @@ function rne_n_tr_step(delta, W::Vector, V::Matrix,P)
         a1=(norm(N-N2))^2
         a2=2*(-(norm(N))^2-2*(norm(N2))^2+3*dot(N,N2))
         a3=-delta^2+4*(norm(N2))^2-4*dot(N,N2)+(norm(N))^2
-        tau=solve(a1,a2,a3)
+        tau=solve_tr(a1,a2,a3)
         Ns=N2+(tau-1)*(N-N2)
     end
     Ns=M*Ns

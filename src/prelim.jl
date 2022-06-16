@@ -48,7 +48,7 @@ function ahp(T::Array,X)
     S=(sum(X[i] for i in 1:n))^d
     t=terms(S)
     s=size(t,1)
-    t1=fill((0.0+0.0im)*x1,s)
+    t1=fill((0.0+0.0im)*X[1],s)
     for i in 1:s
         c=coefficient(t[i])
         m=monomial(t[i])
@@ -61,7 +61,6 @@ function ahp(T::Array,X)
         t1[i]=(c*T[Ids...])*m
     end
     P=sum(t1[i] for i in 1:s)
-
     return P
 end
 

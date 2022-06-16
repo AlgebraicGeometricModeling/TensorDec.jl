@@ -12,7 +12,7 @@ end
 function diagonalization_iter(D)
     n = size(D[1],1)
     s = length(D)
-    
+
     X = fill(zero(D[1][1,1]),n,n)
     Y = fill(zero(D[1][1,1]),n,n)
 
@@ -53,7 +53,7 @@ function simdiag(M::Vector{Matrix{C}},
     E  = eigvecs(M1)
 
     F  = inv(E)
-    
+
     D  = vcat([Matrix{C}(I,r,r)],[F*M[i]*E for i in 1:length(M)])
     err = sum(norm_off.(D))
     delta = sum(norm.(D))
@@ -78,7 +78,7 @@ function simdiag(M::Vector{Matrix{C}},
         Info["d*"]= err
     end
     Info["nIter"] = nit
-    
+
     Xi = fill(zero(E[1,1]),n,r)
     for i in 1:r
     	for j in 1:n
@@ -93,7 +93,7 @@ end
 # Simultaneous Diagonalisation of the pencil of matrices
 function simdiag(H::Vector{Matrix{C}}, lambda::Vector, rkf::Function) where C
     n = length(H)
-    
+
     H0 = sum(H[i]*lambda[i] for i in 1:length(lambda))
 
     U, S, V = svd(H0)       # H0= U*diag(S)*V'
@@ -117,7 +117,7 @@ function simdiag(H::Vector{Matrix{C}}, lambda::Vector, rkf::Function) where C
         E  = fill(1.0,1,1)
         DiagInfo = Dict{String,Any}( "case" => "1x1" )
     end
-    
+
     Uxi = (U[:,1:r].*Sr')*E
     Vxi = (E\ V[:,1:r]')
 

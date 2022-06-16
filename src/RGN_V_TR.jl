@@ -142,7 +142,7 @@ function rgn_v_tr_step(delta,V,P)
     end
     #solve Gauss-Newton equation
 
-    N1=-pinv(H)*G
+    N1=-pinv(H,rtol = sqrt(eps(real(float(one(eltype(H)))))))*G
 
     l1=G'*G
     l2=G'*H*G

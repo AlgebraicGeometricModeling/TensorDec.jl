@@ -114,7 +114,7 @@ function rne_n_tr_step(delta, W::Vector, V::Matrix,P)
     N=zero(Ge)
     #Fe=pinv(He)
     #N=-Fe*Ge
-    N=-pinv(He)*Ge
+    N=-pinv(He,rtol = sqrt(eps(real(float(one(eltype(He)))))))*Ge
     #N1=M*N
     l1=Ge'*Ge
     l2=Ge'*He*Ge

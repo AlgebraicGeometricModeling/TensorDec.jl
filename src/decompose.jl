@@ -1,6 +1,7 @@
 export decompose, decompose_qr, weights
 import MultivariateSeries: decompose
 import LinearAlgebra: diagm
+using DynamicPolynomials
 
 #------------------------------------------------------------------------
 function power_vec(d, L, pt)

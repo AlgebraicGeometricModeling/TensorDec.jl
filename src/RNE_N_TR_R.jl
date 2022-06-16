@@ -27,8 +27,9 @@ end
 
 
 """
+```
 rne_n_tr_r_step(delta, W::Vector, V::Matrix,P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
-
+```
 Riemannian Newton method with trust region (one iteration) from real initial point W, V.
 
 W is a real vector and V is a real matrix and its columns are normalized.

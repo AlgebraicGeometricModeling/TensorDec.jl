@@ -134,7 +134,7 @@ end
 ```
 Delta(P,W) ⤍ Float64
 ```
-This function gives the initial raduis of the initial sphere in a trust region method for the symmetric tensor rank approximation problem.
+This function gives the initial radius of the initial sphere in a trust region method for the symmetric tensor rank approximation problem.
 
 ```
 """
@@ -147,13 +147,13 @@ function Delta(P,W::Vector)
     delta=min(delta1,delta2)
 
 end
+
 function Delta1(P,V::Matrix)
     r=size(V,2)
     d=maxdegree(P)
     delta1=(1/10)*sqrt((d/r)*sum((norm(V[:,i]))^(2*d) for i in 1:r))
     delta2=(1/2)*(norm_apolar(P))
     delta=min(delta1,delta2)
-
 end
 
 function solve(a::Float64,b::Float64,c::Float64)

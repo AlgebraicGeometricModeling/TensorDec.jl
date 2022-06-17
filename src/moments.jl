@@ -1,4 +1,4 @@
-using Distributions, LinearAlgebra, Plots, GaussianMixtures, DynamicPolynomials, MultivariateSeries
+using LinearAlgebra, DynamicPolynomials, MultivariateSeries
 # To make the sum of the entries of the weight vector in a symmetric tensor decomposition equal to 1.
 function mix_nrmlz(w, Xi, d)
     s   = sum(abs(x) for x in w)
@@ -14,25 +14,7 @@ function mix_nrmlz(w, Xi, d)
     end
     return w1, Xi1
 end
-"""
-```
-mix_gauss_var_diff(sigma, mu, lv, N) ⤍ a dataset S
-```
-To sample a dataset of N observations obeying a mixture of multivariate Gaussian distributions i.e., the dataset can be decomposed to r cluster each of this cluster is obeying a multivariate Gaussian distribution.
-* The cluster proportions is given by the  vector lv.
-* The size of the vector lv is equal to the number of clusters.
-* Sigma is a vector of size r where the ith-entry denoted σ_i in this vector means that the cluster i is of covariance matrix σ_i*Id.
-* The r means of size n (the number of features) of the r clusters are represented in columns in a matrix mu.
-"""
 
-function mix_gauss_var_diff(sigma, mu, lv, N)
-    n=length(mu[1])
-    r=length(sigma)
-    Nrm = [MvNormal(mu[i],Diagonal(ones(n)*sigma[i]))  for i in 1:r]
-    Mix_of_Gaussians = MixtureModel(Nrm[1:r],lv)
-    S = rand(Mix_of_Gaussians, N)
-    return S
-end
 """
 ```
 moment_var_diff(S) → gives the first, second and thirs order moments M1, M2 and M3

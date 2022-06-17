@@ -48,44 +48,49 @@ The option `init` specifies the way the initial point for the first three method
 
      * Random: To choose a random combination (default option);
      * Rnd: To choose non-random combination.
+     *RCG: To choose to approximate the pencil of submatrices of the Hankel matrix by a pencil of real simultaneous diagonalizable matrices using Riemannian conjugate gradient algorithm.
 
 """
-function approximate(P::Polynomial, r:: Int64; iter = :RNE, init = :Random)
+function approximate(P::Polynomial, r:: Int64; iter = :RNE, init = :Random, smd= :Default)
 
     if iter == :SPM
         V0 = randn(length(variables(P)))
         return spm_decompose(P,r,V0)
     end
-
-    w0, V0, Info = decompose(P, cst_rkf(r), init)
-    d = maxdegree(P)
-
-    if iter == :RNER
-
-        c = 0
-        while c<5 && !isreal(V0)
-            w0, V0, Info = decompose(P,cst_rkf(r))
-            c += 1
-        end
-        if c >0
-           println("\n[ initial decomposition repeated (", string(c),") ]")
-        end
-        return rne_n_tr_r(P, w0, V0)
-
-    elseif iter == :RNE
-
-        return rne_n_tr(P, w0, V0)
-
-    elseif iter == :RGN
-
-        C0 = fill(zero(Complex{Float64}), size(V0,1), size(V0,2))
-        for i in 1:r
-            C0[:,i]=complex(w0[i])^(1/d)*V0[:,i]
-        end
-        w1 = fill(one(Complex{Float64}),r)
-        return w1, rgn_v_tr(P,C0)...
-
+    if smd == :Default
+        w0, V0, Info = decompose(P, cst_rkf(r), init)
+    elseif smd == :RCG
+            w0, V0, Info = rcg_decompose(P, cst_rkf(r), init)
     end
+
+        d = maxdegree(P)
+
+        if iter == :RNER
+
+            c = 0
+            while c<5 && !isreal(V0)
+                w0, V0, Info = decompose(P,cst_rkf(r))
+                c += 1
+            end
+            if c >0
+                println("\n[ initial decomposition repeated (", string(c),") ]")
+            end
+            return rne_n_tr_r(P, w0, V0)
+
+        elseif iter == :RNE
+
+            return rne_n_tr(P, w0, V0)
+
+        elseif iter == :RGN
+
+            C0 = fill(zero(Complex{Float64}), size(V0,1), size(V0,2))
+            for i in 1:r
+                C0[:,i]=complex(w0[i])^(1/d)*V0[:,i]
+            end
+            w1 = fill(one(Complex{Float64}),r)
+            return w1, rgn_v_tr(P,C0)...
+
+        end
 end
 
 """

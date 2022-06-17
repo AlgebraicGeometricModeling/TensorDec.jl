@@ -12,7 +12,9 @@ include("symmetric.jl")
 include("multilinear.jl")
 include("apolar.jl")
 include("decompose.jl")
+include("rcg_decompose.jl")
 include("simdiag.jl")
+include("rcg_simdiag.jl")
 include("approximate.jl")
 
 end # module

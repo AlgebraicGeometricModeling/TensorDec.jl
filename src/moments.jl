@@ -16,7 +16,7 @@ function mix_nrmlz(w, Xi, d)
 end
 """
 ```
-mix_gauss(sigma, mu, lv, N) ⤍ a dataset S
+mix_gauss_var_diff(sigma, mu, lv, N) ⤍ a dataset S
 ```
 To sample a dataset of N observations obeying a mixture of multivariate Gaussian distributions i.e., the dataset can be decomposed to r cluster each of this cluster is obeying a multivariate Gaussian distribution.
 * The cluster proportions is given by the  vector lv.

@@ -16,5 +16,6 @@ include("rcg_decompose.jl")
 include("simdiag.jl")
 include("rcg_simdiag.jl")
 include("approximate.jl")
+include("moments.jl")
 
 end # module

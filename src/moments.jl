@@ -1,4 +1,5 @@
 using LinearAlgebra, DynamicPolynomials, MultivariateSeries
+export moment_var_diff, optdec, var_diff  
 # To make the sum of the entries of the weight vector in a symmetric tensor decomposition equal to 1.
 function mix_nrmlz(w, Xi, d)
     s   = sum(abs(x) for x in w)

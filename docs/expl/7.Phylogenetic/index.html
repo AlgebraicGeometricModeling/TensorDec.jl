@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Phylogenetic trees · TensorDec</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">TensorDec</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../0.Decomposition/">Decomposition algorithm</a></li><li><a class="tocitem" href="../1.SymmetricTensor/">Symmetric tensors</a></li><li><a class="tocitem" href="../2.MultilinearTensor/">Multilinear tensors</a></li><li><a class="tocitem" href="../3.MultivariateProny/">Multivariate exponential decompositon</a></li><li><a class="tocitem" href="../4.DiracMeasure/">Weighted sum of Dirac Measures</a></li><li><a class="tocitem" href="../5.SparseInterpolation/">Sparse interpolation</a></li><li><a class="tocitem" href="../6.Decoding/">Decoding algebraic codes (BMS)</a></li><li class="is-active"><a class="tocitem" href>Phylogenetic trees</a></li><li><a class="tocitem" href="../8.1.Sym_rank_one_approx/">Best rank one approximation and optimization on the sphere</a></li><li><a class="tocitem" href="../8.2.Sym_rank_approx/">Low rank approximation of symmetric tensors</a></li></ul></li><li><span class="tocitem">Functions &amp; types</span><ul><li><a class="tocitem" href="../../code/0.tensors/">Tensors</a></li><li><a class="tocitem" href="../../code/1.series/">Series</a></li><li><a class="tocitem" href="../../code/2.polynomials/">Polynomials</a></li><li><a class="tocitem" href="../../code/3.decompose/">Decomposition</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Phylogenetic trees</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Phylogenetic trees</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/AlgebraicGeometricModeling/TensorDec.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Phylogenetic-trees"><a class="docs-heading-anchor" href="#Phylogenetic-trees">Phylogenetic trees</a><a id="Phylogenetic-trees-1"></a><a class="docs-heading-anchor-permalink" href="#Phylogenetic-trees" title="Permalink"></a></h1><pre><code class="language-julia hljs">using TensorDec
+normalize_markov! = function(w,A,B,C) 
+    for i in 1:size(A,2) 
+        l = sum(A[j,i] for j in 1:size(A,1) ) 
+        A[:,i] /= l
+        w[i] *= l
+    end
+    for i in 1:size(B,2) 
+        l = sum(B[j,i] for j in 1:size(B,1) ) 
+        B[:,i] /=l
+        w[i] *= l
+    end
+    for i in 1:size(C,2) 
+        l = sum(C[j,i] for j in 1:size(B,1) ) 
+        C[:,i] /=l
+        w[i] *= l
+    end
+    w, A,B,C
+end</code></pre><pre><code class="nohighlight hljs">#3 (generic function with 1 method)</code></pre><pre><code class="language-julia hljs">A = rand(4,4); B = rand(4,4); C = rand(4,4); w = rand(4);
+normalize_markov!(w,A,B,C)
+fill(1.,4)&#39;*A, fill(1.,4)&#39;*B, fill(1.,4)&#39;*C</code></pre><pre><code class="nohighlight hljs">([1.0 1.0 1.0 1.0], [1.0 1.0 1.0 1.0], [1.0 1.0 1.0 1.0])</code></pre><pre><code class="language-julia hljs">t = tensor(w,A,B,C)</code></pre><pre><code class="nohighlight hljs">4×4×4 Array{Float64,3}:
+[:, :, 1] =
+ 0.22132   0.166737  0.254042  0.0613668
+ 0.092515  0.112218  0.194429  0.0814187
+ 0.316227  0.225333  0.297283  0.0668594
+ 0.309741  0.261594  0.293648  0.110342 
+
+[:, :, 2] =
+ 0.0403731  0.0268474  0.0398125  0.0135116
+ 0.024117   0.0254106  0.0371     0.0226149
+ 0.0546752  0.0364448  0.0452751  0.0139016
+ 0.0583531  0.0540776  0.051944   0.0289579
+
+[:, :, 3] =
+ 0.15016    0.0921238  0.133752  0.0523025
+ 0.0810969  0.0689567  0.112981  0.0703695
+ 0.196223   0.121267   0.146411  0.0483899
+ 0.180559   0.144179   0.137036  0.0674456
+
+[:, :, 4] =
+ 0.119343   0.11672   0.22974   0.0601882
+ 0.0967337  0.124609  0.217909  0.0854228
+ 0.146758   0.136596  0.242653  0.0650576
+ 0.168666   0.191626  0.252545  0.11588</code></pre><pre><code class="language-julia hljs">wd, Ad, Bd, Cd = decompose(t)
+normalize_markov!(wd,Ad,Bd,Cd)</code></pre><pre><code class="nohighlight hljs">MethodError: no method matching decompose(::Array{Array{Float64,2},1}, ::Array{Float64,1}, ::getfield(MultivariateSeries, Symbol(&quot;##25#27&quot;)){Float64})
+Closest candidates are:
+  decompose(::Array{Array{C,2},1}, !Matched::Function) where C at /Users/mourrain/.julia/packages/MultivariateSeries/mJQLE/src/decompose.jl:20
+  decompose(!Matched::DynamicPolynomials.Polynomial{true,C}, !Matched::Function, ::Any) where C at /Users/mourrain/Julia/TensorDec.jl/src/decompose.jl:22
+
+
+
+Stacktrace:
+
+ [1] #decompose#23(::Int64, ::Function, ::Array{Float64,3}, ::Function) at /Users/mourrain/Julia/TensorDec.jl/src/decompose.jl:215
+
+ [2] decompose(::Array{Float64,3}, ::Function) at /Users/mourrain/Julia/TensorDec.jl/src/decompose.jl:210 (repeats 2 times)
+
+ [3] top-level scope at In[4]:1</code></pre><pre><code class="language-julia hljs">w</code></pre><pre><code class="nohighlight hljs">4-element Array{Float64,1}:
+ 1.3184908145711505
+ 1.1386144184166538
+ 2.8433075891450534
+ 2.5117767986101014</code></pre><pre><code class="language-julia hljs">wd</code></pre><pre><code class="nohighlight hljs">UndefVarError: wd not defined
+
+
+
+Stacktrace:
+
+ [1] top-level scope at In[6]:1</code></pre><pre><code class="language-julia hljs">A</code></pre><pre><code class="nohighlight hljs">4×4 Array{Float64,2}:
+ 0.0135068  0.32004   0.275579  0.243881   
+ 0.299151   0.323187  0.240813  0.000311288
+ 0.063392   0.252418  0.271949  0.404148   
+ 0.62395    0.104355  0.211659  0.35166</code></pre><pre><code class="language-julia hljs">Ad</code></pre><pre><code class="nohighlight hljs">UndefVarError: Ad not defined
+
+
+
+Stacktrace:
+
+ [1] top-level scope at In[8]:1</code></pre><pre><code class="language-julia hljs">using LinearAlgebra
+norm(t-tensor(wd,Ad,Bd,Cd))</code></pre><pre><code class="nohighlight hljs">UndefVarError: wd not defined
+
+
+
+Stacktrace:
+
+ [1] top-level scope at In[9]:2</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../6.Decoding/">« Decoding algebraic codes (BMS)</a><a class="docs-footer-nextpage" href="../8.1.Sym_rank_one_approx/">Best rank one approximation and optimization on the sphere »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.23 on <span class="colophon-date" title="Tuesday 7 February 2023 11:17">Tuesday 7 February 2023</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

@@ -46,12 +46,10 @@ T-tensor(w0,A0,B0,C0)
 
 ## Documentation
 
-- [LATEST](http://www-sop.inria.fr/members/Bernard.Mourrain/software/TensorDec/index.html)
-- More information on [Julia](https://julialang.org/)
-
+See [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://AlgebraicGeometricModeling.github.io/TensorDec.jl/docs)
+    
 
 ## Dependencies
 
-- Julia 1.0
 - DynamicPolynomials
 - MultivariatePolynomials

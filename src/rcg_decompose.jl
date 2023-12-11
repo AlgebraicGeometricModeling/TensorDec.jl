@@ -3,10 +3,6 @@ import MultivariateSeries: decompose
 import LinearAlgebra: diagm
 using MultivariatePolynomials
 using DynamicPolynomials
-#------------------------------------------------------------------------
-function power_vec(d, L, pt)
- [m(pt)*binomial(d,exponents(m)) for m in L]
-end
 
 #------------------------------------------------------------------------
 """

@@ -15,12 +15,13 @@ function mix_nrmlz(w, Xi, d)
     end
     return w1, Xi1
 end
-"""
+
+#==
 ```
 moment_var_diff(S) → gives the first, second and third order moments M1, M2 and M3
                      computed using the dataset S.
 ```
-"""
+==#
 function moment_var_diff(S) #method of moments
     n=size(S,1)
     N=size(S,2)
@@ -37,11 +38,11 @@ function moment_var_diff(S) #method of moments
     M1, M2, M3
 end
 
-"""
+#==
 ```
 optdec(w, Xi, M2) → uses the second order moments M2 to identify the cluster proportions w and the matrix of the means in columns Xi.
 ```
-"""
+==#
 function optdec(w, Xi, M2)
     n=size(Xi,1)
     r=size(Xi,2)
@@ -57,11 +58,12 @@ function optdec(w, Xi, M2)
     end
     return w1, Xi1
 end
-"""
+
+#==
 ```
 var_diff(w, Xi, M1) → uses the first order moments M1 to identify the variance in each cluster.
 ```
-"""
+==#
 function var_diff(w, Xi, M1)
     n = size(Xi,1)
     r = length(w)
@@ -72,11 +74,11 @@ function var_diff(w, Xi, M1)
     a= (A'*A)\(A'*M1)
 end
 
-"""
+#==
 ```
 moment_var_diff(S, r) → given the dataset S and the number of cluster r such that r ≤ number of features, this function estimates using the method of moments the cluster proportion, the means and the covariance for each Gaussian distribution within a spherical Gaussian mixture model that fits with the studied data S.
 ```
-"""
+==#
 function moment_var_diff(S,r) #method of moments
     d=3
     M1, M2, M3 = moment_var_diff(S)

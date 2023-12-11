@@ -49,9 +49,9 @@ function multilinear(T::Array{C,3}, X::AbstractVector, Y::AbstractVector, Z::Abs
 end
 
 
-"""
+#=
 L``^p`` norm of the coefficient of the tensor `T`. The default value of p is 2.
-"""
+=#
 function LinearAlgebra.norm(T::Array{C,3}, p::Int64=2) where C
     n = size(T)
     r = zero(0)

@@ -1,16 +1,6 @@
 export rcg_simdiag
 using LinearAlgebra
 
-# norm of off diagonal terms of a square matrix
-function norm_off(M)
-    if size(M[1],1)>1
-        return sqrt(sum(abs2(M[i,j]) + abs2(M[j,i]) for i in 1:size(M,1) for j in i+1:size(M,1)))
-    else
-        return 0.0
-    end
-end
-
-
 # add code rcg_simdiag
 
 function diag_multip(A,B)

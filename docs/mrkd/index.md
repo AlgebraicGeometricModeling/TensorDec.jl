@@ -4,14 +4,14 @@ Package for the decomposition of tensors and polynomial-exponential series.
 
 ## Introduction
 
-The package `TensorDec.jl`provides tools for the following decomposition problems:
+The package `TensorDec.jl` provides tools for the following decomposition problems:
 
 ### Symmetric tensor decomposition
 For symmetric tensors or multivariate homogeneous polynomials ``\sigma(\mathbf{x}) = \sum_{|\alpha|=d} \sigma_{\alpha} {d \choose \alpha} \mathbf{x}^{\alpha}``, we consider their Waring decomposition:
 ```math
     \sigma(\mathbf{x}) = \sum_{i=1}^r \omega_i\, (\xi_{i,1} x_1+ \cdots + \xi_{i,n} x_n)^d
 ```
-with `r`minimal.
+with `r` minimal.
     
 ### Multilinear tensor decomposition    
 For multilinear tensors, ``\sigma=(\sigma_{i,j,k})\in E_1 \otimes E_2 \otimes E_3``
@@ -53,12 +53,12 @@ Pages = map(file -> joinpath("code", file), filter(x ->endswith(x, "md"), readdi
 
 ## [Installation](@id sec_installation)
 
-The package is available at [https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl](https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl.git).
+The package is available at [https://github.com/AlgebraicGeometricModeling/TensorDec.jl](https://github.com/AlgebraicGeometricModeling/TensorDec.jl.git).
 
 
 To install it from Julia:
 ```julia
-Pkg.clone("https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl.git")
+] add https://github.com/AlgebraicGeometricModeling/TensorDec.jl
 ```
 It can then be used as follows:
 ```julia
@@ -74,6 +74,6 @@ The package `TensorDec` depends on the following packages:
 - `DynamicPolynomials` package on multivariate polynomials represented as lists of monomials.
 - `MultivariatePolynomials` generic interface package for multivariate polynomials.
 
-These packages will installed with `TensorDec`  (see [installation](@ref sec_installation)).
+These packages will be installed with `TensorDec`  (see [installation](@ref sec_installation)).
 
         

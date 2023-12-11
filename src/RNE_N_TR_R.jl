@@ -4,13 +4,13 @@ using LinearAlgebra
 using MultivariatePolynomials
 using DynamicPolynomials
 
-"""
+#==
 ```
 opt(W,V,P) ⤍ Vector
 ```
 This function solves the linear least square problem: 1/2 min_{α1,...,αr} ||∑αiW[i](V[:,i]'x)^d-P||^2 over the real field.
 
-"""
+==#
 function opt(W::Vector, V::Matrix,P)
     d=maxdegree(P)
     r=size(W,1)
@@ -26,7 +26,7 @@ function opt(W::Vector, V::Matrix,P)
 end
 
 
-"""
+#==
 ```
 rne_n_tr_r_step(delta, W::Vector, V::Matrix,P) ➡ gives symmetric decomposition W1, V1 of rank r=size(W,1).
 ```
@@ -36,7 +36,7 @@ W is a real vector and V is a real matrix and its columns are normalized.
 
 delta is the radius of the sphere i.e. the trust region.
 
-"""
+==#
 function rne_n_tr_r_step(delta, W::Vector, A::Matrix, P)
     r=size(W,1)
     n=size(A,1)
@@ -213,7 +213,6 @@ Output:
    approximation rank. The columns vectors of B are normalized.
   - Info: 'd0' (resp. 'd*') represents the initial (resp. the final) residual error,
       'nIter' is for the number of iterations needed to find the approximation.
-
 
 """
 function rne_n_tr_r(P, A0::Vector, B0::Matrix,

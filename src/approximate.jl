@@ -51,7 +51,7 @@ The option `init` specifies the way the initial point for the first three method
      *RCG: To choose to approximate the pencil of submatrices of the Hankel matrix by a pencil of real simultaneous diagonalizable matrices using Riemannian conjugate gradient algorithm.
 
 """
-function approximate(P::Polynomial, r:: Int64; iter = :RNE, init = :Random, smd= :Default)
+function approximate(P::DynamicPolynomials.Polynomial, r:: Int64; iter = :RNE, init = :Random, smd= :Default)
 
     if iter == :SPM
         V0 = randn(length(variables(P)))
@@ -134,13 +134,13 @@ The option `iter` specifies the method to apply in order to find the approximati
      * SPM: To apply the function 'spm_decompose': Decomposition of the tensorwith the Power Method.
 
 """
-function approximate(P::Polynomial, w0, V0; iter = :RNE)
+function approximate(P::DynamicPolynomials.Polynomial, w0, V0; iter = :RNE)
 
     r = length(w0)
     d = maxdegree(P)
 
     if iter == :SPM
-        C0 = fill(zero(Complex{Float64}), size(V0,1), size(V0,2))
+        C0 = fill(zer(Complex{Float64}), size(V0,1), size(V0,2))
         for i in 1:r
             C0[:,i]=complex(w0[i])^(1/d)*V0[:,i]
         end

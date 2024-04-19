@@ -104,7 +104,7 @@ end
 tensor(s, X, d) -> MultivariatePolynomial
 ```
 Compute the symmetric tensor or homogeneous polynomial in the variables `X` corresponding to the series s.
-The coefficients ``s_{\\alpha}`` of are multiplied by ``binomial(d,\\alpha)``. The monomials are homogenised in degree d with respect to the **last variable** of X0.
+The coefficients ``s_{\\alpha}`` are multiplied by ``binomial(d,\\alpha)``. The monomials are homogenised in degree d with respect to the **last variable** of X0.
 """
 function tensor(s::MultivariateSeries.Series{T}, X, d = maxdegree(s)) where {T}
     P = zero(Polynomial{true,T})

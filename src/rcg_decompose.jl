@@ -1,8 +1,9 @@
 export rcg_decompose
+
 import MultivariateSeries: decompose
 import LinearAlgebra: diagm
-using MultivariatePolynomials
-using DynamicPolynomials
+
+using MultivariatePolynomials, DynamicPolynomials
 
 #------------------------------------------------------------------------
 """
@@ -17,7 +18,7 @@ If the rank function `cst_rkf(r)` is used, the SVD is truncated at rank r.
 
 A Riemannian conjugate gradient algorithm is used (RCG) in the algorithm decompose (rcg_decompose) to approximate the pencil of submatrices of the Hankel matrix by a pencil of real simultaneous diagonalizable matrices.
 """
-function rcg_decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6), lbd = :Random  ) where C
+function rcg_decompose(pol::DynamicPolynomials.Polynomial, rkf::Function=eps_rkf(1.e-6), lbd = :Random  )
     d  = deg(pol)
     X = variables(pol)
     n = length(X)
@@ -70,6 +71,6 @@ function rcg_decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6), lb
 end
 
 
-function rcg_decompose(pol::Polynomial{true,C}, r::Int64) where {C}
+function rcg_decompose(pol::DynamicPolynomials.Polynomial, r::Int64)
     return rcg_decompose(pol, cst_rkf(r))
 end

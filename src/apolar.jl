@@ -1,4 +1,7 @@
+using MultivariatePolynomials
+
 export hilbert, perp, apolarpro, norm_apolar
+
 #include("symmetric.jl")
 import MultivariateSeries: hankel, dual
 """
@@ -8,12 +11,10 @@ dual(p::Polynomial, d:: Int64) -> Series{T}
 Compute the series associated to the tensor p of degree d.
 T is the type of the coefficients of the polynomial p.
 """
-function MultivariateSeries.dual(p::Polynomial{true,T}, d:: Int64) where T
-    s = Series{T, Monomial{true}}()
-    for t in p
-	s[t.x] = t.α/binomial(d,exponent(t.x))
-    end
-    return s
+function MultivariateSeries.dual(p::DynamicPolynomials.Polynomial, d:: Int64) 
+    Lm = monomials(p)
+    Lc = coefficients(p)
+    return MultivariateSeries.series([Lm[i] => Lc[i] for i in 1:length(Lm)])
 end
 
 # """
@@ -38,7 +39,7 @@ end
 # end
 
 
-function MultivariateSeries.hankel(p::Polynomial{true,T}, L1::AbstractVector, L2::AbstractVector) where T
+function MultivariateSeries.hankel(p::DynamicPolynomials.Polynomial, L1::AbstractVector, L2::AbstractVector) 
     hankel(dual(p, deg(p)), L1, L2)
 end
 
@@ -46,7 +47,7 @@ end
 Compute the Hankel matrix (a.k.a. Catalecticant matrix) in degree d of the
 symmetric tensor F.
 """
-function MultivariateSeries.hankel(F::Polynomial{true,T}, d::Int64, X = variables(F)) where T
+function MultivariateSeries.hankel(F::DynamicPolynomials.Polynomial, d::Int64, X = variables(F))
     L0 = monomials(X, deg(F)-d)
     L1 = monomials(X, d)
     hankel(dual(F,deg(F)),L0,L1)

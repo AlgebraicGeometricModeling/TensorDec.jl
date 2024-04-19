@@ -1,17 +1,17 @@
-using TensorDec
+using DynamicPolynomials, TensorDec
 
-X = @ring x1 x2 
+X = @polyvar x1 x2 
 n = length(X)
 r = 5
 
-L = monoms(X,5)
+L = monomials(X,5)
 
 Xi0 = rand(2,r)
 w0  = rand(r)
 
 sigma = series(w0, Xi0, L)
 
-w, Xi = ms_decompose(sigma)
+w, Xi = MultivariateSeries.decompose(sigma)
 
 sigma1 = series(w, Xi, L)
 

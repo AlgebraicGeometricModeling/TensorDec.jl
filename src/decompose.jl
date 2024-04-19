@@ -11,7 +11,7 @@ end
 #------------------------------------------------------------------------
 """
 ```
-decompose(p :: Polynomial{true,T},  rkf :: Function)
+decompose(p :: DynamicPolynomials.Polynomial,  rkf :: Function)
 ```
 Decompose the homogeneous polynomial ``p`` as ``∑ ω_i (ξ_{i1} x_1 + ... + ξ_{in} x_n)ᵈ `` where ``d`` is the degree of ``p``.
 
@@ -19,8 +19,8 @@ The optional argument `rkf` is the rank function used to determine the numerical
 
 If the rank function `cst_rkf(r)` is used, the SVD is truncated at rank r.
 """
-function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6), lbd = :Random  ) where C
-    d  = deg(pol)
+function decompose(pol::DynamicPolynomials.Polynomial, rkf::Function=eps_rkf(1.e-6), lbd = :Random  ) 
+    d  = maxdegree(pol)
     X = variables(pol)
     n = length(X)
     sigma = dual(pol,d)
@@ -29,7 +29,7 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6), lbd = 
     B0 = monomials(X, d0)
     B1 = monomials(X, d1)
 
-    H = Matrix{C}[]
+    H = Matrix[]
     for x in X
         push!(H, hankel(sigma, B0, [b*x for b in B1]))
     end
@@ -72,16 +72,16 @@ function decompose(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6), lbd = 
 end
 
 
-function decompose(pol::Polynomial{true,C}, r::Int64) where {C}
+function decompose(pol::DynamicPolynomials.Polynomial, r::Int64)
     return decompose(pol, cst_rkf(r))
 end
 
-function decompose(pol::Polynomial{true,C}, eps::Float64) where {C}
+function decompose(pol::DynamicPolynomials.Polynomial, eps::Float64)
     return decompose(pol, eps_rkf(eps))
 end
 
 #----------------------------------------------------------------------
-function dec_mat(pol::Polynomial{true,C}, d0 = div(maxdegree(pol)-1,2)) where C
+function dec_mat(pol::DynamicPolynomials.Polynomial, d0 = div(maxdegree(pol)-1,2))
     d     = maxdegree(pol)
     X     = variables(pol)
     sigma = dual(pol,d)
@@ -169,7 +169,7 @@ function dec_eigen(M)
     Xi
 end
 
-function decompose_qr(pol::Polynomial{true,C}, rkf::Function=eps_rkf(1.e-6)) where C
+function decompose_qr(pol::DynamicPolynomials.Polynomial, rkf::Function=eps_rkf(1.e-6))
 
     d = maxdegree(pol)
     X = variables(pol)
@@ -252,7 +252,7 @@ Compute the weight vector in the decomposition of the homogeneous polynomial `T`
 as a weighted sum of powers of the linear forms associated to the
 columns of `Xi`.
 """
-function weights(T::Polynomial{true,C}, Xi::AbstractMatrix) where C
+function weights(T::DynamicPolynomials.Polynomial, Xi::AbstractMatrix)
     X = variables(T)
     d = deg(T)
     L = monomials(X,d)

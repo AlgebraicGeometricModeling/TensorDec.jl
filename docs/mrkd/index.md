@@ -22,30 +22,14 @@ we consider the decomposition:
 with ``U_i^j \in E_j `` vectors and `r` minimal.
 
     
-### Polynomial-exponential decomposition        
-For sequences ``(\sigma_{\alpha})_{\alpha} \in \mathbb{K}^{\mathbb{N}^{n}}`` or series 
-```math
-\sigma(y) = \sum_{\alpha \in \mathbb{K}^{\mathbb{N}^{n}}} \sigma_{\alpha} \frac{y^{\alpha}}{\alpha!}
-```
-which can be decomposed as polynomial-exponential series 
-```math
-\sum_{i=1}^r \omega_i(y) e^{\xi_{i,1} y_1+ \cdots + \xi_{i,n} y_n}
-```
-with polynomials ``\omega_{i}(y)`` and points ``\xi_{i}= (\xi_{i,1}, \ldots, \xi_{i,n})\in \mathbb{K}^{n}``, we compute the weights ``\omega_i`` and the frequencies ``\xi_i``.
-
-
-These types of decompositions appear in many problems (see [Examples](@ref sec_examples)). 
-
-The package `TensorDec` provides functions to manipulate (truncated) series, to construct truncated Hankel matrices, and to compute such a decomposition from these Hankel matrices.
-
-## [Examples](@id sec_examples)
+## [Tutorials](@id sec_examples)
 
 ```@contents
 Pages = map(file -> joinpath("expl", file), filter(x ->endswith(x, "md"), readdir("expl")))
 ```
 
 
-## Functions and types
+## Manual
 
 ```@contents
 Pages = map(file -> joinpath("code", file), filter(x ->endswith(x, "md"), readdir("code"))) 
@@ -64,16 +48,18 @@ It can then be used as follows:
 ```julia
 using TensorDec
 ```
-See the [Examples](@ref sec_examples) for more details.
+For more details, see the [tutorials](@ref sec_examples).
 
 
 ## Dependencies
 
 The package `TensorDec` depends on the following packages:
 
+- `LinearAlgebra` standard package for linear algebra.
 - `DynamicPolynomials` package on multivariate polynomials represented as lists of monomials.
 - `MultivariatePolynomials` generic interface package for multivariate polynomials.
+- `MultivariateSeries` for duality on multivariate polynomials.
 
-These packages will be installed with `TensorDec`  (see [installation](@ref sec_installation)).
+These packages are installed with `TensorDec`  (see [installation](@ref sec_installation)).
 
         

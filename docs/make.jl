@@ -1,6 +1,6 @@
 using Documenter, TensorDec
 
-dir = "mrkd"
+dir = "src"
 Expl = map(file -> joinpath("expl", file), filter(x ->endswith(x, "md"), readdir(dir*"/expl")))
 Code = map(file -> joinpath("code", file), filter(x ->endswith(x, "md"), readdir(dir*"/code")))
 

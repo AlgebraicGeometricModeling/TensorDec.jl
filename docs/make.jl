@@ -13,15 +13,15 @@ makedocs(
          source = dir,
          pages = Any[
                      "Home" => "index.md",
-                     "Examples" => Expl,
-                     "Functions & types" => Code
+#                     "Examples" => Expl,
+#                     "Functions & types" => Code
                      ],
-         repo = "https://github.com/AlgebraicGeometricModeling/TensorDec.jl",
+         repo = Remotes.GitHub("AlgebraicGeometricModeling", "TensorDec.jl"),
          doctest = false
          )
-
+#=
 deploydocs(
            repo = "github.com/AlgebraicGeometricModeling/TensorDec.jl.git",
            target = "site"
            )
-
+=#

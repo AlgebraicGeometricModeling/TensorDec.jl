@@ -1,6 +1,6 @@
-using TensorDec
+using DynamicPolynomials, TensorDec
 
-X = @ring x0 x1 x2 
+X = @polyvar x0 x1 x2 
 n = length(X)
 d = 4
 r = 4

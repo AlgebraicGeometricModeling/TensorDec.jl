@@ -4,6 +4,15 @@ export hilbert, perp, apolarpro, norm_apolar
 
 #include("symmetric.jl")
 import MultivariateSeries: hankel, dual
+
+
+function _binomial(d, E::Vector{Int})
+    r = factorial(d)
+    for e in E
+        r/= factorial(e)
+    end
+    return r
+end
 """
 ```
 dual(p::Polynomial, d:: Int64) -> Series{T}
@@ -14,7 +23,7 @@ T is the type of the coefficients of the polynomial p.
 function MultivariateSeries.dual(p::DynamicPolynomials.Polynomial, d:: Int64) 
     Lm = monomials(p)
     Lc = coefficients(p)
-    return MultivariateSeries.series([Lm[i] => Lc[i] for i in 1:length(Lm)])
+    return MultivariateSeries.series([Lm[i] => Lc[i]/_binomial(d, exponent(Lm[i])) for i in 1:length(Lm)])
 end
 
 # """
@@ -40,7 +49,7 @@ end
 
 
 function MultivariateSeries.hankel(p::DynamicPolynomials.Polynomial, L1::AbstractVector, L2::AbstractVector) 
-    hankel(dual(p, deg(p)), L1, L2)
+    hankel(dual(p, maxdegree(p)), L1, L2)
 end
 
 """
@@ -48,18 +57,18 @@ Compute the Hankel matrix (a.k.a. Catalecticant matrix) in degree d of the
 symmetric tensor F.
 """
 function MultivariateSeries.hankel(F::DynamicPolynomials.Polynomial, d::Int64, X = variables(F))
-    L0 = monomials(X, deg(F)-d)
+    L0 = monomials(X, maxdegree(F)-d)
     L1 = monomials(X, d)
-    hankel(dual(F,deg(F)),L0,L1)
+    hankel(dual(F,maxdegree(F)),L0,L1)
 end
 
 """
 Sequence of dimension of ``S/(F^⟂)`` or of the kernels of the Hankel matrix in degree i
-for i in 1:deg(F).
+for i in 1:maxdegree(F).
 """
 function hilbert(F)
     H = [1]
-    for i in 1:deg(F)-1
+    for i in 1:maxdegree(F)-1
         N = nullspace(hankel(F,i))
         push!(H,size(N,1)-size(N,2))
     end
@@ -73,7 +82,7 @@ Compute the kernel of the Hankel matrix in degree d of the symmetric tensor F.
 function perp(F,d)
     X = variables(F)
     L0 = monomials(X, d)
-    L1 = monomials(X, deg(F)-d)
+    L1 = monomials(X, maxdegree(F)-d)
     H = hankel(F,L1,L0)
     N = nullspace(H)
     N'*L0
@@ -94,7 +103,7 @@ Q=∑_{|α|=d} binom{d}{α} q_α  x^α, of degree d in n variables is given by
 Example
 -------
 ```jldoctest
-julia> X=@ring x1 x2
+julia> X= @polyvar x1 x2
 2-element Array{PolyVar{true},1}:
  x1
  x2

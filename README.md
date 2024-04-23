@@ -11,9 +11,9 @@ To install the package within julia:
 ## Example
 
 ```julia
-using TensorDec
+using TensorDec, DynamicPolynomials
 
-X = @ring x0 x1 x2 
+X = @polyvar x0 x1 x2 
 n = length(X)
 d = 4
 r = 4
@@ -21,7 +21,7 @@ r = 4
 # Symmetric tensor of degree d and rank r:
 Xi = rand(n,r)
 w = fill(1.0,r)
-F = tensor(w,Xi,X, d)
+F = tensor(w,Xi,X,d)
 
 k = 2
 H = hankel(F,k)

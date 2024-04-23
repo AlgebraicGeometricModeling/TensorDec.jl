@@ -1,5 +1,5 @@
 using LinearAlgebra, DynamicPolynomials
-include("../src/apolar.jl")
+
 function rand_sym_tens(X, d::Int64)
     L = monomials(X,d)
     c = randn(length(L))

@@ -8,7 +8,7 @@ using DynamicPolynomials
 #-----------------------------------------------------------------------
 """
 ```
-ahp(T::symmetric Tensor, X=@ring x1...xn)-> 'P' Associated homogeneous polynomial
+ahp(T::symmetric Tensor, X=@polyvar x1...xn)-> 'P' Associated homogeneous polynomial
 ```
 The associated homogeneous polynomials of degree d in n variables of a symmetric tensor of order d and dimension n.
 
@@ -32,7 +32,7 @@ julia> T
  -1.5  0.0
   0.0  1.5
 
-julia> X=@ring x1 x2
+julia> X=@polyvar x1 x2
 2-element Array{PolyVar{true},1}:
  x1
  x2

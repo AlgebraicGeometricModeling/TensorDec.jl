@@ -28,8 +28,8 @@ Compute ``∑ wᵢ (ξ_{i,1} V₁ + ... + ξ_{i,n} Vₙ)ᵈ`` where
 ## Example
 
 ```
-using TensorDec
-X = @ring x0 x1 x2
+using TensorDec, DynamicPolynomials
+X = @polyvar x0 x1 x2
 w = rand(5)
 Xi = rand(3,5)
 tensor(w,Xi,X,4)
@@ -51,9 +51,9 @@ Compute ``∑ wᵢ Π_j(ξ_{i,j,1} V[j][1] + ... + ξ_{i,j,n_j} V[j][n_j])^d[j]`
 ## Example
 
 ```
-using TensorDec
-X = @ring x0 x1 x2
-Y = @ring y0 y1
+using TensorDec, DynamicPolynomials
+X = @polyvar x0 x1 x2
+Y = @polyvar y0 y1
 w = rand(5)
 Xi0 = rand(3,5)
 Xi1 = rand(2,5)
@@ -107,7 +107,8 @@ Compute the symmetric tensor or homogeneous polynomial in the variables `X` corr
 The coefficients ``s_{\\alpha}`` are multiplied by ``binomial(d,\\alpha)``. The monomials are homogenised in degree d with respect to the **last variable** of X0.
 """
 function tensor(s::MultivariateSeries.Series{T}, X, d = maxdegree(s)) where {T}
-    P = zero(Polynomial{true,T})
+
+    P = zero(T) #Polynomial{true,T})
     for (m,c) in s
         alpha = exponent(m)
         alpha = cat(alpha,[d-sum(alpha)]; dims =1)

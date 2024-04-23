@@ -140,7 +140,7 @@ function approximate(P::DynamicPolynomials.Polynomial, w0, V0; iter = :RNE)
     d = maxdegree(P)
 
     if iter == :SPM
-        C0 = fill(zer(Complex{Float64}), size(V0,1), size(V0,2))
+        C0 = fill(zero(Complex{Float64}), size(V0,1), size(V0,2))
         for i in 1:r
             C0[:,i]=complex(w0[i])^(1/d)*V0[:,i]
         end

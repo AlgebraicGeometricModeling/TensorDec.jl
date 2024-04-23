@@ -1,5 +1,5 @@
 export decompose, decompose_qr, weights
-import MultivariateSeries: decompose
+import MultivariateSeries: diagonalization, decompose
 import LinearAlgebra: diagm
 using DynamicPolynomials
 
@@ -33,31 +33,38 @@ function decompose(pol::DynamicPolynomials.Polynomial, rkf::Function=eps_rkf(1.e
     for x in X
         push!(H, hankel(sigma, B0, [b*x for b in B1]))
     end
+    N = length(H)
+    
+    lambda = randn(N);
 
-    if lbd == :Random
-        lambda = randn(n);
-    else
-        # Choose a specific lambda from the SVD of M = [H1; ... ;Hn]
-        M = cat(H...; dims=2)
-        U,S,V = svd(M)
-        v = V[:,1]
-        s = size(H[1])[2]
-        Lambda = zeros(size(M,2),n);
-        for i in 1:n
-            Lambda[(i-1)*s+1:i*s] = fill(1.0,s)
-        end
-        lambda = Lambda\v
+    H0 = sum(H[i]*lambda[i] for i in 1:N)
+
+    U, S, V = svd(H0)       # H0= U*diag(S)*V'
+    r = rkf(S)
+
+    Sr  = S[1:r]
+    Sri = LinearAlgebra.diagm([one(Sr[1])/S[i] for i in 1:r])
+
+    M = Matrix{typeof(Sr[1])}[]
+    for i in 1:length(H)
+    	push!(M, Sri*(U[:,1:r]')*H[i]*(V[:,1:r]))
     end
 
-    lambda /= norm(lambda)
+    if r > 1
+        Xi, E, DiagInfo = diagonalization(M)
+    else
+        Xi = fill(zero(C),n,1)
+        for i in 1:n
+            Xi[i,1] = M[i][1,1]
+        end
+        E  = fill(1.0,1,1)
+        DiagInfo = Dict{String,Any}( "case" => "1x1" )
+    end
 
+    Uxi = (U[:,1:r].*Sr')*E
+    Vxi = (E\ V[:,1:r]')
 
-    # Simulatneous Diagonalisation of the pencil
-    Xi, Uxi, Vxi, Info = simdiag(H, lambda, rkf)
-
-    n, r = size(Xi)
-
-    w0 = power_vec(d0,B0,lambda)'*Uxi
+    w0 = power_vec(d0, B0, lambda)'*Uxi
     w1 = Vxi*power_vec(d1,B1,lambda)
 
     w  = [w0[i]*w1[i] for i in 1:r]
@@ -68,7 +75,7 @@ function decompose(pol::DynamicPolynomials.Polynomial, rkf::Function=eps_rkf(1.e
         Xi[:,i] /= norm(Xi[:,i])
     end
 
-    return w, Xi, Info
+    return w, Xi, DiagInfo
 end
 
 

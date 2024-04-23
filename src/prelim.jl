@@ -70,7 +70,7 @@ end
 ```
 gradeval(F,X,a) ⤍ Vector
 ```
-Compute the evaluation of the gradient vector of the polynomial F with n variables X=@ring x1...xn (i.e. (∂F/∂xi)_{1≤i≤n}) at vector 'a'.
+Compute the evaluation of the gradient vector of the polynomial F with n variables X = @polyvar x1...xn (i.e. (∂F/∂xi)_{1≤i≤n}) at vector 'a'.
 
 ```
 ==#
@@ -84,7 +84,7 @@ end
 ```
 hessianeval(F,X,a) ⤍ Matrix
 ```
-Compute the evaluation of the Hessian matrix of the polynomial F with n variables X=@ring x1...xn (i.e.(∂^2(F)/∂xi∂xj)_{1≤i,j≤n}) at vector 'a'.
+Compute the evaluation of the Hessian matrix of the polynomial F with n variables X = @polyvar x1...xn (i.e.(∂^2(F)/∂xi∂xj)_{1≤i,j≤n}) at vector 'a'.
 
 ```
 ==#

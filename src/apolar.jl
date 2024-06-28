@@ -1,6 +1,6 @@
 using MultivariatePolynomials
 
-export hilbert, perp, apolarpro, norm_apolar
+export hilbert, perp, apolar, norm_apolar
 
 #include("symmetric.jl")
 import MultivariateSeries: hankel, dual
@@ -93,7 +93,7 @@ end
 #-----------------------------------------------------------------------
 """
 ```
-apolarpro(P,Q) -> ComplexF64
+apolar(P,Q) -> ComplexF64
 ```
 The apolar product of two homogeneous polynomials P=∑_{|α|=d} binom{d}{α} p_α x^α and
 Q=∑_{|α|=d} binom{d}{α} q_α  x^α, of degree d in n variables is given by
@@ -114,27 +114,19 @@ x1² + (0 + 2im)x1x2 + x2²
 julia> Q=2*x1^2+3*x1*x2+6x2^2
 2x1² + 3x1x2 + 6x2²
 
-julia> apolarpro(P,Q)
+julia> apolar(P,Q)
 8.0 - 3.0im
 ```
 """
-function apolarpro(P,Q,X)
-    n=size(X,1)
-    d=maxdegree(P)
-    T=(transpose(ones(n))*X)^d
-	t=terms(T)
-	s=size(t,1)
-    t3=0.0
-    for i in 1:s
-		b=monomial(t[i])
-        a1=coefficient(P,b)
-        a2=coefficient(Q,b)
-        e=exponent(b)
-        p=prod(factorial(e[j]) for j in 1:n)
-        alpha=factorial(d)/p
-        t3=t3+dot(a1,a2)/alpha
-    end
-    return t3
+function apolar(P,Q)
+
+    #assert()
+    L = monomials(P)
+    E = exponents.(L)
+    c = coefficients(P)
+    d = maxdegree(P)
+    return sum( c[i]*conj(coefficient(Q,L[i]))/binomial(d,E[i]) for i in 1:length(L))
+
 end
 """
 ```

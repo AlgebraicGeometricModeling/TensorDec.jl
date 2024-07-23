@@ -17,70 +17,47 @@ normalize_markov! = function(w,A,B,C)
         w[i] *= l
     end
     w, A,B,C
-end</code></pre><pre><code class="nohighlight hljs">#3 (generic function with 1 method)</code></pre><pre><code class="language-julia hljs">A = rand(4,4); B = rand(4,4); C = rand(4,4); w = rand(4);
+end</code></pre><pre><code class="nohighlight hljs">#11 (generic function with 1 method)</code></pre><pre><code class="language-julia hljs">A = rand(4,4); B = rand(4,4); C = rand(4,4); w = rand(4);
 normalize_markov!(w,A,B,C)
-fill(1.,4)&#39;*A, fill(1.,4)&#39;*B, fill(1.,4)&#39;*C</code></pre><pre><code class="nohighlight hljs">([1.0 1.0 1.0 1.0], [1.0 1.0 1.0 1.0], [1.0 1.0 1.0 1.0])</code></pre><pre><code class="language-julia hljs">t = tensor(w,A,B,C)</code></pre><pre><code class="nohighlight hljs">4×4×4 Array{Float64,3}:
+fill(1.,4)&#39;*A, fill(1.,4)&#39;*B, fill(1.,4)&#39;*C</code></pre><pre><code class="nohighlight hljs">([0.9999999999999999 1.0 1.0000000000000002 1.0], [1.0 0.9999999999999998 1.0 0.9999999999999999], [1.0 0.9999999999999998 0.9999999999999999 1.0])</code></pre><pre><code class="language-julia hljs">t = tensor(w,A,B,C)</code></pre><pre><code class="nohighlight hljs">4×4×4 Array{Float64, 3}:
 [:, :, 1] =
- 0.22132   0.166737  0.254042  0.0613668
- 0.092515  0.112218  0.194429  0.0814187
- 0.316227  0.225333  0.297283  0.0668594
- 0.309741  0.261594  0.293648  0.110342 
+ 0.132693   0.0830969  0.0783148  0.141214
+ 0.0432026  0.150034   0.184414   0.211311
+ 0.102815   0.0950131  0.0996367  0.161985
+ 0.110227   0.153269   0.204125   0.273002
 
 [:, :, 2] =
- 0.0403731  0.0268474  0.0398125  0.0135116
- 0.024117   0.0254106  0.0371     0.0226149
- 0.0546752  0.0364448  0.0452751  0.0139016
- 0.0583531  0.0540776  0.051944   0.0289579
+ 0.24544    0.110476  0.135381  0.252554
+ 0.0525715  0.321598  0.431964  0.484858
+ 0.181833   0.148571  0.189826  0.294132
+ 0.236174   0.336552  0.482967  0.631557
 
 [:, :, 3] =
- 0.15016    0.0921238  0.133752  0.0523025
- 0.0810969  0.0689567  0.112981  0.0703695
- 0.196223   0.121267   0.146411  0.0483899
- 0.180559   0.144179   0.137036  0.0674456
+ 0.244296   0.0952606  0.133724  0.248845
+ 0.0446221  0.428005   0.593274  0.657718
+ 0.175875   0.155408   0.218437  0.318913
+ 0.24778    0.436314   0.637179  0.802934
 
 [:, :, 4] =
- 0.119343   0.11672   0.22974   0.0601882
- 0.0967337  0.124609  0.217909  0.0854228
- 0.146758   0.136596  0.242653  0.0650576
- 0.168666   0.191626  0.252545  0.11588</code></pre><pre><code class="language-julia hljs">wd, Ad, Bd, Cd = decompose(t)
-normalize_markov!(wd,Ad,Bd,Cd)</code></pre><pre><code class="nohighlight hljs">MethodError: no method matching decompose(::Array{Array{Float64,2},1}, ::Array{Float64,1}, ::getfield(MultivariateSeries, Symbol(&quot;##25#27&quot;)){Float64})
-Closest candidates are:
-  decompose(::Array{Array{C,2},1}, !Matched::Function) where C at /Users/mourrain/.julia/packages/MultivariateSeries/mJQLE/src/decompose.jl:20
-  decompose(!Matched::DynamicPolynomials.Polynomial{true,C}, !Matched::Function, ::Any) where C at /Users/mourrain/Julia/TensorDec.jl/src/decompose.jl:22
-
-
-
-Stacktrace:
-
- [1] #decompose#23(::Int64, ::Function, ::Array{Float64,3}, ::Function) at /Users/mourrain/Julia/TensorDec.jl/src/decompose.jl:215
-
- [2] decompose(::Array{Float64,3}, ::Function) at /Users/mourrain/Julia/TensorDec.jl/src/decompose.jl:210 (repeats 2 times)
-
- [3] top-level scope at In[4]:1</code></pre><pre><code class="language-julia hljs">w</code></pre><pre><code class="nohighlight hljs">4-element Array{Float64,1}:
- 1.3184908145711505
- 1.1386144184166538
- 2.8433075891450534
- 2.5117767986101014</code></pre><pre><code class="language-julia hljs">wd</code></pre><pre><code class="nohighlight hljs">UndefVarError: wd not defined
-
-
-
-Stacktrace:
-
- [1] top-level scope at In[6]:1</code></pre><pre><code class="language-julia hljs">A</code></pre><pre><code class="nohighlight hljs">4×4 Array{Float64,2}:
- 0.0135068  0.32004   0.275579  0.243881   
- 0.299151   0.323187  0.240813  0.000311288
- 0.063392   0.252418  0.271949  0.404148   
- 0.62395    0.104355  0.211659  0.35166</code></pre><pre><code class="language-julia hljs">Ad</code></pre><pre><code class="nohighlight hljs">UndefVarError: Ad not defined
-
-
-
-Stacktrace:
-
- [1] top-level scope at In[8]:1</code></pre><pre><code class="language-julia hljs">using LinearAlgebra
-norm(t-tensor(wd,Ad,Bd,Cd))</code></pre><pre><code class="nohighlight hljs">UndefVarError: wd not defined
-
-
-
-Stacktrace:
-
- [1] top-level scope at In[9]:2</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../2.MultilinearTensor/">« Multilinear tensors</a><a class="docs-footer-nextpage" href="../8.1.Sym_rank_one_approx/">Best rank one approximation and optimization on the sphere »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Tuesday 23 April 2024 15:54">Tuesday 23 April 2024</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ 0.238287  0.107459  0.130185  0.244067
+ 0.051049  0.268698  0.356658  0.402542
+ 0.17696   0.135821  0.170727  0.271312
+ 0.227917  0.286981  0.411238  0.549965</code></pre><pre><code class="language-julia hljs">wd, Ad, Bd, Cd = decompose(t)
+normalize_markov!(wd,Ad,Bd,Cd)</code></pre><pre><code class="nohighlight hljs">([8.92940660072812, 0.3243890460447168, 2.006651019586796, 4.96880683215592], [0.012871553428607897 0.4050369933160829 0.31879617225485973 0.34923006975336246; 0.4615938103813972 0.4443892119024334 0.1403420691158701 0.027166802851164264; 0.10512083876439855 0.05166979664819282 0.3558533936887121 0.2470936660929489; 0.42041379742559626 0.0989039981332909 0.18500836494055817 0.37650946130252444], [0.0035442984241463925 0.43343182390466595 0.22368019916074608 0.3805028527654701; 0.250153034295922 0.3634722384978098 0.25874874534766745 0.08889696256218112; 0.3566415108016708 0.1556898901401802 0.17900369091376936 0.17383466077310794; 0.3896611564782608 0.04740604745734398 0.3385673645778172 0.3567655238992408], [0.1092311679383719 0.2709418021047271 0.300021915931739 0.11251251094269621; 0.27582900675774047 0.2627839434231224 0.27386396039274696 0.2895401460923528; 0.3901589290224436 0.2095081948345019 0.14979577627969767 0.3192207951276887; 0.2247808962814441 0.2567660596376486 0.2763183473958164 0.27872654783726236])</code></pre><pre><code class="language-julia hljs">w</code></pre><pre><code class="nohighlight hljs">4-element Vector{Float64}:
+ 4.968806832155797
+ 0.32438904604475
+ 2.0066510195869562
+ 8.929406600728035</code></pre><pre><code class="language-julia hljs">wd</code></pre><pre><code class="nohighlight hljs">4-element Vector{Float64}:
+ 8.92940660072812
+ 0.3243890460447168
+ 2.006651019586796
+ 4.96880683215592</code></pre><pre><code class="language-julia hljs">A</code></pre><pre><code class="nohighlight hljs">4×4 Matrix{Float64}:
+ 0.34923    0.405037   0.318796  0.0128716
+ 0.0271668  0.444389   0.140342  0.461594
+ 0.247094   0.0516698  0.355853  0.105121
+ 0.376509   0.098904   0.185008  0.420414</code></pre><pre><code class="language-julia hljs">Ad</code></pre><pre><code class="nohighlight hljs">4×4 Matrix{Float64}:
+ 0.0128716  0.405037   0.318796  0.34923
+ 0.461594   0.444389   0.140342  0.0271668
+ 0.105121   0.0516698  0.355853  0.247094
+ 0.420414   0.098904   0.185008  0.376509</code></pre><pre><code class="language-julia hljs">using LinearAlgebra
+norm(t-tensor(wd,Ad,Bd,Cd))</code></pre><pre><code class="nohighlight hljs">2.2991100112614712e-14</code></pre><pre><code class="language-julia hljs"></code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../2.MultilinearTensor/">« Multilinear tensors</a><a class="docs-footer-nextpage" href="../8.1.Sym_rank_one_approx/">Best rank one approximation and optimization on the sphere »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Tuesday 23 July 2024 15:50">Tuesday 23 July 2024</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

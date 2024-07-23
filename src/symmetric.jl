@@ -128,3 +128,18 @@ function tensor(s::MultivariateSeries.Series{T}, X, d = maxdegree(s)) where {T}
     end
     return P
 end
+
+
+import MultivariateSeries:series
+
+
+function MultivariateSeries.series(F, X, d = maxdegree(F))
+    P = zero(F) #Polynomial{true,T})
+    for t in F
+        m = exponents(t)
+        alpha = m[2:end]
+        c = coefficient(t)
+        P += c/binomial(d, m)*_monomial(X,alpha)
+    end
+    return MultivariateSeries.dual(P)
+end

@@ -1,6 +1,6 @@
 .SUFFIXES: .ipynb .md
 
-MD := $(patsubst %.ipynb,%.md,$(wildcard mrkd/expl/*.ipynb))
+MD := $(patsubst %.ipynb,%.md,$(wildcard src/expl/*.ipynb))
 
 .ipynb.md:
 	jupyter nbconvert --to markdown $*.ipynb

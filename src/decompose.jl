@@ -1,4 +1,4 @@
-export decompose, decompose_qr, weights
+export decompose, decompose_qr, weights, affine
 import MultivariateSeries: diagonalization, decompose
 import LinearAlgebra: diagm
 using DynamicPolynomials
@@ -208,7 +208,8 @@ The optional argument `rkf` is the rank function used to determine the numerical
 
 If the rank function cst_rkf(r) is used, the SVD is truncated at rank r.
 
-Slices along the mode m=1 of the tensor (i.e. `T[i,:,:]`) are used by default to compute the decomposition. The optional argument `mode = m` can be used to specify the sliced mode.
+Slices along the mode with minimal dimension  (eg. `T[i,:,:]` if mode=1) are used by default to compute the decomposition. The optional argument `mode = m` can be used to specify the sliced mode.
+
 ```
 decompose(T, mode=2)
 decompose(T, eps_rkf(1.e-10), mode=3)
@@ -248,6 +249,23 @@ function decompose(T::Array{R,3}, rkf::Function = eps_rkf(1.e-6); mode=findmin(s
     else
         return w, B, C, A
     end
+end
+#------------------------------------------------------------------------
+"""
+```
+decompose(T :: Array{C,3},  r:Int; mode = m)
+```
+Approximate the multilinear tensor `T` of order 3 as a weighted sum of r tensor products of vectors of norm 1.
+
+The SVD is used to truncate at rank r.
+
+Slices along the mode with minimal dimension  (eg. `T[i,:,:]` if mode=1) are used by default to compute the decomposition. The optional argument `mode = m` can be used to specify the sliced mode.
+```
+decompose(T, 3, mode=2)
+```
+"""
+function decompose(T::Array{R,3}, r::Int; mode=findmin(size(T))[2]) where R
+    decompose(T, cst_rkf(r))
 end
 
 #------------------------------------------------------------------------
@@ -294,4 +312,13 @@ function normlz(M,i=1)
    M*diagm(0 => [1/M[i,j] for j in 1:size(M,2)])
 end
 
-#------------------------------------------------------------------------
+"""
+
+"""
+function affine(w, Xi, d::Int, i0=1 )
+    for i in 1:size(Xi,2)
+        w[i] *= Xi[i0,i]^d
+        Xi[:,i] /= Xi[1,i]
+    end
+    w, Xi
+end

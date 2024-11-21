@@ -53,12 +53,17 @@ function MultivariateSeries.hankel(p::DynamicPolynomials.Polynomial, L1::Abstrac
 end
 
 """
-Compute the Hankel matrix (a.k.a. Catalecticant matrix) in degree d of the
-symmetric tensor F.
+```
+hankel(F::DynamicPolynomials.Polynomial, k::Int64)
+```
+Compute the Hankel matrix (a.k.a. Catalecticant matrix) in degree (d-k,k) of the
+symmetric tensor or form F, where d=maxdegree(F).
+
+The rows are indexed by the monomials of degree d-k and the colmuns by the monomials of degree k, sorted in the reverse of the lexicographic order
 """
-function MultivariateSeries.hankel(F::DynamicPolynomials.Polynomial, d::Int64, X = variables(F))
-    L0 = monomials(X, maxdegree(F)-d)
-    L1 = monomials(X, d)
+function MultivariateSeries.hankel(F::DynamicPolynomials.Polynomial, k::Int64, X = variables(F))
+    L0 = reverse(monomials(X, maxdegree(F)-k))
+    L1 = reverse(monomials(X, k))
     hankel(dual(F,maxdegree(F)),L0,L1)
 end
 

@@ -130,7 +130,7 @@ function tensor(s::MultivariateSeries.Series{T}, X, d = maxdegree(s)) where {T}
 end
 
 
-import MultivariateSeries:series
+import MultivariateSeries:series, hankel
 
 
 function MultivariateSeries.series(F, X, d = maxdegree(F))
@@ -142,4 +142,13 @@ function MultivariateSeries.series(F, X, d = maxdegree(F))
         P += c/binomial(d, m)*_monomial(X,alpha)
     end
     return MultivariateSeries.dual(P)
+end
+
+function MultivariateSeries.hankel(F, k)
+    X = variables(F)
+    d = maxdegree(F)
+    L0 = reverse(monomials(X,d-k))
+    L1 = reverse(monomials(X,k))
+    s = MultivariateSeries.dual(F,d)
+    MultivariateSeries.hankel(s,L0,L1)
 end

@@ -3,9 +3,9 @@ using MultivariatePolynomials
 export hilbert, perp, apolar, norm_apolar
 
 #include("symmetric.jl")
-import MultivariateSeries: hankel, dual
+import MultivariateSeries: hankel #, dual
 
-
+#=
 function _binomial(d, E::Vector{Int})
     r = factorial(d)
     for e in E
@@ -14,6 +14,7 @@ function _binomial(d, E::Vector{Int})
     return r
 end
 """
+
 ```
 dual(p::Polynomial, d:: Int64) -> Series{T}
 ```
@@ -25,6 +26,7 @@ function MultivariateSeries.dual(p::DynamicPolynomials.Polynomial, d:: Int64)
     Lc = coefficients(p)
     return MultivariateSeries.series([Lm[i] => Lc[i]/_binomial(d, exponent(Lm[i])) for i in 1:length(Lm)])
 end
+=#
 
 # """
 # ```

@@ -1,7 +1,7 @@
 using TensorDec
 
-X = @ring x1 x2
-L = monoms(X,5)
+X = @polyvar x1 x2
+L = monomials(X,0:5)
 
 Xi0 = rand(2,3)
 w0 = rand(3)

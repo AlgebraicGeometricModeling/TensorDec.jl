@@ -1,6 +1,6 @@
 using TensorDec
 
-X = @ring x1 x2
+X = @polyvar x1 x2
 
 n = length(X)
 d = 4
@@ -20,7 +20,7 @@ w  += eps0*randn(length(w))
 Xi += eps0*randn(size(Xi))
 println("w=",w, "     Xi=",Xi)
 
-w, Xi = vdm_newton(w, Xi, s0, monoms(X,d), eps0=1.e-10, maxit=25)
+w, Xi = vdm_newton(w, Xi, s0, monomials(X,0:d), eps0=1.e-10, maxit=25)
 println("w=",w, "     Xi=",Xi)
 
 s = series(w, Xi, X, d)

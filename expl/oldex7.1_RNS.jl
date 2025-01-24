@@ -2,7 +2,7 @@ using TensorDec
 using DynamicPolynomials
 using LinearAlgebra
 
-X = @ring x0 x1 x2
+X = @polyvar x0 x1 x2
 r = 3
 d = 5
 d0=2
@@ -36,6 +36,6 @@ T10 = tensor(W1,V1,X,d)
 println("dec T1: ",norm(T1-T10))
 
 w, Xi = decompose_qr(T1,cst_rkf(3))
-println("dqr T1: ",norm(T1-tensor(w,Xi,X,d)))
+println("dqr T1: ", norm(T1-tensor(w,Xi,X,d)))
 
 TR_RNS_R(T1,r,w, Xi)

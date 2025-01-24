@@ -1,53 +1,9 @@
 using MultivariatePolynomials
+import MultivariateSeries: hankel, dual
 
-export hilbert, perp, apolar, norm_apolar
+export hilbert, perp, apolar, norm_apolar, dual
 
 #include("symmetric.jl")
-import MultivariateSeries: hankel #, dual
-
-#=
-function _binomial(d, E::Vector{Int})
-    r = factorial(d)
-    for e in E
-        r/= factorial(e)
-    end
-    return r
-end
-"""
-
-```
-dual(p::Polynomial, d:: Int64) -> Series{T}
-```
-Compute the series associated to the tensor p of degree d.
-T is the type of the coefficients of the polynomial p.
-"""
-function MultivariateSeries.dual(p::DynamicPolynomials.Polynomial, d:: Int64) 
-    Lm = monomials(p)
-    Lc = coefficients(p)
-    return MultivariateSeries.series([Lm[i] => Lc[i]/_binomial(d, exponent(Lm[i])) for i in 1:length(Lm)])
-end
-=#
-
-# """
-# ```
-# dual(p::Polynomial) -> Series{T}
-# ```
-# Compute the series associated to the polynomial p, replacing
-# the variables xi by its dual dxi. T is the type of the coefficients of the polynomial p.
-# """
-# function MultivariateSeries.dual(p::Polynomial{true,T}) where T
-#     s = Series{T, DynamicPolynomials.Monomial{true}}()
-#     for t in p
-# 	       s[t.x] = t.α
-#     end
-#     return s
-# end
-
-# function dual(t::Term{true,T}) where T
-#     s = Series{T, Monomial{true}}()
-#     s[t.x] = t.α
-#     return s
-# end
 
 
 function MultivariateSeries.hankel(p::DynamicPolynomials.Polynomial, L1::AbstractVector, L2::AbstractVector) 

@@ -279,32 +279,14 @@ columns of `Xi`.
 """
 function weights(T::DynamicPolynomials.Polynomial, Xi::AbstractMatrix)
     X = variables(T)
-    d = deg(T)
+    d = maxdegree(T)
+    P = Xi'*[X[i] for i in 1:length(X)]
     L = monomials(X,d)
-    I = Dict{Monomial{true},Int64}()
-    for (m, i) in zip(L,1:length(L))
-        I[m] = i
-    end
-    A = fill(zero(Xi[1,1]), length(L), size(Xi,2))
-    for i in 1:size(Xi,2)
-        p = dot(Xi[:,i],X)^d
-        for t in p
-            j = get(I,t.x,0)
-            if j != 0
-                A[j,i] = t.α
-            end
-        end
-    end
+          
+    Vdm = (MultivariateSeries.matrixof([ P[i]^d for i in 1:length(P)],L))'
+    b   = (MultivariateSeries.matrixof([T],L))[1,:]
 
-    b = fill(zero(C), length(L))
-    for t in T
-        j = get(I,t.x,0)
-        if j != 0
-            b[j] = t.α
-        end
-    end
-    b = [t.α for t in T]
-    A\b
+    Vdm\b
 end
 
 #------------------------------------------------------------------------

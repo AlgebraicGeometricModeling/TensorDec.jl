@@ -1,6 +1,11 @@
-export decompose, decompose_qr, weights, affine
 import MultivariateSeries: diagonalization, decompose
 import LinearAlgebra: diagm
+
+export decompose, decompose_qr, weights, affinize!
+
+
+
+
 using DynamicPolynomials
 
 #------------------------------------------------------------------------
@@ -295,9 +300,15 @@ function normlz(M,i=1)
 end
 
 """
+```
+ affinize!(w, Xi, d::Int, i0::Int =1 )
+```
+make the i0th coordinates of the points `Xi` equal to 1 and multiply the weights `w` by the corresponding d^{th} power of the scaling factor.  
+
+`w, Xi` are modified.
 
 """
-function affine(w, Xi, d::Int, i0=1 )
+function affinize!(w, Xi, d::Int, i0=1 )
     for i in 1:size(Xi,2)
         w[i] *= Xi[i0,i]^d
         Xi[:,i] /= Xi[1,i]

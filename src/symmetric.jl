@@ -1,7 +1,7 @@
 using MultivariateSeries
 
 import Base: binomial
-export tensor
+export tensor, generic_rank
 
 
 
@@ -14,7 +14,23 @@ function Base.binomial(d, alpha::Vector{Int64})
   r
 end
 
- 
+"""
+    generic_rank(n::Int64,d::Int64; verbose = false)
+
+Genereic rank of a form of degree d in n variables (i.e. in S^d(kk^n)).
+If verbose = true then there is a warning for the exceptional cases.
+"""
+function generic_rank(n::Int64, d::Int64; verbose = false)
+    if d == 2
+        return n
+    end
+    r = Int64(ceil(binomial(n-1+d,d)/n))
+    if (d == 4 && (n in [3,4,5])) || (d==5 && n == 5)
+        verbose && @warn "Exception of Alexander-Hirschowitz theorem"
+        return r+1
+    end
+    return r 
+end
 """
 ```
 tensor(w, Xi, V, d) -> Polynomial{true,T} 

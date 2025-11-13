@@ -5,7 +5,13 @@ export hilbert, perp, apolar, norm_apolar, dual, catalecticant
 
 #include("symmetric.jl")
 
-
+"""
+```
+catalecticant(p::DynamicPolynomials.Polynomial, d1:: Int64, d2::Int64)
+```
+ Compute the Catalecticant matrix of the homogeneous polynomial `p` in bidegree `(d1, d2)`.
+ One should have `maxdegree(p)=d1+d2`.
+""" 
 function catalecticant(p::DynamicPolynomials.Polynomial, d1:: Int64, d2::Int64)
     MultivariateSeries.hankel(p,d1,d2)
 end

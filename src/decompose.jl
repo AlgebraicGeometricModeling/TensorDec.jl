@@ -58,6 +58,7 @@ function decompose(pol::DynamicPolynomials.Polynomial, rkf::Function=eps_rkf(1.e
     if r > 1
         Xi, E, DiagInfo = diagonalization(M)
     else
+        C = typeof(M[1][1,1])
         Xi = fill(zero(C),n,1)
         for i in 1:n
             Xi[i,1] = M[i][1,1]

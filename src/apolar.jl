@@ -1,15 +1,28 @@
 using MultivariatePolynomials
 import MultivariateSeries: hankel, dual
 
-export hilbert, perp, apolar, norm_apolar, dual
+export hilbert, perp, apolar, norm_apolar, dual, catalecticant
 
 #include("symmetric.jl")
+
+
+function catalecticant(p::DynamicPolynomials.Polynomial, d1:: Int64, d2::Int64)
+    MultivariateSeries.hankel(p,d1,d2)
+end
+
+function MultivariateSeries.hankel(p::DynamicPolynomials.Polynomial, d1:: Int64, d2::Int64)
+    d = maxdegree(p)
+    @assert( d == d1+d2)
+    X = variables(p)
+    L1 = monomials(X,d1)
+    L2 = monomials(X,d2)
+    hankel(dual(p, maxdegree(p)), L1, L2)
+end
 
 
 function MultivariateSeries.hankel(p::DynamicPolynomials.Polynomial, L1::AbstractVector, L2::AbstractVector) 
     hankel(dual(p, maxdegree(p)), L1, L2)
 end
-
 """
 ```
 hankel(F::DynamicPolynomials.Polynomial, k::Int64)

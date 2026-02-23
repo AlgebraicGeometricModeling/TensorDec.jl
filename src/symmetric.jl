@@ -18,9 +18,11 @@ end
     generic_rank(n::Int64,d::Int64; verbose = false)
 
 Genereic rank of a form of degree d in n variables (i.e. in S^d(kk^n)).
-If verbose = true then there is a warning for the exceptional cases.
+In the exceptional cases, the generic rank is `r = Int64(ceil(binomial(n-1+d,d)/n)) + 1`
+If verbose = true then there is a warning for these exceptional cases.
+
 """
-function generic_rank(n::Int64, d::Int64; verbose = false)
+function generic_rank(n::Int64, d::Int64; verbose = true)
     if d == 2
         return n
     end
@@ -89,22 +91,21 @@ tensor(H, L1, L2) -> MultivariatePolynomial
 Compute the symmetric tensor or homogeneous polynomial which Hankel matrix in the bases L1, L2 is H.
 """
 function tensor(H::Array{C,2} , L1::AbstractVector{M}, L2::AbstractVector{M}) where {C, M}
-    res = zero(DynamicPolynomials.Polynomial{true,C})
+    res = zero(L1[1])
     dict = Dict{M,Bool}()
     d = maxdegree(L1)+ maxdegree(L2)
 
     i = 1
-    for m1  in L1
-        j=1
-        for m2 in L2
+    for i in 1:length(L1)
+        m1=L1[i]
+        for j in 1:length(L2)
+            m2 = L2[j]
             m = m1*m2
             if !get(dict,m,false)
 	        res = res + H[i,j]*m*TensorDec.binomial(d,exponents(m))
                 dict[m]=true
 	    end
-            j+=1
         end
-        i+=1
     end
    res
 end
@@ -148,10 +149,9 @@ end
 
 import MultivariateSeries:series, hankel
 
-
-function MultivariateSeries.series(F, X, d = maxdegree(F))
+function MultivariateSeries.series(F, X, d::Int64 = maxdegree(F))
     P = zero(F) #Polynomial{true,T})
-    for t in F
+    for (c,t) in zip(coefficients(F),monomials(F))
         m = exponents(t)
         alpha = m[2:end]
         c = coefficient(t)

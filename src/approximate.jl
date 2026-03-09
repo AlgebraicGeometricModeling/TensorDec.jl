@@ -170,7 +170,7 @@ end
 
 
 
-function approximate(s::MultivariateSeries.Series, r:: Int64; args...)
+function approximate(s::AlgebraicSolvers.Series, r:: Int64; args...)
 
     d = maxdegree(s)
     @polyvar x0

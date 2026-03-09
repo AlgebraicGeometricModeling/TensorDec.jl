@@ -1,5 +1,5 @@
 using MultivariatePolynomials
-import MultivariateSeries: hankel, dual
+import AlgebraicSolvers: hankel, dual
 
 export hilbert, perp, apolar, norm_apolar, dual, catalecticant
 
@@ -13,10 +13,10 @@ catalecticant(p::DynamicPolynomials.Polynomial, d1:: Int64, d2::Int64)
  One should have `maxdegree(p)=d1+d2`.
 """ 
 function catalecticant(p::DynamicPolynomials.Polynomial, d1:: Int64, d2::Int64)
-    MultivariateSeries.hankel(p,d1,d2)
+    AlgebraicSolvers.hankel(p,d1,d2)
 end
 
-function MultivariateSeries.hankel(p::DynamicPolynomials.Polynomial, d1:: Int64, d2::Int64)
+function AlgebraicSolvers.hankel(p::DynamicPolynomials.Polynomial, d1:: Int64, d2::Int64)
     d = maxdegree(p)
     @assert( d == d1+d2)
     X = variables(p)
@@ -26,7 +26,7 @@ function MultivariateSeries.hankel(p::DynamicPolynomials.Polynomial, d1:: Int64,
 end
 
 
-function MultivariateSeries.hankel(p::DynamicPolynomials.Polynomial, L1::AbstractVector, L2::AbstractVector) 
+function AlgebraicSolvers.hankel(p::DynamicPolynomials.Polynomial, L1::AbstractVector, L2::AbstractVector) 
     hankel(dual(p, maxdegree(p)), L1, L2)
 end
 """
@@ -38,7 +38,7 @@ symmetric tensor or form F, where d=maxdegree(F).
 
 The rows are indexed by the monomials of degree d-k and the colmuns by the monomials of degree k, sorted in the reverse of the lexicographic order
 """
-function MultivariateSeries.hankel(F::DynamicPolynomials.Polynomial, k::Int64, X = variables(F))
+function AlgebraicSolvers.hankel(F::DynamicPolynomials.Polynomial, k::Int64, X = variables(F))
     L0 = reverse(monomials(X, maxdegree(F)-k))
     L1 = reverse(monomials(X, k))
     hankel(dual(F,maxdegree(F)),L0,L1)

@@ -1,4 +1,4 @@
-using TensorDec, LinearAlgebra
+using TensorDec, AlgebraicSolvers, LinearAlgebra
 
 r  = 4
 w0 = rand(r)

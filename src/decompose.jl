@@ -1,4 +1,4 @@
-import MultivariateSeries: diagonalization, decompose
+import AlgebraicSolvers: diagonalization, decompose
 import LinearAlgebra: diagm
 
 export decompose, decompose_qr, weights, affinize!
@@ -106,7 +106,7 @@ function dec_mat(pol::DynamicPolynomials.Polynomial, d0 = div(maxdegree(pol)-1,2
     return H, B1
 end
 
-function dec_red(H, rkf::Function=MultivariateSeries.eps_rkf(1.e-6))
+function dec_red(H, rkf::Function=AlgebraicSolvers.eps_rkf(1.e-6))
 
     U, S, V = svd(H)       # H0= U*diag(S)*V'
     r = rkf(S)
@@ -289,8 +289,8 @@ function weights(T::DynamicPolynomials.Polynomial, Xi::AbstractMatrix)
     P = Xi'*[X[i] for i in 1:length(X)]
     L = monomials(X,d)
           
-    Vdm = (MultivariateSeries.matrixof([ P[i]^d for i in 1:length(P)],L))'
-    b   = (MultivariateSeries.matrixof([T],L))[1,:]
+    Vdm = (AlgebraicSolvers.matrixof([ P[i]^d for i in 1:length(P)],L))'
+    b   = (AlgebraicSolvers.matrixof([T],L))[1,:]
 
     Vdm\b
 end

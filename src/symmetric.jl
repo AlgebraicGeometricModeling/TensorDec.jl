@@ -1,4 +1,4 @@
-using MultivariateSeries
+using AlgebraicSolvers
 
 import Base: binomial
 export tensor, generic_rank
@@ -135,7 +135,7 @@ gives
     x0³ + 3x2²x0 - 6x1x2x0
 
 """
-function tensor(s::MultivariateSeries.Series{T}, X, d = maxdegree(s)) where {T}
+function tensor(s::AlgebraicSolvers.Series{T}, X, d = maxdegree(s)) where {T}
 
     P = zero(T) #Polynomial{true,T})
     for (m,c) in s
@@ -147,9 +147,9 @@ function tensor(s::MultivariateSeries.Series{T}, X, d = maxdegree(s)) where {T}
 end
 
 
-import MultivariateSeries:series, hankel
+import AlgebraicSolvers:series, hankel
 
-function MultivariateSeries.series(F, X, d::Int64 = maxdegree(F))
+function AlgebraicSolvers.series(F, X, d::Int64 = maxdegree(F))
     P = zero(F) #Polynomial{true,T})
     for (c,t) in zip(coefficients(F),monomials(F))
         m = exponents(t)
@@ -157,14 +157,14 @@ function MultivariateSeries.series(F, X, d::Int64 = maxdegree(F))
         c = coefficient(t)
         P += c/binomial(d, m)*_monomial(X,alpha)
     end
-    return MultivariateSeries.dual(P)
+    return AlgebraicSolvers.dual(P)
 end
 
-function MultivariateSeries.hankel(F, k)
+function AlgebraicSolvers.hankel(F, k)
     X = variables(F)
     d = maxdegree(F)
     L0 = reverse(monomials(X,d-k))
     L1 = reverse(monomials(X,k))
-    s = MultivariateSeries.dual(F,d)
-    MultivariateSeries.hankel(s,L0,L1)
+    s = AlgebraicSolvers.dual(F,d)
+    AlgebraicSolvers.hankel(s,L0,L1)
 end

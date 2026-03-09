@@ -1,4 +1,4 @@
-using MultivariateSeries, DynamicPolynomials, LinearAlgebra
+using AlgebraicSolvers, DynamicPolynomials, LinearAlgebra
 export spm_decompose
 function normalize!(Xi::Matrix)
     for i in 1:size(Xi,2)

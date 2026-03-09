@@ -1,6 +1,6 @@
 export rcg_decompose
 
-import MultivariateSeries: decompose
+import AlgebraicSolvers: decompose
 import LinearAlgebra: diagm
 
 using MultivariatePolynomials, DynamicPolynomials

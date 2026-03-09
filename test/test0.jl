@@ -1,4 +1,4 @@
-using DynamicPolynomials, TensorDec
+using DynamicPolynomials, AlgebraicSolvers, TensorDec
 
 X = @polyvar x0 x1 x2 
 n = length(X)

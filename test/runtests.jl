@@ -7,7 +7,7 @@ _s = 0.0
 for f in F0
     try
         local _t = @elapsed include(f)
-        @info "\033[96m$f\033[0m   $t(s)"
+        @info "\033[96m$f\033[0m   $_t(s)"
         global _s += _t
     catch
         @warn "problem with $f"

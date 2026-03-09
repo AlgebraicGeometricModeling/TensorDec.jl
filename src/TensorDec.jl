@@ -1,12 +1,12 @@
 module TensorDec
 
-info() = "TensorDec", "0.1.1", "https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl"
+#info() = "TensorDec", "0.1.1", "https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl"
 
-using Reexport
-@reexport using MultivariateSeries
+#using Reexport
 using LinearAlgebra
-using MultivariatePolynomials
+#using MultivariatePolynomials
 using DynamicPolynomials
+using AlgebraicSolvers
 
 include("symmetric.jl")
 include("multilinear.jl")

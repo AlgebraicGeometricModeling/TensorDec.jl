@@ -7,31 +7,22 @@ export hilbert, perp, apolar, norm_apolar, dual, catalecticant
 
 """
 ```
-catalecticant(p::DynamicPolynomials.Polynomial, d1:: Int64, d2::Int64)
+    catalecticant(p::DynamicPolynomials.Polynomial, d1:: Int64, d2::Int64)
 ```
- Compute the Catalecticant matrix of the homogeneous polynomial `p` in bidegree `(d1, d2)`.
+Compute the Catalecticant matrix of the homogeneous polynomial `p` in bidegree `(d1, d2)`.
  One should have `maxdegree(p)=d1+d2`.
 """ 
 function catalecticant(p::DynamicPolynomials.Polynomial, d1:: Int64, d2::Int64)
     AlgebraicSolvers.hankel(p,d1,d2)
 end
 
-function AlgebraicSolvers.hankel(p::DynamicPolynomials.Polynomial, d1:: Int64, d2::Int64)
-    d = maxdegree(p)
-    @assert( d == d1+d2)
-    X = variables(p)
-    L1 = monomials(X,d1)
-    L2 = monomials(X,d2)
-    hankel(dual(p, maxdegree(p)), L1, L2)
-end
-
-
 function AlgebraicSolvers.hankel(p::DynamicPolynomials.Polynomial, L1::AbstractVector, L2::AbstractVector) 
     hankel(dual(p, maxdegree(p)), L1, L2)
 end
+
 """
 ```
-hankel(F::DynamicPolynomials.Polynomial, k::Int64)
+    hankel(F::DynamicPolynomials.Polynomial, k::Int64)
 ```
 Compute the Hankel matrix (a.k.a. Catalecticant matrix) in degree (d-k,k) of the
 symmetric tensor or form F, where d=maxdegree(F).

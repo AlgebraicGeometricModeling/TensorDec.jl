@@ -28,7 +28,7 @@ function decompose(pol::DynamicPolynomials.Polynomial, rkf::Function=eps_rkf(1.e
     d  = maxdegree(pol)
     X = variables(pol)
     n = length(X)
-    sigma = dual(pol,d)
+    sigma = apolar_dual(pol)
 
     d0 = div(d-1,2); d1 = d-1-d0
     B0 = monomials(X, d0)

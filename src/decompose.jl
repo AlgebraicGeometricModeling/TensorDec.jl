@@ -5,7 +5,6 @@ export decompose, decompose_qr, weights, affinize!
 
 
 
-
 using DynamicPolynomials
 
 #------------------------------------------------------------------------

@@ -131,16 +131,7 @@ end
 
 
 
-export gad_decompose
-"""
-  This function computes ...
 
-## Example
-```
-   ...
-```
-
-"""
 function gad_decompose(F)
     
     X = variables(F)

@@ -155,7 +155,9 @@ end
 
 
 export gad_decompose
-
+"""
+this function computes the generalized additive decomposition of symmetric forms
+"""
 function gad_decompose(F; verbose = false)
     
     X = variables(F)

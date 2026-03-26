@@ -13,6 +13,24 @@ function power_vec(d, L, pt)
 end
 
 #------------------------------------------------------------------------
+
+export vdm_dec
+function vdm_dec(F, Xi, X, d; verbose = false)
+    Ld = DynamicPolynomials.monomials(X,d)
+    Lp = [dot(X,Xi[:,i])^d for i in 1:size(Xi,2)]
+    push!(Lp,F)
+
+    Vdm = AlgebraicSolvers.matrixof(Lp, Ld)'
+
+    for i in 1:length(Ld)
+        Vdm[i,:] /= binomial(d,exponents(Ld[i]))
+    end
+    w = Vdm[:,1:end-1]\Vdm[:,end]
+    verbose && println("-- [vdm_dec] err: ", norm(Vdm[:,1:end-1]*w-Vdm[:,end]))
+
+    return w
+end
+#------------------------------------------------------------------------
 """
 ```
 decompose(p :: DynamicPolynomials.Polynomial,  rkf :: Function)
@@ -23,11 +41,11 @@ The optional argument `rkf` is the rank function used to determine the numerical
 
 If the rank function `cst_rkf(r)` is used, the SVD is truncated at rank r.
 """
-function decompose(pol::DynamicPolynomials.Polynomial, rkf::Function=eps_rkf(1.e-6), lbd = :Random  ) 
-    d  = maxdegree(pol)
-    X = variables(pol)
+function decompose(F::DynamicPolynomials.Polynomial, rkf::Function=eps_rkf(1.e-6), lbd = :Random; verbose=false  ) 
+    d  = maxdegree(F)
+    X = variables(F)
     n = length(X)
-    sigma = apolar_dual(pol)
+    sigma = apolar_dual(F)
 
     d0 = div(d-1,2); d1 = d-1-d0
     B0 = monomials(X, d0)
@@ -45,7 +63,8 @@ function decompose(pol::DynamicPolynomials.Polynomial, rkf::Function=eps_rkf(1.e
 
     U, S, V = svd(H0)       # H0= U*diag(S)*V'
     r = rkf(S)
-
+    verbose && println("-- [decompose] rank     : ",r, " ",S)
+    
     Sr  = S[1:r]
     Sri = LinearAlgebra.diagm([one(Sr[1])/S[i] for i in 1:r])
 
@@ -56,6 +75,7 @@ function decompose(pol::DynamicPolynomials.Polynomial, rkf::Function=eps_rkf(1.e
 
     if r > 1
         Xi, E, DiagInfo = diagonalization(M)
+        verbose &&  println("-- [decompose] diag err : ",[norm_off(inv(E)*m*E) for m in M])
     else
         C = typeof(M[1][1,1])
         Xi = fill(zero(C),n,1)
@@ -65,7 +85,7 @@ function decompose(pol::DynamicPolynomials.Polynomial, rkf::Function=eps_rkf(1.e
         E  = fill(1.0,1,1)
         DiagInfo = Dict{String,Any}( "case" => "1x1" )
     end
-
+   
     Uxi = (U[:,1:r].*Sr')*E
     Vxi = (E\ V[:,1:r]')
 
@@ -73,13 +93,34 @@ function decompose(pol::DynamicPolynomials.Polynomial, rkf::Function=eps_rkf(1.e
     w1 = Vxi*power_vec(d1,B1,lambda)
 
     w  = [w0[i]*w1[i] for i in 1:r]
+   
 
     # normalize the vectors Xi
     for i in 1:r
-        w[i] *= norm(Xi[:,i])^d;
-        Xi[:,i] /= norm(Xi[:,i])
+        nrm = norm(Xi[:,i])
+        w[i] *= nrm^d;
+        Xi[:,i] /= nrm
     end
 
+    if false
+    # solve the vdm system
+    Ld = DynamicPolynomials.monomials(X,d)
+    
+    Lp = [dot(X,Xi[:,i])^d for i in 1:r]
+    push!(Lp,F)
+
+    Vdm = AlgebraicSolvers.matrixof(Lp, Ld)'
+
+    for i in 1:length(Ld)
+        Vdm[i,:] /= binomial(d,exponents(Ld[i]))
+    end
+    w = Vdm[:,1:end-1]\Vdm[:,end]
+
+    verbose && println("-- [decompose] Vdm err  : ", norm(Vdm[:,1:end-1]*w-Vdm[:,end]) )
+
+
+    end
+    
     return w, Xi, DiagInfo
 end
 

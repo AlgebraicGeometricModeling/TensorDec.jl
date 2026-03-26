@@ -29,7 +29,8 @@ symmetric tensor or form F, where d=maxdegree(F).
 
 The rows are indexed by the monomials of degree d-k and the colmuns by the monomials of degree k, sorted in the reverse of the lexicographic order
 """
-function AlgebraicSolvers.hankel(F::DynamicPolynomials.Polynomial, k::Int64, X = variables(F))
+function AlgebraicSolvers.hankel(F::DynamicPolynomials.Polynomial, k::Int64)
+    X = variables(F)
     L0 = reverse(monomials(X, maxdegree(F)-k))
     L1 = reverse(monomials(X, k))
     hankel(dual(F,maxdegree(F)),L0,L1)

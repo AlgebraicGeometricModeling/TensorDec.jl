@@ -2,7 +2,7 @@ using LinearAlgebra, DynamicPolynomials, AlgebraicSolvers
 
 
 
-function mult_matrices(s::AlgebraicSolvers.Series{C,D}, rkf::Function=eps_rkf(1.e-4)) where {C,D}
+function AlgebraicSolvers.mult_matrices(s::AlgebraicSolvers.Series{C,D}, rkf::Function=eps_rkf(1.e-4)) where {C,D}
     d  = maxdegree(s)
     X = variables(s)
     d0 = div(d-1,2)
@@ -33,6 +33,7 @@ function LinearAlgebra.norm(P::DynamicPolynomials.Polynomial)
     LinearAlgebra.norm(DynamicPolynomials.coefficients(P))
 end
 
+export reconstruct
 function reconstruct(W,L,d)
     sum(W[i]*L[i]^(d-maxdegree(W[i])) for i in 1:length(L))
 end
@@ -54,7 +55,7 @@ function cluster(v)
 end
 
 
-function multiplicities(M)
+function _multiplicities(M)
     while true
         Mrnd = sum(M[i] * randn(Float64) for i in 1:length(M))
         mrnd = sum(M[i] * randn(Float64) for i in 1:length(M))
@@ -73,7 +74,7 @@ end
 
 
 
-function local_mult(Tr,ms)
+function local_mult_matrices(Tr,ms)
     t=length(Tr)
     s=length(ms)
     Subb=[]
@@ -131,20 +132,25 @@ end
 
 
 
-
-function gad_decompose(F)
+export gad_decompose
+function gad_decompose(F; verbose = false)
     
     X = variables(F)
     d = maxdegree(F)
     n = length(variables(F))-1
     sigma = apolar_dual(F) 
-    M = mult_matrices(sigma)
-    
-    ms, Z, r = multiplicities(M)
+    M = AlgebraicSolvers.mult_matrices(sigma)
+
+
+    ms, Z, r = _multiplicities(M)
     Zt = transpose(Z)
     Tr = [Zt*M[i]*Z for i in 1:length(M)]
 
-    Subb = local_mult(Tr, ms)
+    #Xi, ms, Z, Tr = AlgebraicSolvers.schur_dcp(M)
+
+    verbose && println("--- ", ms)
+    
+    Subb = local_mult_matrices(Tr, ms)
     nPt = size(Subb)[1]
     c   = size(Subb[1])[1]
 

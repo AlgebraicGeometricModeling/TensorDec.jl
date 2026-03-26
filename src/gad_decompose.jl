@@ -74,7 +74,7 @@ end
 
 
 
-function local_mult_matrices(Tr,ms)
+function _local_mult_matrices(Tr,ms)
     t=length(Tr)
     s=length(ms)
     Subb=[]
@@ -94,7 +94,9 @@ function local_mult_matrices(Tr,ms)
     return Subb
 end
 
-
+function local_mult_matrices(Tr, ms)
+    [[m[I,I] for I in ms] for m in Tr]
+end
 
 function nilindex(A::Matrix, v; tol=1.e-7,max_iter=1000)
     iter=0
@@ -129,15 +131,38 @@ function nil_index(Subb::Vector, Pt::Vector)
     return reverse(nilx)
 end
 
+function nil_index(Subb::Vector, Xi::Matrix)
 
+    for i in 1:length(Subb)
+        for j in 1:length(Subb[i])
+            Subb[i][j] = Subb[i][j]-Xi[:,i][j]*I(size(Subb[i][j])[1])
+        end
+    end
+
+    for j in 1:length(Subb)
+        Subb[j]=sum(Subb[j][i]*randn(Float64) for i in 1:length(Subb[j]))
+    end
+    
+    nilx=[]
+    
+    for k in 1:length(Subb)
+        v=rand(size(Subb[k])[1])
+        ns,v=nilindex(Subb[k],v)
+        nilx = vcat(ns,nilx)
+    end
+    return reverse(nilx)
+end
 
 
 export gad_decompose
+
 function gad_decompose(F; verbose = false)
     
     X = variables(F)
     d = maxdegree(F)
     n = length(variables(F))-1
+    verbose && println("--- d=", d, " n=", n+1)
+    
     sigma = apolar_dual(F) 
     M = AlgebraicSolvers.mult_matrices(sigma)
 
@@ -146,11 +171,15 @@ function gad_decompose(F; verbose = false)
     Zt = transpose(Z)
     Tr = [Zt*M[i]*Z for i in 1:length(M)]
 
-    #Xi, ms, Z, Tr = AlgebraicSolvers.schur_dcp(M)
+    Xi1, ms1, Z1, Tr1 = AlgebraicSolvers.schur_dcp(M, 1.e-3)
 
-    verbose && println("--- ", ms)
-    
-    Subb = local_mult_matrices(Tr, ms)
+    verbose && println("--- multiplicities: ", ms, " ", ms1)
+
+
+    Subb = _local_mult_matrices(Tr, ms)
+    Subb1 = local_mult_matrices(Tr1, ms1)
+
+   
     nPt = size(Subb)[1]
     c   = size(Subb[1])[1]
 
@@ -165,9 +194,13 @@ function gad_decompose(F; verbose = false)
     for i in 1:c:length(Xi)
         push!(Pt, Xi[i:i+c-1])
     end
-    
-    nilx = nil_index(Subb, Pt)
 
+    println(Pt, " ", Xi1 )
+
+    nilx = _nil_index(Subb, Pt)
+    nilx = nil_index(Subb1, Xi1)
+
+    verbose && println("--- nil indices: ", nilx)
     dg = vcat([nilx[i]-1 for i in 1:length(nilx)]...)
 
     L=[]

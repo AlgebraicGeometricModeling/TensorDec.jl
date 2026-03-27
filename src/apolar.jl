@@ -1,7 +1,7 @@
 using MultivariatePolynomials
 import AlgebraicSolvers: hankel, dual
 
-export hilbert, perp, apolar, norm_apolar, dual, catalecticant
+export hilbert, perp, apolar, apolar_norm, dual, catalecticant
 
 #include("symmetric.jl")
 
@@ -17,23 +17,7 @@ function catalecticant(p::DynamicPolynomials.Polynomial, d1:: Int64, d2::Int64)
 end
 
 function AlgebraicSolvers.hankel(p::DynamicPolynomials.Polynomial, L1::AbstractVector, L2::AbstractVector) 
-    hankel(dual(p, maxdegree(p)), L1, L2)
-end
-
-"""
-```
-    hankel(F::DynamicPolynomials.Polynomial, k::Int64)
-```
-Compute the Hankel matrix (a.k.a. Catalecticant matrix) in degree (d-k,k) of the
-symmetric tensor or form F, where d=maxdegree(F).
-
-The rows are indexed by the monomials of degree d-k and the colmuns by the monomials of degree k, sorted in the reverse of the lexicographic order
-"""
-function AlgebraicSolvers.hankel(F::DynamicPolynomials.Polynomial, k::Int64)
-    X = variables(F)
-    L0 = reverse(monomials(X, maxdegree(F)-k))
-    L1 = reverse(monomials(X, k))
-    hankel(dual(F,maxdegree(F)),L0,L1)
+    hankel(apolar_dual(p), L1, L2)
 end
 
 """
@@ -104,16 +88,16 @@ function apolar(P,Q)
 end
 """
 ```
-norm_apolar(P) -> Float64
+apolar_norm(P) -> Float64
 ```
 Gives the apolar norm of a homogeneous polynomial P=∑_{|α|=d} binom{d}{α} p_α x^α
-as: norm_apolar(P)=∑_{|α|=d} binom{d}{α} p_α*̄p_α.
+as: apolar_norm(P)=∑_{|α|=d} binom{d}{α} p_α*̄p_α.
 
 
 
 ```
 """
-function norm_apolar(P)
+function apolar_norm(P)
     X=variables(P)
     n=size(X,1)
     d=maxdegree(P)

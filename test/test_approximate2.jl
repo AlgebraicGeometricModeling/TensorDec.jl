@@ -1,4 +1,4 @@
-using LinearAlgebra, DynamicPolynomials, TensorDec
+using LinearAlgebra, DynamicPolynomials, TensorDec, AlgebraicSolvers
 
 n = 4
 X = (@polyvar x[1:n])[1]
@@ -15,25 +15,25 @@ r = 4
 
 Nt = 5
 
-w0, V0 = decompose(T0,cst_rkf(r))
+w0, V0 = decompose(T0,AlgebraicSolvers.cst_rkf(r))
 
 print("RGN :")
 w1r, V1r, Info = approximate(T0, w0, V0; iter = :RGN)
 
 T1r = tensor(w1r,V1r,X,d)
-print(" ",norm_apolar(T0-T1r))
+print(" ",apolar_norm(T0-T1r))
 println()
 
 
 print("RNE :")
 w2r, V2r, Info = approximate(T0, w0, V0; iter = :RNE)
 T2r = tensor(w2r,V2r,X,d)
-print(" ",norm_apolar(T0-T2r))
+print(" ",apolar_norm(T0-T2r))
 println()
 
 w3, V3, I = approximate(T0, w0, V0; iter = :SPM)
 
 T3 = tensor(w3,V3,X,d)
-println("SPM  : ",norm_apolar(T0-T3))
+println("SPM  : ",apolar_norm(T0-T3))
 
 

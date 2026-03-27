@@ -57,7 +57,7 @@ The package `TensorDec` depends on the following packages:
 
 - `LinearAlgebra` standard package for linear algebra.
 - `DynamicPolynomials` package on multivariate polynomials represented as lists of monomials.
-- `MultivariateSeries` for duality on multivariate polynomials.
+- `AlgebraicSolvers` for eigensolvers and duality on multivariate polynomials.
 
 These packages are installed with `TensorDec`  (see [installation](@ref sec_installation)).
 

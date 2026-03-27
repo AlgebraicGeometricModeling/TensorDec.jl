@@ -3,8 +3,6 @@ using AlgebraicSolvers
 import Base: binomial
 export tensor, generic_rank
 
-
-
 function Base.binomial(d, alpha::Vector{Int64})
   r = binomial(d, alpha[1])
   for i in 2:length(alpha)
@@ -147,24 +145,3 @@ function tensor(s::AlgebraicSolvers.Series{T}, X, d = maxdegree(s)) where {T}
 end
 
 
-import AlgebraicSolvers:series, hankel
-
-function AlgebraicSolvers.series(F, X, d::Int64 = maxdegree(F))
-    P = zero(F) #Polynomial{true,T})
-    for (c,t) in zip(coefficients(F),monomials(F))
-        m = exponents(t)
-        alpha = m[2:end]
-        c = coefficient(t)
-        P += c/binomial(d, m)*_monomial(X,alpha)
-    end
-    return AlgebraicSolvers.dual(P)
-end
-
-function AlgebraicSolvers.hankel(F, k)
-    X = variables(F)
-    d = maxdegree(F)
-    L0 = reverse(monomials(X,d-k))
-    L1 = reverse(monomials(X,k))
-    s = AlgebraicSolvers.dual(F,d)
-    AlgebraicSolvers.hankel(s,L0,L1)
-end

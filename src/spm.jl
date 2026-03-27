@@ -18,7 +18,7 @@ end
 
 function tensvec(T, L)
     d = maxdegree(T)
-    reshape(hankel(dual(T,d),L,[1]), length(L))
+    reshape(hankel(apolar_dual(T),L,[1]), length(L))
 end
 
 function val_vec(u, L)
@@ -113,7 +113,7 @@ function spm_decompose(T,
     L0 = monomials(X, div(d,2))
     L1 = monomials(X, d-div(d,2))
 
-    H0 = hankel(dual(T,d), L0, L1)
+    H0 = hankel(apolar_dual(T), L0, L1)
 
     U, S, V = trk_svd(H0,r)
 

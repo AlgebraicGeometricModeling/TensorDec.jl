@@ -181,8 +181,8 @@ function rgn_v_tr_step(delta,V,P)
     #Accept or reject solution
     P1=sum((transpose(V[:,i])*X)^d for i in 1:r)
     P2=sum((transpose(V2[:,i])*X)^d for i in 1:r)
-    w1=0.5*(norm_apolar(P1-P))^2
-    w2=0.5*(norm_apolar(P2-P))^2
+    w1=0.5*(apolar_norm(P1-P))^2
+    w2=0.5*(apolar_norm(P2-P))^2
     w3=w1+G'*Ns+0.5*Ns'*H*Ns
     r1=w1-w2
     r2=w1-w3
@@ -193,7 +193,7 @@ function rgn_v_tr_step(delta,V,P)
         sol=V
     end
 #update trut region radius
-    al=0.5*(norm_apolar(P))
+    al=0.5*(apolar_norm(P))
     t=exp(-14*(ki-1/3))
     er=(1/3+(2/3)*(1/(1+t)))*delta
     if ki > 0.6
@@ -249,7 +249,7 @@ function rgn_v_tr(P, B0,
         F=zeros(ComplexF64,n,r)
 
         P0=sum((transpose(B0[:,i])*X)^d for i in 1:r)
-        d0=norm_apolar(P-P0)
+        d0=apolar_norm(P-P0)
         a0=Delta1(P,B0)
         De, F = rgn_v_tr_step(a0,B0,P)
 
@@ -261,7 +261,7 @@ function rgn_v_tr(P, B0,
             i += 1
         end
         P4 = sum((transpose(V[:,i])*X)^d for i in 1:r)
-        d2 = norm_apolar(P4-P)
+        d2 = apolar_norm(P4-P)
         B=zeros(ComplexF64,n,r)
         if d2<d0
             B=V
@@ -269,7 +269,7 @@ function rgn_v_tr(P, B0,
             B=B0
         end
         P5=sum((transpose(B[:,i])*X)^d for i in 1:r)
-        d3=norm_apolar(P-P5)
+        d3=apolar_norm(P-P5)
 
         Info["nIter"] = i
         Info["d0"] = d0

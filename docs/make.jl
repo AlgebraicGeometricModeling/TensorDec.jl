@@ -6,7 +6,7 @@ Code = map(file -> joinpath("code", file), filter(x ->endswith(x, "md"), readdir
 
 makedocs(
     sitename = "TensorDec",
-    authors = "B. Mourrain, R. Khouja",
+    authors = "B. Mourrain, E. Barrilli, R. Khouja",
     modules = [TensorDec],
     build = "TensorDec.jl/docs",
     source = dir,

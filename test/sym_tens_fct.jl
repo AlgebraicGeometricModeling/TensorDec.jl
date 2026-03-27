@@ -4,13 +4,13 @@ function rand_sym_tens(X, d::Int64)
     L = monomials(X,d)
     c = randn(length(L))
     T = sum(c[i]*L[i]*binomial(d, exponents(L[i])) for i in 1:length(L))
-    T/norm_apolar(T)
+    T/apolar_norm(T)
 end
 function randc_sym_tens(X, d::Int64)
     L = monomials(X,d)
     c = rand(ComplexF64,length(L))
     T = sum(c[i]*L[i]*binomial(d, exponents(L[i])) for i in 1:length(L))
-    T/norm_apolar(T)
+    T/apolar_norm(T)
 end
 
 
@@ -18,7 +18,7 @@ function rand_sym_tens_C(X, d::Int64)
     L = monomials(X,d)
     c = randn(Complex{Float64},length(L))
     T = sum(c[i]*L[i]*binomial(d, exponents(L[i])) for i in 1:length(L))
-    T/norm_apolar(T)
+    T/apolar_norm(T)
 end
 
 function idx_sum(v::Vector)

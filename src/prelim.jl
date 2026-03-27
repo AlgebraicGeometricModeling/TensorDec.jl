@@ -148,7 +148,7 @@ function Delta(P,W::Vector)
     r=size(W0,1)
     d=maxdegree(P)
     delta1=(1/10)*sqrt((d/r)*sum(W0[i]^(2) for i in 1:r))
-    delta2=(1/2)*(norm_apolar(P))
+    delta2=(1/2)*(apolar_norm(P))
     delta=min(delta1,delta2)
 
 end
@@ -157,7 +157,7 @@ function Delta1(P,V::Matrix)
     r=size(V,2)
     d=maxdegree(P)
     delta1=(1/10)*sqrt((d/r)*sum((norm(V[:,i]))^(2*d) for i in 1:r))
-    delta2=(1/2)*(norm_apolar(P))
+    delta2=(1/2)*(apolar_norm(P))
     delta=min(delta1,delta2)
 end
 

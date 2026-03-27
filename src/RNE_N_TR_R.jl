@@ -159,8 +159,8 @@ function rne_n_tr_r_step(delta, W::Vector, A::Matrix, P)
         A2[:,i]=(A[:,i]+A1[:,i])/(norm(A[:,i]+A1[:,i]))
     end
     S=Q'*Ns
-    w1=0.5*(norm_apolar(hpol(W,A,X,d)-P))^2
-    w2=0.5*(norm_apolar(hpol(W2,A2,X,d)-P))^2
+    w1=0.5*(apolar_norm(hpol(W,A,X,d)-P))^2
+    w2=0.5*(apolar_norm(hpol(W2,A2,X,d)-P))^2
     w3=w1+G'*S+0.5*S'*H*S
     r1=w1-w2
     r2=w1-w3
@@ -171,7 +171,7 @@ function rne_n_tr_r_step(delta, W::Vector, A::Matrix, P)
         op1,op2=W,A
     end
 
-    al=0.5*(norm_apolar(P))
+    al=0.5*(apolar_norm(P))
     t=exp(-14*(ki-1/3))
     er=(1/3+(2/3)*(1/(1+t)))*delta
     if ki > 0.6
@@ -229,7 +229,7 @@ function rne_n_tr_r(P, A0::Vector, B0::Matrix,
     E=fill(0.0,N*r)
     F=fill(0.0,n,N*r)
     P0=hpol(A0,B0,X,d)
-    d0=norm_apolar(P-P0)
+    d0=apolar_norm(P-P0)
     C=opt(A0,B0,P)
     A1=fill(0.0,r)
     B1=fill(0.0,n,r)
@@ -238,7 +238,7 @@ function rne_n_tr_r(P, A0::Vector, B0::Matrix,
         A1[i]=A0[i]*C[i]
     end
     P1=hpol(A1,B1,X,d)
-    d1=norm_apolar(P1-P)
+    d1=apolar_norm(P1-P)
     if d0<d1
         A1=A0
     end
@@ -257,7 +257,7 @@ function rne_n_tr_r(P, A0::Vector, B0::Matrix,
           i += 1
      end
     P4=hpol(W,V,X,d)
-    d2=norm_apolar(P4-P)
+    d2=apolar_norm(P4-P)
     A=fill(0.0,r)
     B=fill(0.0,n,r)
     if d2<d1
@@ -266,7 +266,7 @@ function rne_n_tr_r(P, A0::Vector, B0::Matrix,
         A,B=A1,B1
     end
     P5=hpol(A,B,X,d)
-    d3=norm_apolar(P-P5)
+    d3=apolar_norm(P-P5)
     #println("N:",i)
     #println("dist0: ",d0)
     #println("dist*: ",d3)

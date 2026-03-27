@@ -1,7 +1,6 @@
 using LinearAlgebra, DynamicPolynomials, AlgebraicSolvers
 
 
-
 function AlgebraicSolvers.mult_matrices(s::AlgebraicSolvers.Series{C,D}, rkf::Function=eps_rkf(1.e-4)) where {C,D}
     d  = maxdegree(s)
     X = variables(s)
@@ -94,11 +93,12 @@ function _local_mult_matrices(Tr,ms)
     return Subb
 end
 
+export local_mult_matrices
 function local_mult_matrices(Tr, ms)
     [[m[I,I] for I in ms] for m in Tr]
 end
 
-function nilindex(A::Matrix, v; tol=1.e-7,max_iter=1000)
+function nil_index_mv(A::Matrix, v; tol=1.e-7,max_iter=1000)
     iter=0
     while norm(v) > tol && iter < max_iter
         v = A*v
@@ -109,7 +109,7 @@ end
 
 
 
-function nil_index(Subb::Vector, Pt::Vector)
+function _nil_index(Subb::Vector, Pt::Vector)
 
     for i in 1:length(Subb)
         for j in 1:length(Subb[i])
@@ -125,29 +125,29 @@ function nil_index(Subb::Vector, Pt::Vector)
     
     for k in 1:length(Subb)
         v=rand(size(Subb[k])[1])
-        ns,v=nilindex(Subb[k],v)
+        ns,v=nil_index_mv(Subb[k],v)
         nilx = vcat(ns,nilx)
     end
     return reverse(nilx)
 end
 
+export nil_index
 function nil_index(Subb::Vector, Xi::Matrix)
 
+    n = length(Subb)
+    npt = size(Xi,2)
     for i in 1:length(Subb)
-        for j in 1:length(Subb[i])
-            Subb[i][j] = Subb[i][j]-Xi[:,i][j]*I(size(Subb[i][j])[1])
+        for j in 1:npt
+            Subb[i][j] = Subb[i][j]- Xi[i,j]*I(size(Subb[i][j],1))
         end
     end
 
-    for j in 1:length(Subb)
-        Subb[j]=sum(Subb[j][i]*randn(Float64) for i in 1:length(Subb[j]))
-    end
+    nilx=Int64[]
     
-    nilx=[]
-    
-    for k in 1:length(Subb)
-        v=rand(size(Subb[k])[1])
-        ns,v=nilindex(Subb[k],v)
+    for k in 1:npt
+        Mkr = sum(Subb[i][k]*randn(Float64) for i in 1:n)
+        v=rand(size(Mkr,1))
+        ns,v = nil_index_mv(Mkr,v)
         nilx = vcat(ns,nilx)
     end
     return reverse(nilx)
@@ -162,27 +162,27 @@ function gad_decompose(F; verbose = false)
     
     X = variables(F)
     d = maxdegree(F)
-    n = length(variables(F))-1
-    verbose && println("--- d=", d, " n=", n+1)
+    n = length(variables(F))
+    verbose && println("--- d=", d, " n=", n)
     
     sigma = apolar_dual(F) 
     M = AlgebraicSolvers.mult_matrices(sigma)
 
+    #ms0, Z, r = _multiplicities(M)
+    #Zt = transpose(Z)
+    #Tr = [Zt*M[i]*Z for i in 1:length(M)]
 
-    ms, Z, r = _multiplicities(M)
-    Zt = transpose(Z)
-    Tr = [Zt*M[i]*Z for i in 1:length(M)]
+    Xi, ms, Z, Tr = AlgebraicSolvers.schur_dcp(M, 1.e-3)
 
-    Xi1, ms1, Z1, Tr1 = AlgebraicSolvers.schur_dcp(M, 1.e-3)
+    verbose && println("--- multiplicities: ", ms)
 
-    verbose && println("--- multiplicities: ", ms, " ", ms1)
+    nPt = size(Xi,2)
+    L = [dot(X,Xi[:,j]) for j in 1:nPt]
+    
+    #Subb = _local_mult_matrices(Tr, ms0)
+    LocMat = local_mult_matrices(Tr, ms)
 
-
-    Subb = _local_mult_matrices(Tr, ms)
-    Subb1 = local_mult_matrices(Tr1, ms1)
-
-   
-    nPt = size(Subb)[1]
+    #=
     c   = size(Subb[1])[1]
 
     Pt = []
@@ -197,30 +197,24 @@ function gad_decompose(F; verbose = false)
         push!(Pt, Xi[i:i+c-1])
     end
 
-    println(Pt, " ", Xi1 )
-
     nilx = _nil_index(Subb, Pt)
-    nilx = nil_index(Subb1, Xi1)
+    =#
+
+    nilx = nil_index(LocMat, Xi)
 
     verbose && println("--- nil indices: ", nilx)
-    dg = vcat([nilx[i]-1 for i in 1:length(nilx)]...)
 
-    L=[]
+    dg = [nilx[i]-1 for i in 1:nPt]
 
-    for i in 1:length(Pt)
-        push!(L,dot(X,Pt[i]))
-    end
-   
     D = DynamicPolynomials.monomials(X,d)
 
     mlt = [DynamicPolynomials.monomials(X,dg[i]) for i in 1:length(dg)]
 
-    P = vcat([L[i]^(d-dg[i])*mlt[i] for i in 1:length(Pt)]...)
+    P = vcat([L[i]^(d-dg[i])*mlt[i] for i in 1:nPt]...)
 
-    Vdm = matrixof(P,D)'
-    b = matrixof([F],D)'
+    Vdm = AlgebraicSolvers.matrixof(P,D)'
+    b   = AlgebraicSolvers.matrixof([F],D)'
 
-    
     ws = Vdm\b
    
    if dg == zeros(length(dg))
@@ -230,13 +224,13 @@ function gad_decompose(F; verbose = false)
        W = []; 
 
        s = 0
-       for i in 1:length(Pt)
+       for i in 1:nPt
            l = length(mlt[i])
            w = dot(mlt[i], ws[s+1:s+l])
            push!(W, dot(mlt[i], ws[s+1:s+l]))
            s+=l
        end
-       return W, L, ms
+       return W, L, length.(ms)
    end
 end
 

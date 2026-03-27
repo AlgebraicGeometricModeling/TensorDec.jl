@@ -1,0 +1,59 @@
+# Generalized Additive Decomposition
+
+The Generalized Additive Decomposition of a symmetric tensor $F$ of degree $d$ is a decomposition of the form 
+
+```math
+
+ F = \sum_{i=1}^{r} \omega_i L_i^{d-k_i}
+```
+where $\omega_i$ is a symmetric tensor of order $k_{i}$  and $L_i$ is a linear form (of degree $1$).
+
+The function `TensorDec.gad_decompose` computes such a decomposition (see )
+
+## How does it works ?
+
+We illustrate the algorithm on the following example:
+```@example gad1
+using LinearAlgebra, DynamicPolynomials, AlgebraicSolvers, TensorDec
+
+X = @polyvar x y z
+F = (x+z)^4 * (x+y) - 2 * x^3 * (x*y+y^2)
+```
+
+We first associate to $F$ is apolar series:
+```@example gad1
+sigma = apolar_dual(F)
+```
+
+We deduce the operators of multiplications $M$ by the variables using the Hankel or Catalecticant matrices, and computes the Schur joint factorization of $M$. This gives the points `Xi`, which are the coeffiecients of the linear forms $L_i$ of the GAD:
+```@example gad1
+M = AlgebraicSolvers.mult_matrices(sigma)
+Xi, ms, Z, Tr = AlgebraicSolvers.schur_dcp(M, 1.e-3)
+L = [dot(X,Xi[:,j]) for j in 1:nPt]
+```
+
+To recover the weights $\omega_i$, we compute the operators of multiplication by the variables in the local Artinian algebras associated to the points $L_i$, compute their nil-indices and deduce the degrees of the $\omega_i$: 
+```@example gad1
+LocM = local_mult_matrices(Tr, ms)
+nilx = nil_index(LocM, Xi)
+dg = [nilx[i]-1 for i in 1:nPt]
+```
+
+Finally we solve a Vandermonde-like system to find the coefficients of the weights $\omega_i$, knowing their degrees:
+```
+D = DynamicPolynomials.monomials(X,d)
+mlt = [DynamicPolynomials.monomials(X,dg[i]) for i in 1:length(dg)]
+P = vcat([L[i]^(d-dg[i])*mlt[i] for i in 1:nPt]...)
+Vdm = AlgebraicSolvers.matrixof(P,D)'
+b   = AlgebraicSolvers.matrixof([F],D)'
+ws = Vdm\b
+W = []; 
+s = 0
+for i in 1:nPt
+    l = length(mlt[i])
+    w = dot(mlt[i], ws[s+1:s+l])
+    push!(W, dot(mlt[i], ws[s+1:s+l]))
+    s+=l
+end
+W
+```

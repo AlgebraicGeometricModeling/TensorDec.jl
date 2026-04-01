@@ -1,7 +1,7 @@
 using LinearAlgebra, DynamicPolynomials, AlgebraicSolvers
 
-
-function AlgebraicSolvers.mult_matrices(s::AlgebraicSolvers.Series{C,D}, rkf::Function=eps_rkf(1.e-4)) where {C,D}
+export hankel_mult_matrices
+function hankel_mult_matrices(s::AlgebraicSolvers.Series{C,D}, rkf::Function=eps_rkf(1.e-4)) where {C,D}
     d  = maxdegree(s)
     X = variables(s)
     d0 = div(d-1,2)
@@ -166,11 +166,7 @@ function gad_decompose(F; verbose = false)
     verbose && println("--- d=", d, " n=", n)
     
     sigma = apolar_dual(F) 
-    M = AlgebraicSolvers.mult_matrices(sigma)
-
-    #ms0, Z, r = _multiplicities(M)
-    #Zt = transpose(Z)
-    #Tr = [Zt*M[i]*Z for i in 1:length(M)]
+    M = hankel_mult_matrices(sigma)
 
     Xi, ms, Z, Tr = AlgebraicSolvers.schur_dcp(M, 1.e-3)
 
@@ -181,24 +177,6 @@ function gad_decompose(F; verbose = false)
     
     #Subb = _local_mult_matrices(Tr, ms0)
     LocMat = local_mult_matrices(Tr, ms)
-
-    #=
-    c   = size(Subb[1])[1]
-
-    Pt = []
-    Xi = []
-    for i in 1:nPt
-        for j in 1:size(Subb[i])[1]
-            push!(Xi,tr(Subb[i][j])/size(Subb[i][j],1))
-        end
-    end
-    
-    for i in 1:c:length(Xi)
-        push!(Pt, Xi[i:i+c-1])
-    end
-
-    nilx = _nil_index(Subb, Pt)
-    =#
 
     nilx = nil_index(LocMat, Xi)
 

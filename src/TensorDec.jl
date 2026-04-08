@@ -11,6 +11,7 @@ using AlgebraicSolvers
 include("symmetric.jl")
 include("multilinear.jl")
 include("apolar.jl")
+include("extension.jl")
 include("decompose.jl")
 include("rcg_decompose.jl")
 include("simdiag.jl")

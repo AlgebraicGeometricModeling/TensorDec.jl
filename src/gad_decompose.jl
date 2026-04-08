@@ -1,7 +1,7 @@
 using LinearAlgebra, DynamicPolynomials, AlgebraicSolvers
 
 export hankel_mult_matrices
-function hankel_mult_matrices(s::AlgebraicSolvers.Series{C,D}, rkf::Function=eps_rkf(1.e-4)) where {C,D}
+function hankel_mult_matrices(s::AlgebraicSolvers.Series{C,D}, d  = maxdegree(s), rkf::Function=eps_rkf(1.e-4)) where {C,D}
     d  = maxdegree(s)
     X = variables(s)
     d0 = div(d-1,2)
@@ -166,7 +166,7 @@ function gad_decompose(F; verbose = false)
     verbose && println("--- d=", d, " n=", n)
     
     sigma = apolar_dual(F) 
-    M = hankel_mult_matrices(sigma)
+    M = hankel_mult_matrices(sigma, d)
 
     Xi, ms, Z, Tr = AlgebraicSolvers.schur_dcp(M, 1.e-3)
 

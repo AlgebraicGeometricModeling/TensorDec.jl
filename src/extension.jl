@@ -46,7 +46,7 @@ end
 export dimext_series
 """
 
-   s, Xe, Y = degext_series(F,r)
+   s, Xe, Y = dimext_series(F,r)
 
 Compute the apolar_series extending  the variables of `F`  to the size `r`.
 The series `s` is a series in the dual monomials of the new variables `Xe`, and with coefficients which are polynomials in the pseudo-moment variables `Y`. 
@@ -59,7 +59,7 @@ function dimext_series(F, r::Int64)
 
     @assert(n < r)
 
-    Xn = (@polyvar xe[1:r-n] monomial_order = Graded{Reverse{LexOrder}})[1]
+    Xn = (@polyvar xe[1:r-n] monomial_order = ordering(F))[1]
 
     Xe = vcat(X, Xn)
     
@@ -80,7 +80,7 @@ function dimext_series(F, r::Int64)
             cnt+=1
         end
     end
-    AlgebraicSolvers.series(Lc,Lm), Y
+    AlgebraicSolvers.series(Lc,Lm), Xe, Y
 end
 
 

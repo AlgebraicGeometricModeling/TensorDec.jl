@@ -11,7 +11,7 @@ Compute the apolar_series extending F to the degree  `d`, shifting F by `X0^(d-d
 The series `s` is a series in the dual monomials of `variables(F)`, and with coefficients which are polynomials in the pseudo-moment variables `Y`. 
  
 """
-function degext_series(F, X0, d)
+function degext_series(F, X0, d::Int64)
 
     d0 = maxdegree(F)
     X = variables(F)
@@ -45,10 +45,16 @@ end
 
 export dimext_series
 """
- Compute the series extending F with moment variables as coefficients
+
+   s, Xe, Y = degext_series(F,r)
+
+Compute the apolar_series extending  the variables of `F`  to the size `r`.
+The series `s` is a series in the dual monomials of the new variables `Xe`, and with coefficients which are polynomials in the pseudo-moment variables `Y`. 
+
 """
-function dimext_series(F, X, r)
+function dimext_series(F, r::Int64)
     d = maxdegree(F)
+    X = variables(F)
     n = length(X)
 
     @assert(n < r)
@@ -74,21 +80,21 @@ function dimext_series(F, X, r)
             cnt+=1
         end
     end
-    AS.series(Lc,Lm), Xe, Y
+    AlgebraicSolvers.series(Lc,Lm), Y
 end
 
 
-
+export eval_series
 """
-  Substitute in the coefficients, the parameters y by the substitution `subs`
+   Substitute in the parametric coefficients of the series, the parameters y by the substitution `sbs`
 """
-function eval_series(s, sbs)
+function eval_series(s::Series, sbs)
     Lm = collect(monomials(s))
     Lc = collect(coefficients(s))
     
     Ls = fill(zero(sbs.second[1]),length(Lc))
     for i in 1:length(Lc)
-        Ls[i] = cst.(subs(Lc[i], sbs))
+        Ls[i] = coefficient(subs(Lc[i], sbs), one(variables(sbs.first)[1]))
     end
-    return series(Ls,Lm)
+    return AlgebraicSolvers.series(Ls,Lm)
 end

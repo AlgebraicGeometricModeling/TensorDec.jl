@@ -1,10 +1,6 @@
 module TensorDec
 
-#info() = "TensorDec", "0.1.1", "https://gitlab.inria.fr/AlgebraicGeometricModeling/TensorDec.jl"
-
-#using Reexport
 using LinearAlgebra
-#using MultivariatePolynomials
 using DynamicPolynomials
 using AlgebraicSolvers
 
